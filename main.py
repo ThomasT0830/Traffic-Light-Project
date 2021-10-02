@@ -17,26 +17,41 @@ if 'SUMO_HOME' in os.environ:
 else:
     sys.exit("please declare environment variable 'SUMO_HOME'")
 
-def generateRoute(lanesNS, lanesWE, steps, demandN=0.20, demandS=0.20, demandW=0.20, demandE=0.20, accel=0.8, decel=4.5, minLength=5, maxLength=5, minGap=2.5, maxSpeed=25.0,
-                  demandProb=None):
+def generateRoute(lanesNS, lanesWE, steps, demandN, demandS, demandW, demandE, accel, decel, minLength, maxLength, minGap, maxSpeed, demandProbNS, demandProbWE):
     random.seed(42)  # make tests reproducible
     vtypes = []
     # demand per second from different directions
-    if demandProb is None:
+    if demandProbNS is None:
         # left, straight, right
-        demandProb = [1, 1, 1, 1]
-    chance = []
+        demandProbNS = [1, 1, 1, 1]
+    if demandProbWE is None:
+        # left, straight, right
+        demandProbWE = [1, 1, 1, 1]
+    chanceNS = []
+    chanceWE = []
     draw_count = 0
-    for draw in demandProb:
+    for draw in demandProbNS:
         for i in range(draw):
             if draw_count == 0:
-                chance.append("left")
+                chanceNS.append("left")
             elif draw_count == 1:
-                chance.append("straight")
+                chanceNS.append("straight")
             elif draw_count == 2:
-                chance.append("right")
+                chanceNS.append("right")
             else:
-                chance.append("uturn")
+                chanceNS.append("uturn")
+        draw_count += 1
+    draw_count = 0
+    for draw in demandProbWE:
+        for i in range(draw):
+            if draw_count == 0:
+                chanceWE.append("left")
+            elif draw_count == 1:
+                chanceWE.append("straight")
+            elif draw_count == 2:
+                chanceWE.append("right")
+            else:
+                chanceWE.append("uturn")
         draw_count += 1
     with open("data/cross.rou.xml", "w") as routes:
         print("""<routes>""", file=routes)
@@ -65,7 +80,7 @@ def generateRoute(lanesNS, lanesWE, steps, demandN=0.20, demandS=0.20, demandW=0
         vehicleCount = 0
         for i in range(steps):
             if random.uniform(0, 1) < demandN:
-                direction = random.choice(chance)
+                direction = random.choice(chanceNS)
                 vehicleType = random.choice(vtypes)
                 if direction == "left":
                     print('    <vehicle id="%sN_%i" type="%s" route="edgeN_edgeE" depart="%i" departLane="%i" />' % (
@@ -81,7 +96,7 @@ def generateRoute(lanesNS, lanesWE, steps, demandN=0.20, demandS=0.20, demandW=0
                         direction, vehicleCount, vehicleType, i), file=routes)
                 vehicleCount += 1
             if random.uniform(0, 1) < demandS:
-                direction = random.choice(chance)
+                direction = random.choice(chanceNS)
                 vehicleType = random.choice(vtypes)
                 if direction == "left":
                     print('    <vehicle id="%sS_%i" type="%s" route="edgeS_edgeW" depart="%i" departLane="%i" />' % (
@@ -97,7 +112,7 @@ def generateRoute(lanesNS, lanesWE, steps, demandN=0.20, demandS=0.20, demandW=0
                         direction, vehicleCount, vehicleType, i), file=routes)
                 vehicleCount += 1
             if random.uniform(0, 1) < demandW:
-                direction = random.choice(chance)
+                direction = random.choice(chanceWE)
                 vehicleType = random.choice(vtypes)
                 if direction == "left":
                     print('    <vehicle id="%sW_%i" type="%s" route="edgeW_edgeN" depart="%i" departLane="%i" />' % (
@@ -109,12 +124,11 @@ def generateRoute(lanesNS, lanesWE, steps, demandN=0.20, demandS=0.20, demandW=0
                     print('    <vehicle id="%sW_%i" type="%s" route="edgeW_edgeW" depart="%i" departLane="%i" />' % (
                             direction, vehicleCount, vehicleType, i, lanesWE - 1), file=routes)
                 else:
-                    print(
-                        '    <vehicle id="%sW_%i" type="%s" route="edgeW_edgeE" depart="%i" departLane="random" />' % (
+                    print('    <vehicle id="%sW_%i" type="%s" route="edgeW_edgeE" depart="%i" departLane="random" />' % (
                             direction, vehicleCount, vehicleType, i), file=routes)
                 vehicleCount += 1
             if random.uniform(0, 1) < demandE:
-                direction = random.choice(chance)
+                direction = random.choice(chanceWE)
                 vehicleType = random.choice(vtypes)
                 if direction == "left":
                     print('    <vehicle id="%sE_%i" type="%s" route="edgeE_edgeS" depart="%i" departLane="%i" />' % (
@@ -132,15 +146,157 @@ def generateRoute(lanesNS, lanesWE, steps, demandN=0.20, demandS=0.20, demandW=0
                 vehicleCount += 1
         print("</routes>", file=routes)
 
-def setDuration(move, yellow=5):
+def setDuration(lanesNS, lanesWE, moveNS, moveWE, yellowNS, yellowWE, turnNS, turnWE):
+    status = []
+    for state in range(6):
+        temp_string = ""
+        if state == 0:
+            # North
+            temp_string += "GG"
+            for i in range(lanesNS):
+                temp_string += "G"
+            temp_string += "ggg"
+            # East
+            temp_string += "rr"
+            for i in range(lanesWE):
+                temp_string += "r"
+            temp_string += "rrr"
+            # South
+            temp_string += "GG"
+            for i in range(lanesNS):
+                temp_string += "G"
+            temp_string += "ggg"
+            #West
+            temp_string += "rr"
+            for i in range(lanesWE):
+                temp_string += "r"
+            temp_string += "rrr"
+        elif state == 1:
+            # North
+            temp_string += "yy"
+            for i in range(lanesNS):
+                temp_string += "y"
+            temp_string += "yyy"
+            # East
+            temp_string += "rr"
+            for i in range(lanesWE):
+                temp_string += "r"
+            temp_string += "rrr"
+            # South
+            temp_string += "yy"
+            for i in range(lanesNS):
+                temp_string += "y"
+            temp_string += "yyy"
+            # West
+            temp_string += "rr"
+            for i in range(lanesWE):
+                temp_string += "r"
+            temp_string += "rrr"
+        elif state == 2:
+            # North
+            temp_string += "rr"
+            for i in range(lanesNS):
+                temp_string += "r"
+            temp_string += "rrr"
+            # East
+            temp_string += "rr"
+            for i in range(lanesWE):
+                temp_string += "r"
+            temp_string += "GGG"
+            # South
+            temp_string += "rr"
+            for i in range(lanesNS):
+                temp_string += "r"
+            temp_string += "rrr"
+            # West
+            temp_string += "rr"
+            for i in range(lanesWE):
+                temp_string += "r"
+            temp_string += "GGG"
+        elif state == 3:
+            # North
+            temp_string += "rr"
+            for i in range(lanesNS):
+                temp_string += "r"
+            temp_string += "rrr"
+            # East
+            temp_string += "GG"
+            for i in range(lanesWE):
+                temp_string += "G"
+            temp_string += "ggg"
+            # South
+            temp_string += "rr"
+            for i in range(lanesNS):
+                temp_string += "r"
+            temp_string += "rrr"
+            # West
+            temp_string += "GG"
+            for i in range(lanesWE):
+                temp_string += "G"
+            temp_string += "ggg"
+        elif state == 4:
+            # North
+            temp_string += "rr"
+            for i in range(lanesNS):
+                temp_string += "r"
+            temp_string += "rrr"
+            # East
+            temp_string += "yy"
+            for i in range(lanesWE):
+                temp_string += "y"
+            temp_string += "yyy"
+            # South
+            temp_string += "rr"
+            for i in range(lanesNS):
+                temp_string += "r"
+            temp_string += "rrr"
+            # West
+            temp_string += "yy"
+            for i in range(lanesWE):
+                temp_string += "y"
+            temp_string += "yyy"
+        else:
+            # North
+            temp_string += "rr"
+            for i in range(lanesNS):
+                temp_string += "r"
+            temp_string += "GGG"
+            # East
+            temp_string += "rr"
+            for i in range(lanesWE):
+                temp_string += "r"
+            temp_string += "rrr"
+            # South
+            temp_string += "rr"
+            for i in range(lanesNS):
+                temp_string += "r"
+            temp_string += "GGG"
+            # West
+            temp_string += "rr"
+            for i in range(lanesWE):
+                temp_string += "r"
+            temp_string += "rrr"
+        status.append(temp_string)
+
     with open("data/cross.tls.xml", "w") as tls:
         print("<additional>", file=tls)
         print("""   <tlLogic id="juncMain" type="static" programID="1" offset="0">""", file=tls)
+        if moveNS != 0:
+            print("""       <phase duration="%i" state="%s"/>""" % (moveNS, status[0]), file=tls)
+        if yellowNS != 0:
+            print("""       <phase duration="%i" state="%s"/>""" % (yellowNS, status[1]), file=tls)
+        if turnWE != 0:
+            print("""       <phase duration="%i" state="%s"/>""" % (turnWE, status[2]), file=tls)
+        if moveWE != 0:
+            print("""       <phase duration="%i" state="%s"/>""" % (moveWE, status[3]), file=tls)
+        if yellowWE != 0:
+            print("""       <phase duration="%i" state="%s"/>""" % (yellowWE, status[4]), file=tls)
+        if turnNS != 0:
+            print("""       <phase duration="%i" state="%s"/>""" % (turnNS, status[5]), file=tls)
         print("""   </tlLogic>""", file=tls)
         print("</additional>", file=tls)
 
-
-def createNetwork(lanesNS, lanesWE, outspeedNS=19.0, inspeedNS=11.0, outspeedWE=19.0, inspeedWE=11.0):
+def createNetwork(lanesNS, lanesWE, outspeedNS, inspeedNS, outspeedWE, inspeedWE):
     tree = ET.parse("data/cross.edg.xml")
 
     tl = tree.find(".//edge[@id='edgeN_O']")
@@ -196,21 +352,41 @@ def findRate(data):
         total += (duration / (duration - loss))
     return total / len(all_trips)
 
-def main(duration_min, duration_max, time_steps, lanesNS, lanesWE, csv_path):
-    durations = []
-    rates = []
-    createNetwork(lanesNS, lanesWE)
-    for duration in range(duration_min, duration_max + 1):
-        generateRoute(lanesNS, lanesWE, time_steps)
-        setDuration(duration)
-        traci.start([checkBinary('sumo-gui'), "-c", "data/cross.sumocfg",
-                     "--tripinfo-output", "tripinfo.xml"])
-        runSim()
-        durations.append(duration)
-        rates.append(findRate("tripinfo.xml"))
-    data = pd.DataFrame({"duration": durations, "rates": rates})
+def main(time_steps, lanesNS, lanesWE, csv_path,
+    moveDurationNS, moveDurationWE,
+    yellowDurationNS=5, yellowDurationWE=5,
+    turnDurationNS=0, turnDurationWE=0,
+    demandN=0.20, demandS=0.20, demandW=0.20, demandE=0.20,
+    demandProbNS = None, demandProbWE = None,
+    outSpeedNS=19.0, outSpeedWE=19.0, inSpeedNS=11.0, inSpeedWE=11.0,
+    vehicleMaxSpeed=25.0, vehicleAccel=0.8, vehicleDecel=4.5,
+    vehicleMinLength=5, vehicleMaxLength=5, minGap=2.5):
+
+    ratesRec = []
+    lanesNSRec = []
+    lanesWERec = []
+    moveDurationNSRec = []
+    moveDurationWERec = []
+    yellowDurationNSRec = []
+    yellowDurationWERec = []
+    turnDurationNSRec = []
+    turnDurationWERec = []
+    demandNRec = []
+    demandSRec = []
+    demandWRec = []
+    demandERec = []
+
+
+    setDuration(lanesNS, lanesWE, moveDurationNS, moveDurationWE, yellowDurationNS, yellowDurationWE, turnDurationNS, turnDurationWE)
+    createNetwork(lanesNS, lanesWE, outSpeedNS, inSpeedNS, outSpeedWE, inSpeedWE)
+    generateRoute(lanesNS, lanesWE, time_steps, demandN, demandS, demandW, demandE, vehicleAccel, vehicleDecel, vehicleMinLength, vehicleMaxLength, minGap, vehicleMaxSpeed, demandProbNS, demandProbWE)
+    traci.start([checkBinary('sumo-gui'), "-c", "data/cross.sumocfg",
+                 "--tripinfo-output", "tripinfo.xml"])
+    runSim()
+    ratesRec.append(findRate("tripinfo.xml"))
+    data = pd.DataFrame({})
     data.to_csv(csv_path)
 
 
 if __name__ == "__main__":
-    main(50, 58, 3000, 5, 5, "record.csv")
+    main(time_steps=3000, lanesNS=5, lanesWE=3, csv_path="record.csv", moveDurationNS=50, moveDurationWE=50, demandN=0.001, demandS=0.001)
