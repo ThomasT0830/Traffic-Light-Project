@@ -8,6 +8,7 @@ import os
 import sys
 import xml.etree.ElementTree as ET
 import random
+import time
 import csv
 
 # we need to import python modules from the $SUMO_HOME/tools directory
@@ -17,7 +18,9 @@ if 'SUMO_HOME' in os.environ:
 else:
     sys.exit("please declare environment variable 'SUMO_HOME'")
 
-def generateRoute(lanesNS, lanesWE, steps, demandN, demandS, demandW, demandE, accel, decel, minLength, maxLength, minGap, maxSpeed, demandProbNS, demandProbWE):
+def generateRoute(leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS, rightOnlyNS, allNS,
+                  leftOnlyWE, leftStraightWE, straightOnlyWE, rightStraightWE, rightOnlyWE, allWE,
+                  steps, demandN, demandS, demandW, demandE, accel, decel, minLength, maxLength, minGap, maxSpeed, demandProbNS, demandProbWE):
     random.seed(42)  # make tests reproducible
     vtypes = []
     # demand per second from different directions
@@ -146,7 +149,9 @@ def generateRoute(lanesNS, lanesWE, steps, demandN, demandS, demandW, demandE, a
                 vehicleCount += 1
         print("</routes>", file=routes)
 
-def setDuration(lanesNS, lanesWE, moveNS, moveWE, yellowNS, yellowWE, turnNS, turnWE):
+def setDuration(leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS, rightOnlyNS, allNS,
+                leftOnlyWE, leftStraightWE, straightOnlyWE, rightStraightWE, rightOnlyWE, allWE,
+                moveNS, moveWE, yellowNS, yellowWE, turnNS, turnWE):
     status = []
     for state in range(6):
         temp_string = ""
@@ -296,7 +301,13 @@ def setDuration(lanesNS, lanesWE, moveNS, moveWE, yellowNS, yellowWE, turnNS, tu
         print("""   </tlLogic>""", file=tls)
         print("</additional>", file=tls)
 
-def createNetwork(lanesNS, lanesWE, outspeedNS, inspeedNS, outspeedWE, inspeedWE):
+def createNetwork(leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS, rightOnlyNS, allNS,
+                  leftOnlyWE, leftStraightWE, straightOnlyWE, rightStraightWE, rightOnlyWE, allWE,
+                  outspeedNS, inspeedNS, outspeedWE, inspeedWE):
+
+    lanesNS = leftOnlyNS + leftStraightNS + straightOnlyNS + rightStraightNS + rightOnlyNS + allNS
+    lanesWE = leftOnlyWE + leftStraightWE + straightOnlyWE + rightStraightWE + rightOnlyWE + allWE
+
     tree = ET.parse("data/cross.edg.xml")
 
     tl = tree.find(".//edge[@id='edgeN_O']")
@@ -352,7 +363,9 @@ def findRate(data):
         total += (duration / (duration - loss))
     return total / len(all_trips)
 
-def main(time_steps, lanesNS, lanesWE, csv_path,
+def main(time_steps, csv_path,
+    leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS, rightOnlyNS, allNS,
+    leftOnlyWE, leftStraightWE, straightOnlyWE, rightStraightWE, rightOnlyWE, allWE,
     moveDurationNS, moveDurationWE,
     yellowDurationNS=5, yellowDurationWE=5,
     turnDurationNS=0, turnDurationWE=0,
@@ -362,31 +375,33 @@ def main(time_steps, lanesNS, lanesWE, csv_path,
     vehicleMaxSpeed=25.0, vehicleAccel=0.8, vehicleDecel=4.5,
     vehicleMinLength=5, vehicleMaxLength=5, minGap=2.5):
 
-    ratesRec = []
-    lanesNSRec = []
-    lanesWERec = []
-    moveDurationNSRec = []
-    moveDurationWERec = []
-    yellowDurationNSRec = []
-    yellowDurationWERec = []
-    turnDurationNSRec = []
-    turnDurationWERec = []
-    demandNRec = []
-    demandSRec = []
-    demandWRec = []
-    demandERec = []
-
-
-    setDuration(lanesNS, lanesWE, moveDurationNS, moveDurationWE, yellowDurationNS, yellowDurationWE, turnDurationNS, turnDurationWE)
-    createNetwork(lanesNS, lanesWE, outSpeedNS, inSpeedNS, outSpeedWE, inSpeedWE)
-    generateRoute(lanesNS, lanesWE, time_steps, demandN, demandS, demandW, demandE, vehicleAccel, vehicleDecel, vehicleMinLength, vehicleMaxLength, minGap, vehicleMaxSpeed, demandProbNS, demandProbWE)
-    traci.start([checkBinary('sumo-gui'), "-c", "data/cross.sumocfg",
+    setDuration(leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS, rightOnlyNS, allNS,
+                leftOnlyWE, leftStraightWE, straightOnlyWE, rightStraightWE, rightOnlyWE, allWE,
+                moveDurationNS, moveDurationWE, yellowDurationNS, yellowDurationWE, turnDurationNS, turnDurationWE)
+    createNetwork(leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS, rightOnlyNS, allNS,
+                  leftOnlyWE, leftStraightWE, straightOnlyWE, rightStraightWE, rightOnlyWE, allWE,
+                  outSpeedNS, inSpeedNS, outSpeedWE, inSpeedWE)
+    generateRoute(leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS, rightOnlyNS, allNS,
+                  leftOnlyWE, leftStraightWE, straightOnlyWE, rightStraightWE, rightOnlyWE, allWE,
+                  time_steps, demandN, demandS, demandW, demandE, vehicleAccel, vehicleDecel, vehicleMinLength,
+                  vehicleMaxLength, minGap, vehicleMaxSpeed, demandProbNS, demandProbWE)
+    traci.start([checkBinary('sumo'), "-c", "data/cross.sumocfg",
                  "--tripinfo-output", "tripinfo.xml"])
     runSim()
-    ratesRec.append(findRate("tripinfo.xml"))
-    data = pd.DataFrame({})
-    data.to_csv(csv_path)
+    rates = findRate("tripinfo.xml")
+
+    dataframe = pd.read_csv(csv_path, sep='\t',
+                      names=["moveDurationNS", "moveDurationWE", "yellowDurationNS", "yellowDurationWE",
+                             "turnDurationNS", "turnDurationWE", "demandN", "demandS", "demandW", "demandE",
+                             "demandProbNS_Straight", "demandProbNS_Left", "demandProbNS_Right", "demandProbNS_UTurn",
+                             "demandProbWE_Straight", "demandProbWE_Left", "demandProbWE_Right", "demandProbWE_UTurn",
+                             "outSpeedNS", "outSpeedWE", "inSpeedNS", "inSpeedWE", "vehicleMaxSpeed", "vehicleAccel",
+                             "vehicleDecel", "vehicleMinLength", "vehicleMaxLength", "minGap"])
+    data = pd.DataFrame([])
+    dataframe.to_csv(csv_path)
 
 
 if __name__ == "__main__":
-    main(time_steps=3000, lanesNS=5, lanesWE=3, csv_path="record.csv", moveDurationNS=50, moveDurationWE=50, demandN=0.001, demandS=0.001)
+    start_time = time.time()
+    main(time_steps=3000, csv_path="record.csv", moveDurationNS=50, moveDurationWE=50, demandN=0.001, demandS=0.001)
+    print(time.time() - start_time)

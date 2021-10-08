@@ -1,10 +1,4 @@
-,duration,rates
-0,50,2.400905913997027
-1,51,2.400905913997027
-2,52,2.400905913997027
-3,53,2.400905913997027
-4,54,2.400905913997027
-5,55,2.400905913997027
-6,56,2.400905913997027
-7,57,2.400905913997027
-8,58,2.400905913997027
+,moveDurationNS,moveDurationWE,yellowDurationNS,yellowDurationWE,turnDurationNS,turnDurationWE,demandN,demandS,demandW,demandE,demandProbNS_Straight,demandProbNS_Left,demandProbNS_Right,demandProbNS_UTurn,demandProbWE_Straight,demandProbWE_Left,demandProbWE_Right,demandProbWE_UTurn,outSpeedNS,outSpeedWE,inSpeedNS,inSpeedWE,vehicleMaxSpeed,vehicleAccel,vehicleDecel,vehicleMinLength,vehicleMaxLength,minGap
+0,",moveDurationNS,moveDurationWE,yellowDurationNS,yellowDurationWE,turnDurationNS,turnDurationWE,demandN,demandS,demandW,demandE,demandProbNS_Straight,demandProbNS_Left,demandProbNS_Right,demandProbNS_UTurn,demandProbWE_Straight,demandProbWE_Left,demandProbWE_Right,demandProbWE_UTurn,outSpeedNS,outSpeedWE,inSpeedNS,inSpeedWE,vehicleMaxSpeed,vehicleAccel,vehicleDecel,vehicleMinLength,vehicleMaxLength,minGap",,,,,,,,,,,,,,,,,,,,,,,,,,,
+1,"0,"",moveDurationNS,moveDurationWE,yellowDurationNS,yellowDurationWE,turnDurationNS,turnDurationWE,demandN,demandS,demandW,demandE,demandProbNS_Straight,demandProbNS_Left,demandProbNS_Right,demandProbNS_UTurn,demandProbWE_Straight,demandProbWE_Left,demandProbWE_Right,demandProbWE_UTurn,outSpeedNS,outSpeedWE,inSpeedNS,inSpeedWE,vehicleMaxSpeed,vehicleAccel,vehicleDecel,vehicleMinLength,vehicleMaxLength,minGap"",,,,,,,,,,,,,,,,,,,,,,,,,,,",,,,,,,,,,,,,,,,,,,,,,,,,,,
+2,"1,""0,"""",moveDurationNS,moveDurationWE,yellowDurationNS,yellowDurationWE,turnDurationNS,turnDurationWE,demandN,demandS,demandW,demandE,demandProbNS_Straight,demandProbNS_Left,demandProbNS_Right,demandProbNS_UTurn,demandProbWE_Straight,demandProbWE_Left,demandProbWE_Right,demandProbWE_UTurn,outSpeedNS,outSpeedWE,inSpeedNS,inSpeedWE,vehicleMaxSpeed,vehicleAccel,vehicleDecel,vehicleMinLength,vehicleMaxLength,minGap"""",,,,,,,,,,,,,,,,,,,,,,,,,,,"",,,,,,,,,,,,,,,,,,,,,,,,,,,",,,,,,,,,,,,,,,,,,,,,,,,,,,
