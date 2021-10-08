@@ -20,7 +20,8 @@ else:
 
 def generateRoute(leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS, rightOnlyNS, allNS,
                   leftOnlyWE, leftStraightWE, straightOnlyWE, rightStraightWE, rightOnlyWE, allWE,
-                  steps, demandN, demandS, demandW, demandE, accel, decel, minLength, maxLength, minGap, maxSpeed, demandProbNS, demandProbWE):
+                  steps, demandN, demandS, demandW, demandE, accel, decel, minLength, maxLength,
+                  minGap, maxSpeed, demandProbNS, demandProbWE):
     random.seed(42)  # make tests reproducible
     vtypes = []
     # demand per second from different directions
@@ -340,7 +341,7 @@ def createNetwork(leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS, r
 
     tree.write("data/cross.edg.xml")
 
-    os.system("netconvert --node-files=data/cross.nod.xml --edge-files=data/cross.edg.xml --output-file=data/cross.net.xml")
+    os.system("netconvert --node-files=data/cross.nod.xml --edge-files=data/cross.edg.xml --connection-files=data/cross.con.xml --output-file=data/cross.net.xml")
 
 def runSim():
     step = 0
@@ -363,45 +364,63 @@ def findRate(data):
         total += (duration / (duration - loss))
     return total / len(all_trips)
 
-def main(time_steps, csv_path,
-    leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS, rightOnlyNS, allNS,
-    leftOnlyWE, leftStraightWE, straightOnlyWE, rightStraightWE, rightOnlyWE, allWE,
-    moveDurationNS, moveDurationWE,
-    yellowDurationNS=5, yellowDurationWE=5,
-    turnDurationNS=0, turnDurationWE=0,
-    demandN=0.20, demandS=0.20, demandW=0.20, demandE=0.20,
-    demandProbNS = None, demandProbWE = None,
-    outSpeedNS=19.0, outSpeedWE=19.0, inSpeedNS=11.0, inSpeedWE=11.0,
-    vehicleMaxSpeed=25.0, vehicleAccel=0.8, vehicleDecel=4.5,
-    vehicleMinLength=5, vehicleMaxLength=5, minGap=2.5):
+def setup(csv_path):
+    dataframe = pd.read_csv(csv_path, sep='\t',
+                            names=["leftOnlyNS", "leftStraightNS", "straightOnlyNS", "rightStraightNS", "rightOnlyNS",
+                                   "allNS",
+                                   "leftOnlyWE", "leftStraightWE", "straightOnlyWE", "rightStraightWE", "rightOnlyWE",
+                                   "allWE",
+                                   "moveDurationNS", "moveDurationWE", "yellowDurationNS", "yellowDurationWE",
+                                   "turnDurationNS", "turnDurationWE", "demandN", "demandS", "demandW", "demandE",
+                                   "demandProbNS_Straight", "demandProbNS_Left", "demandProbNS_Right",
+                                   "demandProbNS_UTurn",
+                                   "demandProbWE_Straight", "demandProbWE_Left", "demandProbWE_Right",
+                                   "demandProbWE_UTurn",
+                                   "outSpeedNS", "outSpeedWE", "inSpeedNS", "inSpeedWE", "vehicleMaxSpeed",
+                                   "vehicleAccel",
+                                   "vehicleDecel", "vehicleMinLength", "vehicleMaxLength", "minGap"])
+    if dataframe.empty:
+        dataframe.to_csv(csv_path)
 
-    setDuration(leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS, rightOnlyNS, allNS,
-                leftOnlyWE, leftStraightWE, straightOnlyWE, rightStraightWE, rightOnlyWE, allWE,
-                moveDurationNS, moveDurationWE, yellowDurationNS, yellowDurationWE, turnDurationNS, turnDurationWE)
-    createNetwork(leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS, rightOnlyNS, allNS,
-                  leftOnlyWE, leftStraightWE, straightOnlyWE, rightStraightWE, rightOnlyWE, allWE,
-                  outSpeedNS, inSpeedNS, outSpeedWE, inSpeedWE)
-    generateRoute(leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS, rightOnlyNS, allNS,
-                  leftOnlyWE, leftStraightWE, straightOnlyWE, rightStraightWE, rightOnlyWE, allWE,
-                  time_steps, demandN, demandS, demandW, demandE, vehicleAccel, vehicleDecel, vehicleMinLength,
-                  vehicleMaxLength, minGap, vehicleMaxSpeed, demandProbNS, demandProbWE)
+
+def main(csv_path, time_steps,
+        leftOnlyNS=0, leftStraightNS=1, straightOnlyNS=1, rightStraightNS=1, rightOnlyNS=0, allNS=0,
+        leftOnlyWE=0, leftStraightWE=1, straightOnlyWE=1, rightStraightWE=1, rightOnlyWE=0, allWE=0,
+        moveDurationNS=60, moveDurationWE=60,
+        yellowDurationNS=5, yellowDurationWE=5,
+        turnDurationNS=0, turnDurationWE=0,
+        demandN=0.20, demandS=0.20, demandW=0.20, demandE=0.20,
+        demandProbNS = None, demandProbWE = None,
+        outSpeedNS=19.0, outSpeedWE=19.0, inSpeedNS=11.0, inSpeedWE=11.0,
+        vehicleMaxSpeed=25.0, vehicleAccel=0.8, vehicleDecel=4.5,
+        vehicleMinLength=5, vehicleMaxLength=5, minGap=2.5):
+
+    # setDuration(leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS, rightOnlyNS, allNS,
+    #             leftOnlyWE, leftStraightWE, straightOnlyWE, rightStraightWE, rightOnlyWE, allWE,
+    #             moveDurationNS, moveDurationWE, yellowDurationNS, yellowDurationWE, turnDurationNS, turnDurationWE)
+    # createNetwork(leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS, rightOnlyNS, allNS,
+    #               leftOnlyWE, leftStraightWE, straightOnlyWE, rightStraightWE, rightOnlyWE, allWE,
+    #               outSpeedNS, inSpeedNS, outSpeedWE, inSpeedWE)
+    # generateRoute(leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS, rightOnlyNS, allNS,
+    #               leftOnlyWE, leftStraightWE, straightOnlyWE, rightStraightWE, rightOnlyWE, allWE,
+    #               time_steps, demandN, demandS, demandW, demandE, vehicleAccel, vehicleDecel, vehicleMinLength,
+    #               vehicleMaxLength, minGap, vehicleMaxSpeed, demandProbNS, demandProbWE)
     traci.start([checkBinary('sumo'), "-c", "data/cross.sumocfg",
                  "--tripinfo-output", "tripinfo.xml"])
     runSim()
     rates = findRate("tripinfo.xml")
 
-    dataframe = pd.read_csv(csv_path, sep='\t',
-                      names=["moveDurationNS", "moveDurationWE", "yellowDurationNS", "yellowDurationWE",
-                             "turnDurationNS", "turnDurationWE", "demandN", "demandS", "demandW", "demandE",
-                             "demandProbNS_Straight", "demandProbNS_Left", "demandProbNS_Right", "demandProbNS_UTurn",
-                             "demandProbWE_Straight", "demandProbWE_Left", "demandProbWE_Right", "demandProbWE_UTurn",
-                             "outSpeedNS", "outSpeedWE", "inSpeedNS", "inSpeedWE", "vehicleMaxSpeed", "vehicleAccel",
-                             "vehicleDecel", "vehicleMinLength", "vehicleMaxLength", "minGap"])
-    data = pd.DataFrame([])
-    dataframe.to_csv(csv_path)
+    dataframe = pd.DataFrame([[i for i in range(40)]])
+    dataframe.to_csv(csv_path, mode='a', header=False)
 
+def fixIndex(csv_path):
+    dataframe = pd.read_csv(csv_path, index_col=0)
+    dataframe = dataframe.reset_index(drop=True)
+    dataframe.to_csv(csv_path)
 
 if __name__ == "__main__":
     start_time = time.time()
-    main(time_steps=3000, csv_path="record.csv", moveDurationNS=50, moveDurationWE=50, demandN=0.001, demandS=0.001)
+    setup("record.csv")
+    main(time_steps=3000, csv_path="record.csv")
+    fixIndex("record.csv")
     print(time.time() - start_time)
