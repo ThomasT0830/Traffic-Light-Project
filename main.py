@@ -365,6 +365,10 @@ def buildConnections(leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS
             lane_count += 1
         if leftOnlyNS > 0:
             print("", file=connections)
+        if leftOnlyNS > 0 or leftStraightNS > 0 or allNS > 0:
+            print("""   <connection from="edgeN_O" to="edgeN_I" fromLane="%i" toLane="%i"/>"""
+                  % (lane_count - 1, lanesNS - 1), file=connections)
+            print("", file=connections)
 
         # South
         print("""   <!-- South -->""", file=connections)
@@ -419,6 +423,10 @@ def buildConnections(leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS
             lane_count += 1
         if leftOnlyNS > 0:
             print("", file=connections)
+        if leftOnlyNS > 0 or leftStraightNS > 0 or allNS > 0:
+            print("""   <connection from="edgeS_O" to="edgeS_I" fromLane="%i" toLane="%i"/>"""
+                  % (lane_count - 1, lanesNS - 1), file=connections)
+            print("", file=connections)
 
         # West
         print("""   <!-- West -->""", file=connections)
@@ -428,8 +436,113 @@ def buildConnections(leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS
                 print("""   <connection from="edgeW_O" to="edgeS_I" fromLane="%i" toLane="%i"/>"""
                       % (lane_count, lane), file=connections)
             lane_count += 1
+        if rightOnlyWE > 0:
+            print("", file=connections)
+        for i in range(rightStraightWE):
+            for lane in range(rightOutLanesWE):
+                print("""   <connection from="edgeW_O" to="edgeS_I" fromLane="%i" toLane="%i"/>"""
+                      % (lane_count, lane), file=connections)
+            print("""   <connection from="edgeW_O" to="edgeE_I" fromLane="%i" toLane="%i"/>"""
+                  % (lane_count, lane_count), file=connections)
+            lane_count += 1
+        if rightStraightWE > 0:
+            print("", file=connections)
+        for i in range(straightOnlyWE):
+            print("""   <connection from="edgeW_O" to="edgeE_I" fromLane="%i" toLane="%i"/>"""
+                  % (lane_count, lane_count), file=connections)
+            lane_count += 1
+        if straightOnlyWE > 0:
+            print("", file=connections)
+        for i in range(allWE):
+            for lane in range(rightOutLanesWE):
+                print("""   <connection from="edgeW_O" to="edgeS_I" fromLane="%i" toLane="%i"/>"""
+                      % (lane_count, lane), file=connections)
+            print("""   <connection from="edgeW_O" to="edgeE_I" fromLane="%i" toLane="%i"/>"""
+                  % (lane_count, lane_count), file=connections)
+            for lane in range(leftOutLanesWE):
+                print("""   <connection from="edgeW_O" to="edgeN_I" fromLane="%i" toLane="%i"/>"""
+                      % (lane_count, lanesNS - 1 - lane), file=connections)
+            lane_count += 1
+        if allWE > 0:
+            print("", file=connections)
+        for i in range(leftStraightWE):
+            for lane in range(leftOutLanesWE):
+                print("""   <connection from="edgeW_O" to="edgeN_I" fromLane="%i" toLane="%i"/>"""
+                      % (lane_count, lanesNS - 1 - lane), file=connections)
+            print("""   <connection from="edgeW_O" to="edgeE_I" fromLane="%i" toLane="%i"/>"""
+                  % (lane_count, lane_count), file=connections)
+            lane_count += 1
+        if leftStraightWE > 0:
+            print("", file=connections)
+        for i in range(leftOnlyWE):
+            for lane in range(leftOutLanesWE):
+                print("""   <connection from="edgeW_O" to="edgeN_I" fromLane="%i" toLane="%i"/>"""
+                      % (lane_count, lanesNS - 1 - lane), file=connections)
+            lane_count += 1
+        if leftOnlyWE > 0:
+            print("", file=connections)
+        if leftOnlyWE > 0 or leftStraightWE > 0 or allWE > 0:
+            print("""   <connection from="edgeW_O" to="edgeW_I" fromLane="%i" toLane="%i"/>"""
+                  % (lane_count - 1, lanesWE - 1), file=connections)
+            print("", file=connections)
 
-
+        # East
+        print("""   <!-- East -->""", file=connections)
+        lane_count = 0
+        for i in range(rightOnlyWE):
+            for lane in range(rightOutLanesWE):
+                print("""   <connection from="edgeE_O" to="edgeN_I" fromLane="%i" toLane="%i"/>"""
+                      % (lane_count, lane), file=connections)
+            lane_count += 1
+        if rightOnlyWE > 0:
+            print("", file=connections)
+        for i in range(rightStraightWE):
+            for lane in range(rightOutLanesWE):
+                print("""   <connection from="edgeE_O" to="edgeN_I" fromLane="%i" toLane="%i"/>"""
+                      % (lane_count, lane), file=connections)
+            print("""   <connection from="edgeE_O" to="edgeW_I" fromLane="%i" toLane="%i"/>"""
+                  % (lane_count, lane_count), file=connections)
+            lane_count += 1
+        if rightStraightWE > 0:
+            print("", file=connections)
+        for i in range(straightOnlyWE):
+            print("""   <connection from="edgeE_O" to="edgeW_I" fromLane="%i" toLane="%i"/>"""
+                  % (lane_count, lane_count), file=connections)
+            lane_count += 1
+        if straightOnlyWE > 0:
+            print("", file=connections)
+        for i in range(allWE):
+            for lane in range(rightOutLanesWE):
+                print("""   <connection from="edgeE_O" to="edgeN_I" fromLane="%i" toLane="%i"/>"""
+                      % (lane_count, lane), file=connections)
+            print("""   <connection from="edgeE_O" to="edgeW_I" fromLane="%i" toLane="%i"/>"""
+                  % (lane_count, lane_count), file=connections)
+            for lane in range(leftOutLanesWE):
+                print("""   <connection from="edgeE_O" to="edgeS_I" fromLane="%i" toLane="%i"/>"""
+                      % (lane_count, lanesNS - 1 - lane), file=connections)
+            lane_count += 1
+        if allWE > 0:
+            print("", file=connections)
+        for i in range(leftStraightWE):
+            for lane in range(leftOutLanesWE):
+                print("""   <connection from="edgeE_O" to="edgeS_I" fromLane="%i" toLane="%i"/>"""
+                      % (lane_count, lanesNS - 1 - lane), file=connections)
+            print("""   <connection from="edgeE_O" to="edgeW_I" fromLane="%i" toLane="%i"/>"""
+                  % (lane_count, lane_count), file=connections)
+            lane_count += 1
+        if leftStraightWE > 0:
+            print("", file=connections)
+        for i in range(leftOnlyWE):
+            for lane in range(leftOutLanesWE):
+                print("""   <connection from="edgeE_O" to="edgeS_I" fromLane="%i" toLane="%i"/>"""
+                      % (lane_count, lanesNS - 1 - lane), file=connections)
+            lane_count += 1
+        if leftOnlyWE > 0:
+            print("", file=connections)
+        if leftOnlyWE > 0 or leftStraightWE > 0 or allWE > 0:
+            print("""   <connection from="edgeE_O" to="edgeE_I" fromLane="%i" toLane="%i"/>"""
+                  % (lane_count - 1, lanesWE - 1), file=connections)
+        print("</connections>", file=connections)
 
 def createNetwork(leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS, rightOnlyNS, allNS,
                   leftOnlyWE, leftStraightWE, straightOnlyWE, rightStraightWE, rightOnlyWE, allWE,
@@ -519,7 +632,7 @@ def main(csv_path, time_steps,
         yellowDurationNS=5, yellowDurationWE=5,
         turnDurationNS=0, turnDurationWE=0,
         demandN=0.20, demandS=0.20, demandW=0.20, demandE=0.20,
-        demandProbNS = None, demandProbWE = None,
+        demandProbNS = [0, 0, 0, 0], demandProbWE = [0, 0, 0, 0],
         outSpeedNS=19.0, outSpeedWE=19.0, inSpeedNS=11.0, inSpeedWE=11.0,
         vehicleMaxSpeed=25.0, vehicleAccel=0.8, vehicleDecel=4.5,
         vehicleMinLength=5, vehicleMaxLength=5, minGap=2.5):
@@ -564,9 +677,9 @@ def main(csv_path, time_steps,
     buildConnections(leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS, rightOnlyNS, allNS,
                      leftOnlyWE, leftStraightWE, straightOnlyWE, rightStraightWE, rightOnlyWE, allWE,
                      leftOutLanesNS, rightOutLanesNS, leftOutLanesWE, rightOutLanesWE)
-    # createNetwork(leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS, rightOnlyNS, allNS,
-    #               leftOnlyWE, leftStraightWE, straightOnlyWE, rightStraightWE, rightOnlyWE, allWE,
-    #               outSpeedNS, inSpeedNS, outSpeedWE, inSpeedWE)
+    createNetwork(leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS, rightOnlyNS, allNS,
+                  leftOnlyWE, leftStraightWE, straightOnlyWE, rightStraightWE, rightOnlyWE, allWE,
+                  outSpeedNS, inSpeedNS, outSpeedWE, inSpeedWE)
     # generateRoute(leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS, rightOnlyNS, allNS,
     #               leftOnlyWE, leftStraightWE, straightOnlyWE, rightStraightWE, rightOnlyWE, allWE,
     #               time_steps, demandN, demandS, demandW, demandE, vehicleAccel, vehicleDecel, vehicleMinLength,
@@ -587,6 +700,8 @@ def fixIndex(csv_path):
 if __name__ == "__main__":
     start_time = time.time()
     setup("record.csv")
-    main(time_steps=3000, csv_path="record.csv", rightOnlyWE=2, rightStraightWE=3, straightOnlyWE=0, allWE=1, leftOnlyWE=3)
+    main(time_steps=3000, csv_path="record.csv",
+         leftOnlyNS=0, leftStraightNS=5, straightOnlyNS=0, rightStraightNS=1, rightOnlyNS=1, allNS=0,
+         leftOnlyWE=0, leftStraightWE=5, straightOnlyWE=0, rightStraightWE=1, rightOnlyWE=1, allWE=0)
     fixIndex("record.csv")
     print(time.time() - start_time)
