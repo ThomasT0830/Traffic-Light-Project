@@ -22,15 +22,11 @@ def generateRoute(leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS, r
                   leftOnlyWE, leftStraightWE, straightOnlyWE, rightStraightWE, rightOnlyWE, allWE,
                   steps, demandN, demandS, demandW, demandE, accel, decel, minLength, maxLength,
                   minGap, maxSpeed, demandProbNS, demandProbWE):
+    lanesNS = leftOnlyNS + leftStraightNS + straightOnlyNS + rightStraightNS + rightOnlyNS + allNS
+    lanesWE = leftOnlyWE + leftStraightWE + straightOnlyWE + rightStraightWE + rightOnlyWE + allWE
     random.seed(42)  # make tests reproducible
     vtypes = []
     # demand per second from different directions
-    if demandProbNS is None:
-        # left, straight, right
-        demandProbNS = [1, 1, 1, 1]
-    if demandProbWE is None:
-        # left, straight, right
-        demandProbWE = [1, 1, 1, 1]
     chanceNS = []
     chanceWE = []
     draw_count = 0
@@ -61,26 +57,27 @@ def generateRoute(leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS, r
         print("""<routes>""", file=routes)
         for length in range(minLength, maxLength + 1):
             print("""
-<vType id="length_%s" length="%i" accel="%f" decel="%f" sigma="0.5" minGap="%f" maxSpeed="%f" guiShape="passenger">
-</vType>""" % (str(length), length, accel, decel, minGap, maxSpeed), file=routes)
+    <vType id="length_%s" length="%i" accel="%f" decel="%f" sigma="0.5" minGap="%f" maxSpeed="%f" guiShape="passenger" />"""
+            % (str(length), length, accel, decel, minGap, maxSpeed), file=routes)
             vtypes.append("length_" + str(length))
         print("""
-<route id="edgeN_edgeN" edges="edgeN_O edgeN_I" />
-<route id="edgeN_edgeS" edges="edgeN_O edgeS_I" />
-<route id="edgeN_edgeW" edges="edgeN_O edgeW_I" />
-<route id="edgeN_edgeE" edges="edgeN_O edgeE_I" />
-<route id="edgeS_edgeN" edges="edgeS_O edgeN_I" />
-<route id="edgeS_edgeS" edges="edgeS_O edgeS_I" />
-<route id="edgeS_edgeW" edges="edgeS_O edgeW_I" />
-<route id="edgeS_edgeE" edges="edgeS_O edgeE_I" />
-<route id="edgeW_edgeN" edges="edgeW_O edgeN_I" />
-<route id="edgeW_edgeS" edges="edgeW_O edgeS_I" />
-<route id="edgeW_edgeW" edges="edgeW_O edgeW_I" />
-<route id="edgeW_edgeE" edges="edgeW_O edgeE_I" />
-<route id="edgeE_edgeN" edges="edgeE_O edgeN_I" />
-<route id="edgeE_edgeS" edges="edgeE_O edgeS_I" />
-<route id="edgeE_edgeW" edges="edgeE_O edgeW_I" />
-<route id="edgeE_edgeE" edges="edgeE_O edgeE_I" />""", file=routes)
+    <route id="edgeN_edgeN" edges="edgeN_O edgeN_I" />
+    <route id="edgeN_edgeS" edges="edgeN_O edgeS_I" />
+    <route id="edgeN_edgeW" edges="edgeN_O edgeW_I" />
+    <route id="edgeN_edgeE" edges="edgeN_O edgeE_I" />
+    <route id="edgeS_edgeN" edges="edgeS_O edgeN_I" />
+    <route id="edgeS_edgeS" edges="edgeS_O edgeS_I" />
+    <route id="edgeS_edgeW" edges="edgeS_O edgeW_I" />
+    <route id="edgeS_edgeE" edges="edgeS_O edgeE_I" />
+    <route id="edgeW_edgeN" edges="edgeW_O edgeN_I" />
+    <route id="edgeW_edgeS" edges="edgeW_O edgeS_I" />
+    <route id="edgeW_edgeW" edges="edgeW_O edgeW_I" />
+    <route id="edgeW_edgeE" edges="edgeW_O edgeE_I" />
+    <route id="edgeE_edgeN" edges="edgeE_O edgeN_I" />
+    <route id="edgeE_edgeS" edges="edgeE_O edgeS_I" />
+    <route id="edgeE_edgeW" edges="edgeE_O edgeW_I" />
+    <route id="edgeE_edgeE" edges="edgeE_O edgeE_I" />
+    """, file=routes)
         vehicleCount = 0
         for i in range(steps):
             if random.uniform(0, 1) < demandN:
@@ -632,10 +629,18 @@ def main(csv_path, time_steps,
         yellowDurationNS=5, yellowDurationWE=5,
         turnDurationNS=0, turnDurationWE=0,
         demandN=0.20, demandS=0.20, demandW=0.20, demandE=0.20,
-        demandProbNS = [0, 0, 0, 0], demandProbWE = [0, 0, 0, 0],
+        demandProbNS=None, demandProbWE=None,
         outSpeedNS=19.0, outSpeedWE=19.0, inSpeedNS=11.0, inSpeedWE=11.0,
         vehicleMaxSpeed=25.0, vehicleAccel=0.8, vehicleDecel=4.5,
         vehicleMinLength=5, vehicleMaxLength=5, minGap=2.5):
+
+    if demandProbNS is None:
+        # left, straight, right, uturn
+        demandProbNS = [1, 1, 1, 1]
+    if demandProbWE is None:
+        # left, straight, right, uturn
+        demandProbWE = [1, 1, 1, 1]
+
     if straightOnlyNS != 0 and allNS != 0:
         allNS = 0
     if straightOnlyWE != 0 and allWE != 0:
