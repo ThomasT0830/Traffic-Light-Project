@@ -1,0 +1,28 @@
+<connections>
+   <!-- North -->
+   <connection from="edgeN_O" to="edgeW_I" fromLane="0" toLane="0"/>
+   <connection from="edgeN_O" to="edgeW_I" fromLane="0" toLane="1"/>
+   <connection from="edgeN_O" to="edgeS_I" fromLane="0" toLane="0"/>
+
+   <connection from="edgeN_O" to="edgeS_I" fromLane="1" toLane="1"/>
+
+   <connection from="edgeN_O" to="edgeE_I" fromLane="2" toLane="9"/>
+   <connection from="edgeN_O" to="edgeE_I" fromLane="2" toLane="8"/>
+   <connection from="edgeN_O" to="edgeS_I" fromLane="2" toLane="2"/>
+
+   <!-- South -->
+   <connection from="edgeS_O" to="edgeE_I" fromLane="0" toLane="0"/>
+   <connection from="edgeS_O" to="edgeE_I" fromLane="0" toLane="1"/>
+   <connection from="edgeS_O" to="edgeN_I" fromLane="0" toLane="0"/>
+
+   <connection from="edgeS_O" to="edgeN_I" fromLane="1" toLane="1"/>
+
+   <connection from="edgeS_O" to="edgeW_I" fromLane="2" toLane="9"/>
+   <connection from="edgeS_O" to="edgeW_I" fromLane="2" toLane="8"/>
+   <connection from="edgeS_O" to="edgeN_I" fromLane="2" toLane="2"/>
+
+   <!-- West -->
+   <connection from="edgeW_O" to="edgeS_I" fromLane="0" toLane="0"/>
+   <connection from="edgeW_O" to="edgeS_I" fromLane="0" toLane="1"/>
+   <connection from="edgeW_O" to="edgeS_I" fromLane="1" toLane="0"/>
+   <connection from="edgeW_O" to="edgeS_I" fromLane="1" toLane="1"/>
