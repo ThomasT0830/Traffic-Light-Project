@@ -20,8 +20,8 @@ else:
 
 def generateRoute(leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS, rightOnlyNS, allNS,
                   leftOnlyWE, leftStraightWE, straightOnlyWE, rightStraightWE, rightOnlyWE, allWE,
-                  steps, demandN, demandS, demandW, demandE, accel, decel, minLength, maxLength,
-                  minGap, maxSpeed, demandProbNS, demandProbWE):
+                  steps, demandN, demandS, demandW, demandE, minAccel, maxAccel, minDecel, maxDecel,
+                  minLength, maxLength, minGap, maxSpeed, demandProbNS, demandProbWE):
     lanesNS = leftOnlyNS + leftStraightNS + straightOnlyNS + rightStraightNS + rightOnlyNS + allNS
     lanesWE = leftOnlyWE + leftStraightWE + straightOnlyWE + rightStraightWE + rightOnlyWE + allWE
     random.seed(42)  # make tests reproducible
@@ -631,8 +631,8 @@ def main(csv_path, time_steps,
         demandN=0.20, demandS=0.20, demandW=0.20, demandE=0.20,
         demandProbNS=None, demandProbWE=None,
         outSpeedNS=19.0, outSpeedWE=19.0, inSpeedNS=11.0, inSpeedWE=11.0,
-        vehicleMaxSpeed=25.0, vehicleAccel=0.8, vehicleDecel=4.5,
-        vehicleMinLength=5, vehicleMaxLength=5, minGap=2.5):
+        vehicleMaxSpeed=25.0, vehicleMinAccel=0.8, vehicleMaxAccel=0.8, vehicleMinDecel=4.5,
+        vehicleMaxDecel=4.5, vehicleMinLength=5, vehicleMaxLength=5, minGap=2.5):
 
     if demandProbNS is None:
         # left, straight, right, uturn
@@ -685,10 +685,11 @@ def main(csv_path, time_steps,
     createNetwork(leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS, rightOnlyNS, allNS,
                   leftOnlyWE, leftStraightWE, straightOnlyWE, rightStraightWE, rightOnlyWE, allWE,
                   outSpeedNS, inSpeedNS, outSpeedWE, inSpeedWE)
-    # generateRoute(leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS, rightOnlyNS, allNS,
-    #               leftOnlyWE, leftStraightWE, straightOnlyWE, rightStraightWE, rightOnlyWE, allWE,
-    #               time_steps, demandN, demandS, demandW, demandE, vehicleAccel, vehicleDecel, vehicleMinLength,
-    #               vehicleMaxLength, minGap, vehicleMaxSpeed, demandProbNS, demandProbWE)
+    generateRoute(leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS, rightOnlyNS, allNS,
+                  leftOnlyWE, leftStraightWE, straightOnlyWE, rightStraightWE, rightOnlyWE, allWE,
+                  time_steps, demandN, demandS, demandW, demandE, vehicleMinAccel, vehicleMaxAccel,
+                  vehicleMinDecel, vehicleMaxDecel, vehicleMinLength, vehicleMaxLength, minGap,
+                  vehicleMaxSpeed, demandProbNS, demandProbWE)
     traci.start([checkBinary('sumo'), "-c", "data/cross.sumocfg",
                  "--tripinfo-output", "tripinfo.xml"])
     runSim()
