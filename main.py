@@ -591,7 +591,7 @@ def createNetwork(folder_name, leftOnlyNS, leftStraightNS, straightOnlyNS, right
     tl.set("numLanes", str(lanesWE))
     tl.set("speed", str(inspeedWE))
 
-    tree.write("data1/cross.edg.xml")
+    tree.write(str(folder_name) + "/cross.edg.xml")
 
     os.system("netconvert --node-files=%s/cross.nod.xml --edge-files=%s/cross.edg.xml --connection-files=%s/cross.con.xml --output-file=%s/cross.net.xml" % (folder_name, folder_name, folder_name, folder_name))
 
@@ -701,8 +701,8 @@ def main(csv_path, folder_name, time_steps,
                   time_steps, demandN, demandS, demandW, demandE, vehicleMinAccel, vehicleMaxAccel,
                   vehicleMinDecel, vehicleMaxDecel, vehicleMinLength, vehicleMaxLength, minGap,
                   vehicleMaxSpeed, demandProbNS, demandProbWE)
-    traci.start([checkBinary('sumo'), "-c", str(folder_name) + "/cross.sumocfg",
-                 "--tripinfo-output", str(folder_name) + "/tripinfo.xml", "--statistic-output", "statistics.xml", "--tripinfo-output.write-unfinished"])
+    traci.start([checkBinary('sumo-gui'), "-c", str(folder_name) + "/cross.sumocfg",
+             "--tripinfo-output", str(folder_name) + "/tripinfo.xml", "--statistic-output", "statistics.xml", "--tripinfo-output.write-unfinished"])
     runSim(time_steps)
     rates = findRate(str(folder_name) + "/tripinfo.xml")
     print(rates)
@@ -722,20 +722,22 @@ def test(sumoCmd, a):
 if __name__ == "__main__":
     start_time = time.time()
     setup("record.csv")
-    for p_num in range(mp.cpu_count()):
+    total_processes = 1
+    for p_num in range(total_processes):
         os.mkdir(r"C:\Users\Thomas Tseng\Documents\GitHub\Traffic-Light-Project\data%i" % (p_num))
         copy_tree(r"C:\Users\Thomas Tseng\Documents\GitHub\Traffic-Light-Project\data", r"C:\Users\Thomas Tseng\Documents\GitHub\Traffic-Light-Project\data%i" % (p_num))
     processes = []
-    for p_num in range(mp.cpu_count()):
-        p = mp.Process(target=main, args=("record.csv", "data" + str(p_num), 3000))
+    for p_num in range(total_processes):
+        p = mp.Process(target=main, args=("record.csv", "data" + str(p_num), 3000, random.randint(0, 3), random.randint(0, 3), random.randint(0, 3), random.randint(0, 3), random.randint(0, 3), random.randint(0, 3), random.randint(0, 3), random.randint(0, 3), random.randint(0, 3), random.randint(0, 3), random.randint(0, 3), random.randint(0, 3)))
         p.start()
         processes.append(p)
     for process in processes:
         process.join()
     fixIndex("record.csv")
-    for p_num in range(mp.cpu_count()):
+    for p_num in range(total_processes):
         shutil.rmtree(r"C:\Users\Thomas Tseng\Documents\GitHub\Traffic-Light-Project\data%i" % (p_num))
-    # print(time.time() - start_time)
+    print("")
+    print("Time: " + str(time.time() - start_time) + "s")
     # start_time = time.time()
     # for i in range(4):
     #     main(time_steps=3000, csv_path="record.csv", folder_name="data" + str(i + 1))
