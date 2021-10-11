@@ -715,10 +715,6 @@ def fixIndex(csv_path):
     dataframe = dataframe.reset_index(drop=True)
     dataframe.to_csv(csv_path)
 
-def test(sumoCmd, a):
-    traci.start(sumoCmd)
-    runSim(3000)
-
 if __name__ == "__main__":
     start_time = time.time()
     setup("record.csv")
