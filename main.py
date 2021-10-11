@@ -163,153 +163,365 @@ def generateRoute(folder_name, leftOnlyNS, leftStraightNS, straightOnlyNS, right
 
 def setDuration(folder_name, leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS, rightOnlyNS, allNS,
                 leftOnlyWE, leftStraightWE, straightOnlyWE, rightStraightWE, rightOnlyWE, allWE,
+                leftOutLanesNS, rightOutLanesNS, leftOutLanesWE, rightOutLanesWE,
                 moveNS, moveWE, yellowNS, yellowWE, turnNS, turnWE):
+
+    lanesNS = leftOnlyNS + leftStraightNS + straightOnlyNS + rightStraightNS + rightOnlyNS + allNS
+    lanesWE = leftOnlyWE + leftStraightWE + straightOnlyWE + rightStraightWE + rightOnlyWE + allWE
+
     status = []
     for state in range(6):
         temp_string = ""
         if state == 0:
-            # North
-            temp_string += "GG"
-            for i in range(lanesNS):
-                temp_string += "G"
-            temp_string += "ggg"
-            # East
-            temp_string += "rr"
-            for i in range(lanesWE):
-                temp_string += "r"
-            temp_string += "rrr"
-            # South
-            temp_string += "GG"
-            for i in range(lanesNS):
-                temp_string += "G"
-            temp_string += "ggg"
-            #West
-            temp_string += "rr"
-            for i in range(lanesWE):
-                temp_string += "r"
-            temp_string += "rrr"
+            for run in range(2):
+                # North and South
+                for lane in range(rightOnlyNS):
+                    if lane == 0:
+                        for i in range(rightOutLanesNS):
+                            temp_string += "G"
+                    else:
+                        for i in range(rightOutLanesNS):
+                            temp_string += "g"
+                for lane in range(rightStraightNS):
+                    for i in range(rightOutLanesNS):
+                        temp_string += "g"
+                    temp_string += "G"
+                for lane in range(straightOnlyNS):
+                    temp_string += "G"
+                for lane in range(allNS):
+                    for i in range(rightOutLanesNS):
+                        temp_string += "g"
+                    temp_string += "G"
+                    for i in range(leftOutLanesNS):
+                        temp_string += "g"
+                for lane in range(leftStraightNS):
+                    temp_string += "G"
+                    for i in range(leftOutLanesNS):
+                        temp_string += "g"
+                for lane in range(leftOnlyNS):
+                    for i in range(leftOutLanesNS):
+                        temp_string += "g"
+                if leftOnlyNS + leftStraightNS + allNS > 0:
+                    temp_string += "g"
+                # West and East
+                for lane in range(rightOnlyWE):
+                    for i in range(rightOutLanesWE):
+                        temp_string += "r"
+                for lane in range(rightStraightWE):
+                    for i in range(rightOutLanesWE):
+                        temp_string += "r"
+                    temp_string += "r"
+                for lane in range(straightOnlyWE):
+                    temp_string += "r"
+                for lane in range(allWE):
+                    for i in range(rightOutLanesWE):
+                        temp_string += "r"
+                    temp_string += "r"
+                    for i in range(leftOutLanesWE):
+                        temp_string += "r"
+                for lane in range(leftStraightWE):
+                    temp_string += "r"
+                    for i in range(leftOutLanesWE):
+                        temp_string += "r"
+                for lane in range(leftOnlyWE):
+                    for i in range(leftOutLanesWE):
+                        temp_string += "r"
+                if leftOnlyWE + leftStraightWE + allWE > 0:
+                    temp_string += "r"
+            status.append(temp_string)
         elif state == 1:
-            # North
-            temp_string += "yy"
-            for i in range(lanesNS):
-                temp_string += "y"
-            temp_string += "yyy"
-            # East
-            temp_string += "rr"
-            for i in range(lanesWE):
-                temp_string += "r"
-            temp_string += "rrr"
-            # South
-            temp_string += "yy"
-            for i in range(lanesNS):
-                temp_string += "y"
-            temp_string += "yyy"
-            # West
-            temp_string += "rr"
-            for i in range(lanesWE):
-                temp_string += "r"
-            temp_string += "rrr"
+            for run in range(2):
+                # North and South
+                for lane in range(rightOnlyNS):
+                    for i in range(rightOutLanesNS):
+                        temp_string += "y"
+                for lane in range(rightStraightNS):
+                    for i in range(rightOutLanesNS):
+                        temp_string += "y"
+                    temp_string += "y"
+                for lane in range(straightOnlyNS):
+                    temp_string += "y"
+                for lane in range(allNS):
+                    for i in range(rightOutLanesNS):
+                        temp_string += "y"
+                    temp_string += "y"
+                    for i in range(leftOutLanesNS):
+                        temp_string += "y"
+                for lane in range(leftStraightNS):
+                    temp_string += "y"
+                    for i in range(leftOutLanesNS):
+                        temp_string += "y"
+                for lane in range(leftOnlyNS):
+                    for i in range(leftOutLanesNS):
+                        temp_string += "y"
+                if leftOnlyNS + leftStraightNS + allNS > 0:
+                    temp_string += "y"
+                # West and East
+                for lane in range(rightOnlyWE):
+                    for i in range(rightOutLanesWE):
+                        temp_string += "r"
+                for lane in range(rightStraightWE):
+                    for i in range(rightOutLanesWE):
+                        temp_string += "r"
+                    temp_string += "r"
+                for lane in range(straightOnlyWE):
+                    temp_string += "r"
+                for lane in range(allWE):
+                    for i in range(rightOutLanesWE):
+                        temp_string += "r"
+                    temp_string += "r"
+                    for i in range(leftOutLanesWE):
+                        temp_string += "r"
+                for lane in range(leftStraightWE):
+                    temp_string += "r"
+                    for i in range(leftOutLanesWE):
+                        temp_string += "r"
+                for lane in range(leftOnlyWE):
+                    for i in range(leftOutLanesWE):
+                        temp_string += "r"
+                if leftOnlyWE + leftStraightWE + allWE > 0:
+                    temp_string += "r"
+            status.append(temp_string)
         elif state == 2:
-            # North
-            temp_string += "rr"
-            for i in range(lanesNS):
-                temp_string += "r"
-            temp_string += "rrr"
-            # East
-            temp_string += "rr"
-            for i in range(lanesWE):
-                temp_string += "r"
-            temp_string += "GGG"
-            # South
-            temp_string += "rr"
-            for i in range(lanesNS):
-                temp_string += "r"
-            temp_string += "rrr"
-            # West
-            temp_string += "rr"
-            for i in range(lanesWE):
-                temp_string += "r"
-            temp_string += "GGG"
+            for run in range(2):
+                # North and South
+                for lane in range(rightOnlyNS):
+                    for i in range(rightOutLanesNS):
+                        temp_string += "r"
+                for lane in range(rightStraightNS):
+                    for i in range(rightOutLanesNS):
+                        temp_string += "r"
+                    temp_string += "r"
+                for lane in range(straightOnlyNS):
+                    temp_string += "r"
+                for lane in range(allNS):
+                    for i in range(rightOutLanesNS):
+                        temp_string += "r"
+                    temp_string += "r"
+                    for i in range(leftOutLanesNS):
+                        temp_string += "r"
+                for lane in range(leftStraightNS):
+                    temp_string += "r"
+                    for i in range(leftOutLanesNS):
+                        temp_string += "r"
+                for lane in range(leftOnlyNS):
+                    for i in range(leftOutLanesNS):
+                        temp_string += "r"
+                if leftOnlyNS + leftStraightNS + allNS > 0:
+                    temp_string += "r"
+                # West and East
+                for lane in range(rightOnlyWE):
+                    for i in range(rightOutLanesWE):
+                        temp_string += "r"
+                for lane in range(rightStraightWE):
+                    for i in range(rightOutLanesWE):
+                        temp_string += "r"
+                    temp_string += "r"
+                for lane in range(straightOnlyWE):
+                    temp_string += "r"
+                for lane in range(allWE):
+                    for i in range(rightOutLanesWE):
+                        temp_string += "r"
+                    temp_string += "r"
+                    for i in range(leftOutLanesWE):
+                        temp_string += "r"
+                for lane in range(leftStraightWE):
+                    temp_string += "r"
+                    for i in range(leftOutLanesWE):
+                        temp_string += "r"
+                for lane in range(leftOnlyWE):
+                    if lane == leftOnlyWE - 1:
+                        for i in range(leftOutLanesWE):
+                            temp_string += "G"
+                    else:
+                        for i in range(leftOutLanesWE):
+                            temp_string += "g"
+                if leftOnlyWE + leftStraightWE + allWE > 0:
+                    temp_string += "G"
+            status.append(temp_string)
         elif state == 3:
-            # North
-            temp_string += "rr"
-            for i in range(lanesNS):
-                temp_string += "r"
-            temp_string += "rrr"
-            # East
-            temp_string += "GG"
-            for i in range(lanesWE):
-                temp_string += "G"
-            temp_string += "ggg"
-            # South
-            temp_string += "rr"
-            for i in range(lanesNS):
-                temp_string += "r"
-            temp_string += "rrr"
-            # West
-            temp_string += "GG"
-            for i in range(lanesWE):
-                temp_string += "G"
-            temp_string += "ggg"
+            for run in range(2):
+                # North and South
+                for lane in range(rightOnlyNS):
+                    for i in range(rightOutLanesNS):
+                        temp_string += "r"
+                for lane in range(rightStraightNS):
+                    for i in range(rightOutLanesNS):
+                        temp_string += "r"
+                    temp_string += "r"
+                for lane in range(straightOnlyNS):
+                    temp_string += "r"
+                for lane in range(allNS):
+                    for i in range(rightOutLanesNS):
+                        temp_string += "r"
+                    temp_string += "r"
+                    for i in range(leftOutLanesNS):
+                        temp_string += "r"
+                for lane in range(leftStraightNS):
+                    temp_string += "r"
+                    for i in range(leftOutLanesNS):
+                        temp_string += "r"
+                for lane in range(leftOnlyNS):
+                    for i in range(leftOutLanesNS):
+                        temp_string += "r"
+                if leftOnlyNS + leftStraightNS + allNS > 0:
+                    temp_string += "r"
+                # West and East
+                for lane in range(rightOnlyWE):
+                    if lane == 0:
+                        for i in range(rightOutLanesWE):
+                            temp_string += "G"
+                    else:
+                        for i in range(rightOutLanesWE):
+                            temp_string += "g"
+                for lane in range(rightStraightWE):
+                    for i in range(rightOutLanesWE):
+                        temp_string += "g"
+                    temp_string += "G"
+                for lane in range(straightOnlyWE):
+                    temp_string += "G"
+                for lane in range(allWE):
+                    for i in range(rightOutLanesWE):
+                        temp_string += "g"
+                    temp_string += "G"
+                    for i in range(leftOutLanesWE):
+                        temp_string += "g"
+                for lane in range(leftStraightWE):
+                    temp_string += "G"
+                    for i in range(leftOutLanesWE):
+                        temp_string += "g"
+                for lane in range(leftOnlyWE):
+                    for i in range(leftOutLanesWE):
+                        temp_string += "g"
+                if leftOnlyWE + leftStraightWE + allWE > 0:
+                    temp_string += "g"
+            status.append(temp_string)
         elif state == 4:
-            # North
-            temp_string += "rr"
-            for i in range(lanesNS):
-                temp_string += "r"
-            temp_string += "rrr"
-            # East
-            temp_string += "yy"
-            for i in range(lanesWE):
-                temp_string += "y"
-            temp_string += "yyy"
-            # South
-            temp_string += "rr"
-            for i in range(lanesNS):
-                temp_string += "r"
-            temp_string += "rrr"
-            # West
-            temp_string += "yy"
-            for i in range(lanesWE):
-                temp_string += "y"
-            temp_string += "yyy"
-        else:
-            # North
-            temp_string += "rr"
-            for i in range(lanesNS):
-                temp_string += "r"
-            temp_string += "GGG"
-            # East
-            temp_string += "rr"
-            for i in range(lanesWE):
-                temp_string += "r"
-            temp_string += "rrr"
-            # South
-            temp_string += "rr"
-            for i in range(lanesNS):
-                temp_string += "r"
-            temp_string += "GGG"
-            # West
-            temp_string += "rr"
-            for i in range(lanesWE):
-                temp_string += "r"
-            temp_string += "rrr"
-        status.append(temp_string)
+            for run in range(2):
+                # North and South
+                for lane in range(rightOnlyNS):
+                    for i in range(rightOutLanesNS):
+                        temp_string += "r"
+                for lane in range(rightStraightNS):
+                    for i in range(rightOutLanesNS):
+                        temp_string += "r"
+                    temp_string += "r"
+                for lane in range(straightOnlyNS):
+                    temp_string += "r"
+                for lane in range(allNS):
+                    for i in range(rightOutLanesNS):
+                        temp_string += "r"
+                    temp_string += "r"
+                    for i in range(leftOutLanesNS):
+                        temp_string += "r"
+                for lane in range(leftStraightNS):
+                    temp_string += "r"
+                    for i in range(leftOutLanesNS):
+                        temp_string += "r"
+                for lane in range(leftOnlyNS):
+                    for i in range(leftOutLanesNS):
+                        temp_string += "r"
+                if leftOnlyNS + leftStraightNS + allNS > 0:
+                    temp_string += "r"
+                # West and East
+                for lane in range(rightOnlyWE):
+                    for i in range(rightOutLanesWE):
+                        temp_string += "y"
+                for lane in range(rightStraightWE):
+                    for i in range(rightOutLanesWE):
+                        temp_string += "y"
+                    temp_string += "y"
+                for lane in range(straightOnlyWE):
+                    temp_string += "y"
+                for lane in range(allWE):
+                    for i in range(rightOutLanesWE):
+                        temp_string += "y"
+                    temp_string += "y"
+                    for i in range(leftOutLanesWE):
+                        temp_string += "y"
+                for lane in range(leftStraightWE):
+                    temp_string += "y"
+                    for i in range(leftOutLanesWE):
+                        temp_string += "y"
+                for lane in range(leftOnlyWE):
+                    for i in range(leftOutLanesWE):
+                        temp_string += "y"
+                if leftOnlyWE + leftStraightWE + allWE > 0:
+                    temp_string += "y"
+            status.append(temp_string)
+        elif state == 5:
+            for run in range(2):
+                # North and South
+                for lane in range(rightOnlyNS):
+                    for i in range(rightOutLanesNS):
+                        temp_string += "r"
+                for lane in range(rightStraightNS):
+                    for i in range(rightOutLanesNS):
+                        temp_string += "r"
+                    temp_string += "r"
+                for lane in range(straightOnlyNS):
+                    temp_string += "r"
+                for lane in range(allNS):
+                    for i in range(rightOutLanesNS):
+                        temp_string += "r"
+                    temp_string += "r"
+                    for i in range(leftOutLanesNS):
+                        temp_string += "r"
+                for lane in range(leftStraightNS):
+                    temp_string += "r"
+                    for i in range(leftOutLanesNS):
+                        temp_string += "r"
+                for lane in range(leftOnlyNS):
+                    if lane == leftOnlyNS - 1:
+                        for i in range(leftOutLanesNS):
+                            temp_string += "G"
+                    else:
+                        for i in range(leftOutLanesNS):
+                            temp_string += "g"
+                if leftOnlyNS + leftStraightNS + allNS > 0:
+                    temp_string += "G"
+                # West and East
+                for lane in range(rightOnlyWE):
+                    for i in range(rightOutLanesWE):
+                        temp_string += "r"
+                for lane in range(rightStraightWE):
+                    for i in range(rightOutLanesWE):
+                        temp_string += "r"
+                    temp_string += "r"
+                for lane in range(straightOnlyWE):
+                    temp_string += "r"
+                for lane in range(allWE):
+                    for i in range(rightOutLanesWE):
+                        temp_string += "r"
+                    temp_string += "r"
+                    for i in range(leftOutLanesWE):
+                        temp_string += "r"
+                for lane in range(leftStraightWE):
+                    temp_string += "r"
+                    for i in range(leftOutLanesWE):
+                        temp_string += "r"
+                for lane in range(leftOnlyWE):
+                    for i in range(leftOutLanesWE):
+                        temp_string += "r"
+                if leftOnlyWE + leftStraightWE + allWE > 0:
+                    temp_string += "r"
+            status.append(temp_string)
 
     with open(str(folder_name) + "/cross.tls.xml", "w") as tls:
         print("<additional>", file=tls)
         print("""   <tlLogic id="juncMain" type="static" programID="1" offset="0">""", file=tls)
-        if moveNS != 0:
-            print("""       <phase duration="%i" state="%s"/>""" % (moveNS, status[0]), file=tls)
-        if yellowNS != 0:
-            print("""       <phase duration="%i" state="%s"/>""" % (yellowNS, status[1]), file=tls)
-        if turnWE != 0:
-            print("""       <phase duration="%i" state="%s"/>""" % (turnWE, status[2]), file=tls)
-        if moveWE != 0:
-            print("""       <phase duration="%i" state="%s"/>""" % (moveWE, status[3]), file=tls)
-        if yellowWE != 0:
-            print("""       <phase duration="%i" state="%s"/>""" % (yellowWE, status[4]), file=tls)
-        if turnNS != 0:
-            print("""       <phase duration="%i" state="%s"/>""" % (turnNS, status[5]), file=tls)
+        if moveNS != 0 and lanesNS != 0:
+            print("""       <phase duration="%f" state="%s"/>""" % (moveNS, status[0]), file=tls)
+        if yellowNS != 0 and lanesNS != 0:
+            print("""       <phase duration="%f" state="%s"/>""" % (yellowNS, status[1]), file=tls)
+        if turnWE != 0 and leftOnlyWE != 0:
+            print("""       <phase duration="%f" state="%s"/>""" % (turnWE, status[2]), file=tls)
+        if moveWE != 0 and lanesWE != 0:
+            print("""       <phase duration="%f" state="%s"/>""" % (moveWE, status[3]), file=tls)
+        if yellowWE != 0 and lanesWE != 0:
+            print("""       <phase duration="%f" state="%s"/>""" % (yellowWE, status[4]), file=tls)
+        if turnNS != 0 and leftOnlyNS != 0:
+            print("""       <phase duration="%f" state="%s"/>""" % (turnNS, status[5]), file=tls)
         print("""   </tlLogic>""", file=tls)
         print("</additional>", file=tls)
 
@@ -633,12 +845,12 @@ def setup(csv_path):
 
 
 def main(csv_path, folder_name, time_steps,
-        leftOnlyNS=0, leftStraightNS=1, straightOnlyNS=1, rightStraightNS=1, rightOnlyNS=0, allNS=0,
-        leftOnlyWE=0, leftStraightWE=1, straightOnlyWE=1, rightStraightWE=1, rightOnlyWE=0, allWE=0,
+        leftOnlyNS=1, leftStraightNS=1, straightOnlyNS=1, rightStraightNS=1, rightOnlyNS=0, allNS=0,
+        leftOnlyWE=1, leftStraightWE=1, straightOnlyWE=1, rightStraightWE=1, rightOnlyWE=0, allWE=0,
         leftOutLanesNS=2, rightOutLanesNS=2, leftOutLanesWE=2, rightOutLanesWE=2,
         moveDurationNS=60, moveDurationWE=60,
         yellowDurationNS=5, yellowDurationWE=5,
-        turnDurationNS=0, turnDurationWE=0,
+        turnDurationNS=20, turnDurationWE=20,
         demandN=0.20, demandS=0.20, demandW=0.20, demandE=0.20,
         demandProbNS=None, demandProbWE=None,
         outSpeedNS=19.0, outSpeedWE=19.0, inSpeedNS=11.0, inSpeedWE=11.0,
@@ -687,9 +899,10 @@ def main(csv_path, folder_name, time_steps,
     if leftStraightWE + rightStraightWE + straightOnlyWE + allWE == 0:
         demandProbWE[1] = 0
 
-    # setDuration(leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS, rightOnlyNS, allNS,
-    #             leftOnlyWE, leftStraightWE, straightOnlyWE, rightStraightWE, rightOnlyWE, allWE,
-    #             moveDurationNS, moveDurationWE, yellowDurationNS, yellowDurationWE, turnDurationNS, turnDurationWE)
+    setDuration(folder_name, leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS, rightOnlyNS, allNS,
+                leftOnlyWE, leftStraightWE, straightOnlyWE, rightStraightWE, rightOnlyWE, allWE,
+                leftOutLanesNS, rightOutLanesNS, leftOutLanesWE, rightOutLanesWE,
+                moveDurationNS, moveDurationWE, yellowDurationNS, yellowDurationWE, turnDurationNS, turnDurationWE)
     buildConnections(folder_name, leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS, rightOnlyNS, allNS,
                      leftOnlyWE, leftStraightWE, straightOnlyWE, rightStraightWE, rightOnlyWE, allWE,
                      leftOutLanesNS, rightOutLanesNS, leftOutLanesWE, rightOutLanesWE)
@@ -701,13 +914,13 @@ def main(csv_path, folder_name, time_steps,
                   time_steps, demandN, demandS, demandW, demandE, vehicleMinAccel, vehicleMaxAccel,
                   vehicleMinDecel, vehicleMaxDecel, vehicleMinLength, vehicleMaxLength, minGap,
                   vehicleMaxSpeed, demandProbNS, demandProbWE)
-    traci.start([checkBinary('sumo-gui'), "-c", str(folder_name) + "/cross.sumocfg",
+    traci.start([checkBinary('sumo'), "-c", str(folder_name) + "/cross.sumocfg",
              "--tripinfo-output", str(folder_name) + "/tripinfo.xml", "--statistic-output", "statistics.xml", "--tripinfo-output.write-unfinished"])
     runSim(time_steps)
     rates = findRate(str(folder_name) + "/tripinfo.xml")
     print(rates)
 
-    dataframe = pd.DataFrame([[i for i in range(40)]])
+    dataframe = pd.DataFrame([[rates]])
     dataframe.to_csv(csv_path, mode='a', header=False)
 
 def fixIndex(csv_path):
@@ -716,25 +929,24 @@ def fixIndex(csv_path):
     dataframe.to_csv(csv_path)
 
 if __name__ == "__main__":
-    start_time = time.time()
-    setup("record.csv")
-    total_processes = 1
-    for p_num in range(total_processes):
-        os.mkdir(r"C:\Users\Thomas Tseng\Documents\GitHub\Traffic-Light-Project\data%i" % (p_num))
-        copy_tree(r"C:\Users\Thomas Tseng\Documents\GitHub\Traffic-Light-Project\data", r"C:\Users\Thomas Tseng\Documents\GitHub\Traffic-Light-Project\data%i" % (p_num))
-    processes = []
-    for p_num in range(total_processes):
-        p = mp.Process(target=main, args=("record.csv", "data" + str(p_num), 3000, random.randint(0, 3), random.randint(0, 3), random.randint(0, 3), random.randint(0, 3), random.randint(0, 3), random.randint(0, 3), random.randint(0, 3), random.randint(0, 3), random.randint(0, 3), random.randint(0, 3), random.randint(0, 3), random.randint(0, 3)))
-        p.start()
-        processes.append(p)
-    for process in processes:
-        process.join()
-    fixIndex("record.csv")
-    for p_num in range(total_processes):
-        shutil.rmtree(r"C:\Users\Thomas Tseng\Documents\GitHub\Traffic-Light-Project\data%i" % (p_num))
-    print("")
-    print("Time: " + str(time.time() - start_time) + "s")
-    # start_time = time.time()
-    # for i in range(4):
-    #     main(time_steps=3000, csv_path="record.csv", folder_name="data" + str(i + 1))
-    # print(time.time() - start_time)
+    for i in range(10):
+        start_time = time.time()
+        setup("record.csv")
+        instance = mp.cpu_count()
+        for p_num in range(instance):
+            os.mkdir(r"C:\Users\Thomas Tseng\Documents\GitHub\Traffic-Light-Project\data%i" % (p_num))
+            copy_tree(r"C:\Users\Thomas Tseng\Documents\GitHub\Traffic-Light-Project\data", r"C:\Users\Thomas Tseng\Documents\GitHub\Traffic-Light-Project\data%i" % (p_num))
+        processes = []
+        for p_num in range(instance):
+            p = mp.Process(target=main, args=("record.csv", "data" + str(p_num), 3000, 0, 0, random.randint(50, 100), 0, 0, 0, 0, 0, random.randint(50, 100), 0, 0, 0, 2, 2, 2, 2, 13, 13, 3, 3, 0, 0, 0.01, 0.01, 0.01, 0.01))
+            p.start()
+            processes.append(p)
+        for process in processes:
+            process.join()
+        fixIndex("record.csv")
+        for p_num in range(instance):
+            shutil.rmtree(r"C:\Users\Thomas Tseng\Documents\GitHub\Traffic-Light-Project\data%i" % (p_num))
+        print("")
+        print("Time: " + str(time.time() - start_time) + "s")
+
+    # main(time_steps=3000, csv_path="record.csv", folder_name="data")
