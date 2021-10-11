@@ -33,7 +33,7 @@ for draw in demandProbWE:
         else:
             chanceWE.append("uturn")
     draw_count += 1
-with open("data/cross.rou.xml", "w") as routes:
+with open("data1/cross.rou.xml", "w") as routes:
     print("""<routes>""", file=routes)
     for length in range(minLength, maxLength + 1):
         print("""

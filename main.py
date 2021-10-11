@@ -8,6 +8,9 @@ import os
 import sys
 import xml.etree.ElementTree as ET
 import random
+import multiprocessing as mp
+import shutil
+from distutils.dir_util import copy_tree
 import time
 import csv
 
@@ -18,48 +21,16 @@ if 'SUMO_HOME' in os.environ:
 else:
     sys.exit("please declare environment variable 'SUMO_HOME'")
 
-def generateRoute(leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS, rightOnlyNS, allNS,
+def generateRoute(folder_name, leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS, rightOnlyNS, allNS,
                   leftOnlyWE, leftStraightWE, straightOnlyWE, rightStraightWE, rightOnlyWE, allWE,
                   steps, demandN, demandS, demandW, demandE, minAccel, maxAccel, minDecel, maxDecel,
                   minLength, maxLength, minGap, maxSpeed, demandProbNS, demandProbWE):
     lanesNS = leftOnlyNS + leftStraightNS + straightOnlyNS + rightStraightNS + rightOnlyNS + allNS
     lanesWE = leftOnlyWE + leftStraightWE + straightOnlyWE + rightStraightWE + rightOnlyWE + allWE
     random.seed(42)  # make tests reproducible
-    vtypes = []
-    # demand per second from different directions
-    chanceNS = []
-    chanceWE = []
-    draw_count = 0
-    for draw in demandProbNS:
-        for i in range(draw):
-            if draw_count == 0:
-                chanceNS.append("left")
-            elif draw_count == 1:
-                chanceNS.append("straight")
-            elif draw_count == 2:
-                chanceNS.append("right")
-            else:
-                chanceNS.append("uturn")
-        draw_count += 1
-    draw_count = 0
-    for draw in demandProbWE:
-        for i in range(draw):
-            if draw_count == 0:
-                chanceWE.append("left")
-            elif draw_count == 1:
-                chanceWE.append("straight")
-            elif draw_count == 2:
-                chanceWE.append("right")
-            else:
-                chanceWE.append("uturn")
-        draw_count += 1
-    with open("data/cross.rou.xml", "w") as routes:
+
+    with open(str(folder_name) + "/cross.rou.xml", "w") as routes:
         print("""<routes>""", file=routes)
-        for length in range(minLength, maxLength + 1):
-            print("""
-    <vType id="length_%s" length="%i" accel="%f" decel="%f" sigma="0.5" minGap="%f" maxSpeed="%f" guiShape="passenger" />"""
-            % (str(length), length, accel, decel, minGap, maxSpeed), file=routes)
-            vtypes.append("length_" + str(length))
         print("""
     <route id="edgeN_edgeN" edges="edgeN_O edgeN_I" />
     <route id="edgeN_edgeS" edges="edgeN_O edgeS_I" />
@@ -81,73 +52,116 @@ def generateRoute(leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS, r
         vehicleCount = 0
         for i in range(steps):
             if random.uniform(0, 1) < demandN:
-                direction = random.choice(chanceNS)
-                vehicleType = random.choice(vtypes)
-                if direction == "left":
-                    print('    <vehicle id="%sN_%i" type="%s" route="edgeN_edgeE" depart="%i" departLane="%i" />' % (
-                        direction, vehicleCount, vehicleType, i, lanesNS - 1), file=routes)
-                elif direction == "right":
-                    print('    <vehicle id="%sN_%i" type="%s" route="edgeN_edgeW" depart="%i" departLane="0" />' % (
-                        direction, vehicleCount, vehicleType, i), file=routes)
-                elif direction == "uturn":
-                    print('    <vehicle id="%sN_%i" type="%s" route="edgeN_edgeN" depart="%i" departLane="%i" />' % (
-                            direction, vehicleCount, vehicleType, i, lanesNS - 1), file=routes)
+                random_direction = random.uniform(0, sum(demandProbNS))
+                if random_direction < demandProbNS[0]:
+                    direction = "left"
+                elif random_direction < demandProbNS[0] + demandProbNS[1]:
+                    direction = "straight"
+                elif random_direction < demandProbNS[0] + demandProbNS[1] + demandProbNS[2]:
+                    direction = "right"
                 else:
-                    print('    <vehicle id="%sN_%i" type="%s" route="edgeN_edgeS" depart="%i" departLane="random" />' % (
-                        direction, vehicleCount, vehicleType, i), file=routes)
+                    direction = "uturn"
+                print("""   <vType id="vehicleN_%i" length="%f" accel="%f" decel="%f" sigma="0.5" minGap="%f" maxSpeed="%f" guiShape="passenger" />"""
+                      % (vehicleCount, round(random.uniform(minLength, maxLength), 3), round(random.uniform(minAccel, maxAccel), 3),
+                         round(random.uniform(minDecel, maxDecel), 3), minGap, maxSpeed), file=routes)
+                if direction == "left":
+                    print("""   <vehicle id="%sN_%i" type="vehicleN_%i" route="edgeN_edgeE" depart="%i" departLane="%i" />""" % (
+                        direction, vehicleCount, vehicleCount, i, random.randint(lanesNS - leftOnlyNS - leftStraightNS - allNS, lanesNS - 1)), file=routes)
+                elif direction == "right":
+                    print("""   <vehicle id="%sN_%i" type="vehicleN_%i" route="edgeN_edgeW" depart="%i" departLane="%i" />""" % (
+                        direction, vehicleCount, vehicleCount, i, random.randint(0, rightOnlyNS + rightStraightNS + allNS - 1)), file=routes)
+                elif direction == "uturn":
+                    print("""   <vehicle id="%sN_%i" type="vehicleN_%i" route="edgeN_edgeN" depart="%i" departLane="%i" />""" % (
+                            direction, vehicleCount, vehicleCount, i, lanesNS - 1), file=routes)
+                else:
+                    print("""   <vehicle id="%sN_%i" type="vehicleN_%i" route="edgeN_edgeS" depart="%i" departLane="%i" />""" % (
+                        direction, vehicleCount, vehicleCount, i, random.randint(rightOnlyNS, rightOnlyNS + rightStraightNS + allNS + straightOnlyNS + leftStraightNS - 1)), file=routes)
                 vehicleCount += 1
+                print("", file=routes)
             if random.uniform(0, 1) < demandS:
-                direction = random.choice(chanceNS)
-                vehicleType = random.choice(vtypes)
-                if direction == "left":
-                    print('    <vehicle id="%sS_%i" type="%s" route="edgeS_edgeW" depart="%i" departLane="%i" />' % (
-                        direction, vehicleCount, vehicleType, i, lanesNS - 1), file=routes)
-                elif direction == "right":
-                    print('    <vehicle id="%sS_%i" type="%s" route="edgeS_edgeE" depart="%i" departLane="0" />' % (
-                        direction, vehicleCount, vehicleType, i), file=routes)
-                elif direction == "uturn":
-                    print('    <vehicle id="%sS_%i" type="%s" route="edgeS_edgeS" depart="%i" departLane="%i" />' % (
-                            direction, vehicleCount, vehicleType, i, lanesNS - 1), file=routes)
+                random_direction = random.uniform(0, sum(demandProbNS))
+                if random_direction < demandProbNS[0]:
+                    direction = "left"
+                elif random_direction < demandProbNS[0] + demandProbNS[1]:
+                    direction = "straight"
+                elif random_direction < demandProbNS[0] + demandProbNS[1] + demandProbNS[2]:
+                    direction = "right"
                 else:
-                    print('    <vehicle id="%sS_%i" type="%s" route="edgeS_edgeN" depart="%i" departLane="random" />' % (
-                        direction, vehicleCount, vehicleType, i), file=routes)
+                    direction = "uturn"
+                print("""   <vType id="vehicleS_%i" length="%f" accel="%f" decel="%f" sigma="0.5" minGap="%f" maxSpeed="%f" guiShape="passenger" />"""
+                      % (vehicleCount, round(random.uniform(minLength, maxLength), 3), round(random.uniform(minAccel, maxAccel), 3),
+                         round(random.uniform(minDecel, maxDecel), 3), minGap, maxSpeed), file=routes)
+                if direction == "left":
+                    print("""   <vehicle id="%sS_%i" type="vehicleS_%i" route="edgeS_edgeW" depart="%i" departLane="%i" />""" % (
+                        direction, vehicleCount, vehicleCount, i, random.randint(lanesNS - leftOnlyNS - leftStraightNS - allNS, lanesNS - 1)), file=routes)
+                elif direction == "right":
+                    print("""   <vehicle id="%sS_%i" type="vehicleS_%i" route="edgeS_edgeE" depart="%i" departLane="%i" />""" % (
+                        direction, vehicleCount, vehicleCount, i, random.randint(0, rightOnlyNS + rightStraightNS + allNS - 1)), file=routes)
+                elif direction == "uturn":
+                    print("""   <vehicle id="%sS_%i" type="vehicleS_%i" route="edgeS_edgeS" depart="%i" departLane="%i" />""" % (
+                            direction, vehicleCount, vehicleCount, i, lanesNS - 1), file=routes)
+                else:
+                    print("""   <vehicle id="%sS_%i" type="vehicleS_%i" route="edgeS_edgeN" depart="%i" departLane="%i" />""" % (
+                        direction, vehicleCount, vehicleCount, i, random.randint(rightOnlyNS, rightOnlyNS + rightStraightNS + allNS + straightOnlyNS + leftStraightNS - 1)), file=routes)
                 vehicleCount += 1
+                print("", file=routes)
             if random.uniform(0, 1) < demandW:
-                direction = random.choice(chanceWE)
-                vehicleType = random.choice(vtypes)
-                if direction == "left":
-                    print('    <vehicle id="%sW_%i" type="%s" route="edgeW_edgeN" depart="%i" departLane="%i" />' % (
-                        direction, vehicleCount, vehicleType, i, lanesWE - 1), file=routes)
-                elif direction == "right":
-                    print('    <vehicle id="%sW_%i" type="%s" route="edgeW_edgeS" depart="%i" departLane="0" />' % (
-                        direction, vehicleCount, vehicleType, i), file=routes)
-                elif direction == "uturn":
-                    print('    <vehicle id="%sW_%i" type="%s" route="edgeW_edgeW" depart="%i" departLane="%i" />' % (
-                            direction, vehicleCount, vehicleType, i, lanesWE - 1), file=routes)
+                random_direction = random.uniform(0, sum(demandProbWE))
+                if random_direction < demandProbWE[0]:
+                    direction = "left"
+                elif random_direction < demandProbWE[0] + demandProbWE[1]:
+                    direction = "straight"
+                elif random_direction < demandProbWE[0] + demandProbWE[1] + demandProbWE[2]:
+                    direction = "right"
                 else:
-                    print('    <vehicle id="%sW_%i" type="%s" route="edgeW_edgeE" depart="%i" departLane="random" />' % (
-                            direction, vehicleCount, vehicleType, i), file=routes)
+                    direction = "uturn"
+                print("""   <vType id="vehicleW_%i" length="%f" accel="%f" decel="%f" sigma="0.5" minGap="%f" maxSpeed="%f" guiShape="passenger" />"""
+                      % (vehicleCount, round(random.uniform(minLength, maxLength), 3), round(random.uniform(minAccel, maxAccel), 3),
+                         round(random.uniform(minDecel, maxDecel), 3), minGap, maxSpeed), file=routes)
+                if direction == "left":
+                    print("""   <vehicle id="%sW_%i" type="vehicleW_%i" route="edgeW_edgeN" depart="%i" departLane="%i" />""" % (
+                        direction, vehicleCount, vehicleCount, i, random.randint(lanesWE - leftOnlyWE - leftStraightWE - allWE, lanesWE - 1)), file=routes)
+                elif direction == "right":
+                    print("""   <vehicle id="%sW_%i" type="vehicleW_%i" route="edgeW_edgeS" depart="%i" departLane="%i" />""" % (
+                        direction, vehicleCount, vehicleCount, i, random.randint(0, rightOnlyWE + rightStraightWE + allWE - 1)), file=routes)
+                elif direction == "uturn":
+                    print("""   <vehicle id="%sW_%i" type="vehicleW_%i" route="edgeW_edgeW" depart="%i" departLane="%i" />""" % (
+                            direction, vehicleCount, vehicleCount, i, lanesWE - 1), file=routes)
+                else:
+                    print("""   <vehicle id="%sW_%i" type="vehicleW_%i" route="edgeW_edgeE" depart="%i" departLane="%i" />""" % (
+                            direction, vehicleCount, vehicleCount, i, random.randint(rightOnlyWE, rightOnlyWE + rightStraightWE + allWE + straightOnlyWE + leftStraightWE - 1)), file=routes)
                 vehicleCount += 1
+                print("", file=routes)
             if random.uniform(0, 1) < demandE:
-                direction = random.choice(chanceWE)
-                vehicleType = random.choice(vtypes)
-                if direction == "left":
-                    print('    <vehicle id="%sE_%i" type="%s" route="edgeE_edgeS" depart="%i" departLane="%i" />' % (
-                        direction, vehicleCount, vehicleType, i, lanesWE - 1), file=routes)
-                elif direction == "right":
-                    print('    <vehicle id="%sE_%i" type="%s" route="edgeE_edgeN" depart="%i" departLane="0" />' % (
-                        direction, vehicleCount, vehicleType, i), file=routes)
-                elif direction == "uturn":
-                    print('    <vehicle id="%sE_%i" type="%s" route="edgeE_edgeE" depart="%i" departLane="%i" />' % (
-                            direction, vehicleCount, vehicleType, i, lanesWE - 1), file=routes)
+                random_direction = random.uniform(0, sum(demandProbWE))
+                if random_direction < demandProbWE[0]:
+                    direction = "left"
+                elif random_direction < demandProbWE[0] + demandProbWE[1]:
+                    direction = "straight"
+                elif random_direction < demandProbWE[0] + demandProbWE[1] + demandProbWE[2]:
+                    direction = "right"
                 else:
-                    print(
-                        '    <vehicle id="%sE_%i" type="%s" route="edgeE_edgeW" depart="%i" departLane="random" />' % (
-                            direction, vehicleCount, vehicleType, i), file=routes)
+                    direction = "uturn"
+                print("""   <vType id="vehicleE_%i" length="%f" accel="%f" decel="%f" sigma="0.5" minGap="%f" maxSpeed="%f" guiShape="passenger" />"""
+                      % (vehicleCount, round(random.uniform(minLength, maxLength), 3), round(random.uniform(minAccel, maxAccel), 3),
+                         round(random.uniform(minDecel, maxDecel), 3), minGap, maxSpeed), file=routes)
+                if direction == "left":
+                    print("""   <vehicle id="%sE_%i" type="vehicleE_%i" route="edgeE_edgeS" depart="%i" departLane="%i" />""" % (
+                        direction, vehicleCount, vehicleCount, i, random.randint(lanesWE - leftOnlyWE - leftStraightWE - allWE, lanesWE - 1)), file=routes)
+                elif direction == "right":
+                    print("""   <vehicle id="%sE_%i" type="vehicleE_%i" route="edgeE_edgeN" depart="%i" departLane="%i" />""" % (
+                        direction, vehicleCount, vehicleCount, i, random.randint(0, rightOnlyWE + rightStraightWE + allWE - 1)), file=routes)
+                elif direction == "uturn":
+                    print("""   <vehicle id="%sE_%i" type="vehicleE_%i" route="edgeE_edgeE" depart="%i" departLane="%i" />""" % (
+                            direction, vehicleCount, vehicleCount, i, lanesWE - 1), file=routes)
+                else:
+                    print("""   <vehicle id="%sE_%i" type="vehicleE_%i" route="edgeE_edgeW" depart="%i" departLane="%i" />""" % (
+                            direction, vehicleCount, vehicleCount, i, random.randint(rightOnlyWE, rightOnlyWE + rightStraightWE + allWE + straightOnlyWE + leftStraightWE - 1)), file=routes)
                 vehicleCount += 1
+                print("", file=routes)
         print("</routes>", file=routes)
 
-def setDuration(leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS, rightOnlyNS, allNS,
+def setDuration(folder_name, leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS, rightOnlyNS, allNS,
                 leftOnlyWE, leftStraightWE, straightOnlyWE, rightStraightWE, rightOnlyWE, allWE,
                 moveNS, moveWE, yellowNS, yellowWE, turnNS, turnWE):
     status = []
@@ -281,7 +295,7 @@ def setDuration(leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS, rig
             temp_string += "rrr"
         status.append(temp_string)
 
-    with open("data/cross.tls.xml", "w") as tls:
+    with open(str(folder_name) + "/cross.tls.xml", "w") as tls:
         print("<additional>", file=tls)
         print("""   <tlLogic id="juncMain" type="static" programID="1" offset="0">""", file=tls)
         if moveNS != 0:
@@ -299,14 +313,14 @@ def setDuration(leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS, rig
         print("""   </tlLogic>""", file=tls)
         print("</additional>", file=tls)
 
-def buildConnections(leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS, rightOnlyNS, allNS,
+def buildConnections(folder_name, leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS, rightOnlyNS, allNS,
                      leftOnlyWE, leftStraightWE, straightOnlyWE, rightStraightWE, rightOnlyWE, allWE,
                      leftOutLanesNS, rightOutLanesNS, leftOutLanesWE, rightOutLanesWE):
 
     lanesNS = leftOnlyNS + leftStraightNS + straightOnlyNS + rightStraightNS + rightOnlyNS + allNS
     lanesWE = leftOnlyWE + leftStraightWE + straightOnlyWE + rightStraightWE + rightOnlyWE + allWE
 
-    with open("data/cross.con.xml", "w") as connections:
+    with open(str(folder_name) + "/cross.con.xml", "w") as connections:
         print("""<connections>""", file=connections)
 
         # North
@@ -541,13 +555,13 @@ def buildConnections(leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS
                   % (lane_count - 1, lanesWE - 1), file=connections)
         print("</connections>", file=connections)
 
-def createNetwork(leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS, rightOnlyNS, allNS,
+def createNetwork(folder_name, leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS, rightOnlyNS, allNS,
                   leftOnlyWE, leftStraightWE, straightOnlyWE, rightStraightWE, rightOnlyWE, allWE,
                   outspeedNS, inspeedNS, outspeedWE, inspeedWE):
     lanesNS = leftOnlyNS + leftStraightNS + straightOnlyNS + rightStraightNS + rightOnlyNS + allNS
     lanesWE = leftOnlyWE + leftStraightWE + straightOnlyWE + rightStraightWE + rightOnlyWE + allWE
 
-    tree = ET.parse("data/cross.edg.xml")
+    tree = ET.parse(str(folder_name) + "/cross.edg.xml")
 
     tl = tree.find(".//edge[@id='edgeN_O']")
     tl.set("numLanes", str(lanesNS))
@@ -577,13 +591,13 @@ def createNetwork(leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS, r
     tl.set("numLanes", str(lanesWE))
     tl.set("speed", str(inspeedWE))
 
-    tree.write("data/cross.edg.xml")
+    tree.write("data1/cross.edg.xml")
 
-    os.system("netconvert --node-files=data/cross.nod.xml --edge-files=data/cross.edg.xml --connection-files=data/cross.con.xml --output-file=data/cross.net.xml")
+    os.system("netconvert --node-files=%s/cross.nod.xml --edge-files=%s/cross.edg.xml --connection-files=%s/cross.con.xml --output-file=%s/cross.net.xml" % (folder_name, folder_name, folder_name, folder_name))
 
-def runSim():
+def runSim(time_steps):
     step = 0
-    while traci.simulation.getMinExpectedNumber() > 0:
+    while step <= time_steps:
         traci.simulationStep()
         step += 1
     traci.close()
@@ -599,29 +613,26 @@ def findRate(data):
     for trip in all_trips:
         duration = float(trip["duration"])
         loss = float(trip["timeloss"])
-        total += (duration / (duration - loss))
+        # total += (duration / (duration - loss))
+        total += ((duration - loss) / duration)
     return total / len(all_trips)
 
 def setup(csv_path):
     dataframe = pd.read_csv(csv_path, sep='\t',
-                            names=["leftOnlyNS", "leftStraightNS", "straightOnlyNS", "rightStraightNS", "rightOnlyNS",
-                                   "allNS",
-                                   "leftOnlyWE", "leftStraightWE", "straightOnlyWE", "rightStraightWE", "rightOnlyWE",
-                                   "allWE",
+                            names=["leftOnlyNS", "leftStraightNS", "straightOnlyNS", "rightStraightNS", "rightOnlyNS", "allNS",
+                                   "leftOnlyWE", "leftStraightWE", "straightOnlyWE", "rightStraightWE", "rightOnlyWE", "allWE",
                                    "moveDurationNS", "moveDurationWE", "yellowDurationNS", "yellowDurationWE",
                                    "turnDurationNS", "turnDurationWE", "demandN", "demandS", "demandW", "demandE",
                                    "demandProbNS_Straight", "demandProbNS_Left", "demandProbNS_Right",
-                                   "demandProbNS_UTurn",
-                                   "demandProbWE_Straight", "demandProbWE_Left", "demandProbWE_Right",
-                                   "demandProbWE_UTurn",
-                                   "outSpeedNS", "outSpeedWE", "inSpeedNS", "inSpeedWE", "vehicleMaxSpeed",
-                                   "vehicleAccel",
-                                   "vehicleDecel", "vehicleMinLength", "vehicleMaxLength", "minGap"])
+                                   "demandProbNS_UTurn", "demandProbWE_Straight", "demandProbWE_Left", "demandProbWE_Right",
+                                   "demandProbWE_UTurn", "outSpeedNS", "outSpeedWE", "inSpeedNS", "inSpeedWE", "vehicleMaxSpeed",
+                                   "vehicleMinAccel", "vehicleMaxAccel", "vehicleMinDecel", "vehicleMaxDecel", "vehicleMinLength",
+                                   "vehicleMaxLength", "minGap"])
     if dataframe.empty:
         dataframe.to_csv(csv_path)
 
 
-def main(csv_path, time_steps,
+def main(csv_path, folder_name, time_steps,
         leftOnlyNS=0, leftStraightNS=1, straightOnlyNS=1, rightStraightNS=1, rightOnlyNS=0, allNS=0,
         leftOnlyWE=0, leftStraightWE=1, straightOnlyWE=1, rightStraightWE=1, rightOnlyWE=0, allWE=0,
         leftOutLanesNS=2, rightOutLanesNS=2, leftOutLanesWE=2, rightOutLanesWE=2,
@@ -679,21 +690,22 @@ def main(csv_path, time_steps,
     # setDuration(leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS, rightOnlyNS, allNS,
     #             leftOnlyWE, leftStraightWE, straightOnlyWE, rightStraightWE, rightOnlyWE, allWE,
     #             moveDurationNS, moveDurationWE, yellowDurationNS, yellowDurationWE, turnDurationNS, turnDurationWE)
-    buildConnections(leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS, rightOnlyNS, allNS,
+    buildConnections(folder_name, leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS, rightOnlyNS, allNS,
                      leftOnlyWE, leftStraightWE, straightOnlyWE, rightStraightWE, rightOnlyWE, allWE,
                      leftOutLanesNS, rightOutLanesNS, leftOutLanesWE, rightOutLanesWE)
-    createNetwork(leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS, rightOnlyNS, allNS,
+    createNetwork(folder_name, leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS, rightOnlyNS, allNS,
                   leftOnlyWE, leftStraightWE, straightOnlyWE, rightStraightWE, rightOnlyWE, allWE,
                   outSpeedNS, inSpeedNS, outSpeedWE, inSpeedWE)
-    generateRoute(leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS, rightOnlyNS, allNS,
+    generateRoute(folder_name, leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS, rightOnlyNS, allNS,
                   leftOnlyWE, leftStraightWE, straightOnlyWE, rightStraightWE, rightOnlyWE, allWE,
                   time_steps, demandN, demandS, demandW, demandE, vehicleMinAccel, vehicleMaxAccel,
                   vehicleMinDecel, vehicleMaxDecel, vehicleMinLength, vehicleMaxLength, minGap,
                   vehicleMaxSpeed, demandProbNS, demandProbWE)
-    traci.start([checkBinary('sumo'), "-c", "data/cross.sumocfg",
-                 "--tripinfo-output", "tripinfo.xml"])
-    runSim()
-    rates = findRate("tripinfo.xml")
+    traci.start([checkBinary('sumo'), "-c", str(folder_name) + "/cross.sumocfg",
+                 "--tripinfo-output", str(folder_name) + "/tripinfo.xml", "--statistic-output", "statistics.xml", "--tripinfo-output.write-unfinished"])
+    runSim(time_steps)
+    rates = findRate(str(folder_name) + "/tripinfo.xml")
+    print(rates)
 
     dataframe = pd.DataFrame([[i for i in range(40)]])
     dataframe.to_csv(csv_path, mode='a', header=False)
@@ -703,11 +715,28 @@ def fixIndex(csv_path):
     dataframe = dataframe.reset_index(drop=True)
     dataframe.to_csv(csv_path)
 
+def test(sumoCmd, a):
+    traci.start(sumoCmd)
+    runSim(3000)
+
 if __name__ == "__main__":
     start_time = time.time()
     setup("record.csv")
-    main(time_steps=3000, csv_path="record.csv",
-         leftOnlyNS=0, leftStraightNS=5, straightOnlyNS=0, rightStraightNS=1, rightOnlyNS=1, allNS=0,
-         leftOnlyWE=0, leftStraightWE=5, straightOnlyWE=0, rightStraightWE=1, rightOnlyWE=1, allWE=0)
+    for p_num in range(mp.cpu_count()):
+        os.mkdir(r"C:\Users\Thomas Tseng\Documents\GitHub\Traffic-Light-Project\data%i" % (p_num))
+        copy_tree(r"C:\Users\Thomas Tseng\Documents\GitHub\Traffic-Light-Project\data", r"C:\Users\Thomas Tseng\Documents\GitHub\Traffic-Light-Project\data%i" % (p_num))
+    processes = []
+    for p_num in range(mp.cpu_count()):
+        p = mp.Process(target=main, args=("record.csv", "data" + str(p_num), 3000))
+        p.start()
+        processes.append(p)
+    for process in processes:
+        process.join()
     fixIndex("record.csv")
-    print(time.time() - start_time)
+    for p_num in range(mp.cpu_count()):
+        shutil.rmtree(r"C:\Users\Thomas Tseng\Documents\GitHub\Traffic-Light-Project\data%i" % (p_num))
+    # print(time.time() - start_time)
+    # start_time = time.time()
+    # for i in range(4):
+    #     main(time_steps=3000, csv_path="record.csv", folder_name="data" + str(i + 1))
+    # print(time.time() - start_time)

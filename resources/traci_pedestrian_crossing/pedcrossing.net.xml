@@ -4,9 +4,9 @@
 <configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/netconvertConfiguration.xsd">
 
     <input>
-        <node-files value="data\pedcrossing.nod.xml"/>
-        <edge-files value="data\pedcrossing.edg.xml"/>
-        <connection-files value="data\pedcrossing.con.xml"/>
+        <node-files value="data1\pedcrossing.nod.xml"/>
+        <edge-files value="data1\pedcrossing.edg.xml"/>
+        <connection-files value="data1\pedcrossing.con.xml"/>
     </input>
 
     <output>
