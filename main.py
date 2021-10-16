@@ -31,6 +31,9 @@ def generateRoute(folder_name, leftOnlyNS, leftStraightNS, straightOnlyNS, right
 
     with open(str(folder_name) + "/cross.rou.xml", "w") as routes:
         print("""<routes>""", file=routes)
+        print("""<personFlow id="p" begin="0" end="100" period="2">
+       <walk from="edgeN_O" to="edgeS_I" />
+   </personFlow>""", file=routes)
         print("""
     <route id="edgeN_edgeN" edges="edgeN_O edgeN_I" />
     <route id="edgeN_edgeS" edges="edgeN_O edgeS_I" />
@@ -166,8 +169,8 @@ def setDuration(folder_name, leftOnlyNS, leftStraightNS, straightOnlyNS, rightSt
                 leftOutLanesNS, rightOutLanesNS, leftOutLanesWE, rightOutLanesWE,
                 moveNS, moveWE, yellowNS, yellowWE, turnNS, turnWE):
 
-    lanesNS = leftOnlyNS + leftStraightNS + straightOnlyNS + rightStraightNS + rightOnlyNS + allNS
-    lanesWE = leftOnlyWE + leftStraightWE + straightOnlyWE + rightStraightWE + rightOnlyWE + allWE
+    lanesNS = leftOnlyNS + leftStraightNS + straightOnlyNS + rightStraightNS + rightOnlyNS + allNS + 1
+    lanesWE = leftOnlyWE + leftStraightWE + straightOnlyWE + rightStraightWE + rightOnlyWE + allWE + 1
 
     status = []
     for state in range(6):
@@ -228,6 +231,7 @@ def setDuration(folder_name, leftOnlyNS, leftStraightNS, straightOnlyNS, rightSt
                         temp_string += "r"
                 if leftOnlyWE + leftStraightWE + allWE > 0:
                     temp_string += "r"
+            temp_string += "rGrG"
             status.append(temp_string)
         elif state == 1:
             for run in range(2):
@@ -281,6 +285,7 @@ def setDuration(folder_name, leftOnlyNS, leftStraightNS, straightOnlyNS, rightSt
                         temp_string += "r"
                 if leftOnlyWE + leftStraightWE + allWE > 0:
                     temp_string += "r"
+            temp_string += "rGrG"
             status.append(temp_string)
         elif state == 2:
             for run in range(2):
@@ -338,6 +343,7 @@ def setDuration(folder_name, leftOnlyNS, leftStraightNS, straightOnlyNS, rightSt
                             temp_string += "g"
                 if leftOnlyWE + leftStraightWE + allWE > 0:
                     temp_string += "G"
+            temp_string += "rrrr"
             status.append(temp_string)
         elif state == 3:
             for run in range(2):
@@ -395,6 +401,7 @@ def setDuration(folder_name, leftOnlyNS, leftStraightNS, straightOnlyNS, rightSt
                         temp_string += "g"
                 if leftOnlyWE + leftStraightWE + allWE > 0:
                     temp_string += "g"
+            temp_string += "GrGr"
             status.append(temp_string)
         elif state == 4:
             for run in range(2):
@@ -448,6 +455,7 @@ def setDuration(folder_name, leftOnlyNS, leftStraightNS, straightOnlyNS, rightSt
                         temp_string += "y"
                 if leftOnlyWE + leftStraightWE + allWE > 0:
                     temp_string += "y"
+            temp_string += "GrGr"
             status.append(temp_string)
         elif state == 5:
             for run in range(2):
@@ -505,6 +513,7 @@ def setDuration(folder_name, leftOnlyNS, leftStraightNS, straightOnlyNS, rightSt
                         temp_string += "r"
                 if leftOnlyWE + leftStraightWE + allWE > 0:
                     temp_string += "r"
+            temp_string += "rrrr"
             status.append(temp_string)
 
     with open(str(folder_name) + "/cross.tls.xml", "w") as tls:
@@ -529,12 +538,15 @@ def buildConnections(folder_name, leftOnlyNS, leftStraightNS, straightOnlyNS, ri
                      leftOnlyWE, leftStraightWE, straightOnlyWE, rightStraightWE, rightOnlyWE, allWE,
                      leftOutLanesNS, rightOutLanesNS, leftOutLanesWE, rightOutLanesWE):
 
-    lanesNS = leftOnlyNS + leftStraightNS + straightOnlyNS + rightStraightNS + rightOnlyNS + allNS
-    lanesWE = leftOnlyWE + leftStraightWE + straightOnlyWE + rightStraightWE + rightOnlyWE + allWE
+    lanesNS = leftOnlyNS + leftStraightNS + straightOnlyNS + rightStraightNS + rightOnlyNS + allNS + 1
+    lanesWE = leftOnlyWE + leftStraightWE + straightOnlyWE + rightStraightWE + rightOnlyWE + allWE + 1
 
     with open(str(folder_name) + "/cross.con.xml", "w") as connections:
         print("""<connections>""", file=connections)
-
+        print("""   <crossing width="4.00" priority="1" edges="edgeN_I edgeN_O" node="juncMain"/>
+    <crossing width="4.00" edges="edgeE_I edgeE_O" node="juncMain"/>
+    <crossing width="4.00" edges="edgeS_I edgeS_O" node="juncMain"/>
+    <crossing width="4.00" edges="edgeW_I edgeW_O" node="juncMain"/>""", file=connections)
         # North
         print("""   <!-- North -->""", file=connections)
         lane_count = 1
@@ -805,7 +817,7 @@ def createNetwork(folder_name, leftOnlyNS, leftStraightNS, straightOnlyNS, right
 
     tree.write(str(folder_name) + "/cross.edg.xml")
 
-    os.system("netconvert --node-files=%s/cross.nod.xml --edge-files=%s/cross.edg.xml --connection-files=%s/cross.con.xml --output-file=%s/cross.net.xml" % (folder_name, folder_name, folder_name, folder_name))
+    os.system("netconvert --node-files=%s/cross.nod.xml --edge-files=%s/cross.edg.xml --connection-files=%s/cross.con.xml --output-file=%s/cross.net.xml --no-turnarounds.except-turnlane=true" % (folder_name, folder_name, folder_name, folder_name))
 
 def runSim(time_steps):
     step = 0
@@ -899,13 +911,13 @@ def main(csv_path, folder_name, time_steps,
     if leftStraightWE + rightStraightWE + straightOnlyWE + allWE == 0:
         demandProbWE[1] = 0
 
-    # setDuration(folder_name, leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS, rightOnlyNS, allNS,
-    #             leftOnlyWE, leftStraightWE, straightOnlyWE, rightStraightWE, rightOnlyWE, allWE,
-    #             leftOutLanesNS, rightOutLanesNS, leftOutLanesWE, rightOutLanesWE,
-    #             moveDurationNS, moveDurationWE, yellowDurationNS, yellowDurationWE, turnDurationNS, turnDurationWE)
-    # buildConnections(folder_name, leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS, rightOnlyNS, allNS,
-    #                  leftOnlyWE, leftStraightWE, straightOnlyWE, rightStraightWE, rightOnlyWE, allWE,
-    #                  leftOutLanesNS, rightOutLanesNS, leftOutLanesWE, rightOutLanesWE)
+    setDuration(folder_name, leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS, rightOnlyNS, allNS,
+                leftOnlyWE, leftStraightWE, straightOnlyWE, rightStraightWE, rightOnlyWE, allWE,
+                leftOutLanesNS, rightOutLanesNS, leftOutLanesWE, rightOutLanesWE,
+                moveDurationNS, moveDurationWE, yellowDurationNS, yellowDurationWE, turnDurationNS, turnDurationWE)
+    buildConnections(folder_name, leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS, rightOnlyNS, allNS,
+                     leftOnlyWE, leftStraightWE, straightOnlyWE, rightStraightWE, rightOnlyWE, allWE,
+                     leftOutLanesNS, rightOutLanesNS, leftOutLanesWE, rightOutLanesWE)
     createNetwork(folder_name, leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS, rightOnlyNS, allNS,
                   leftOnlyWE, leftStraightWE, straightOnlyWE, rightStraightWE, rightOnlyWE, allWE,
                   outSpeedNS, inSpeedNS, outSpeedWE, inSpeedWE)
@@ -914,7 +926,7 @@ def main(csv_path, folder_name, time_steps,
                   time_steps, demandN, demandS, demandW, demandE, vehicleMinAccel, vehicleMaxAccel,
                   vehicleMinDecel, vehicleMaxDecel, vehicleMinLength, vehicleMaxLength, minGap,
                   vehicleMaxSpeed, demandProbNS, demandProbWE)
-    traci.start([checkBinary('sumo-gui'), "-c", str(folder_name) + "/cross.sumocfg",
+    traci.start([checkBinary('sumo'), "-c", str(folder_name) + "/cross.sumocfg",
              "--tripinfo-output", str(folder_name) + "/tripinfo.xml", "--statistic-output", "statistics.xml", "--tripinfo-output.write-unfinished"])
     runSim(time_steps)
     rates = findRate(str(folder_name) + "/tripinfo.xml")
@@ -929,25 +941,25 @@ def fixIndex(csv_path):
     dataframe.to_csv(csv_path)
 
 if __name__ == "__main__":
-    # for i in range(1):
-    #     start_time = time.time()
-    #     setup("record.csv")
-    #     instance = mp.cpu_count()
-    #     for p_num in range(instance):
-    #         os.mkdir(r"C:\Users\Thomas Tseng\Documents\GitHub\Traffic-Light-Project\data%i" % (p_num))
-    #         copy_tree(r"C:\Users\Thomas Tseng\Documents\GitHub\Traffic-Light-Project\data", r"C:\Users\Thomas Tseng\Documents\GitHub\Traffic-Light-Project\data%i" % (p_num))
-    #     processes = []
-    #     for p_num in range(instance):
-    #         p = mp.Process(target=main, args=("record.csv", "data" + str(p_num), 3000, 0, 0, random.randint(50, 100), 0, 0, 0, 0, 0, random.randint(50, 100), 0, 0, 0, 2, 2, 2, 2, 3000, 0, 0, 0, 0, 0, 0, 0.0005, 0, 0))
-    #         p.start()
-    #         processes.append(p)
-    #     for process in processes:
-    #         process.join()
-    #     fixIndex("record.csv")
-    #     for p_num in range(instance):
-    #         shutil.rmtree(r"C:\Users\Thomas Tseng\Documents\GitHub\Traffic-Light-Project\data%i" % (p_num))
-    #     print("")
-    #     print("Instance: " + str(instance))
-    #     print("Time: " + str(time.time() - start_time) + "s")
+    for i in range(1):
+        start_time = time.time()
+        setup("record.csv")
+        instance = mp.cpu_count()
+        for p_num in range(instance):
+            os.mkdir(r"C:\Users\Thomas Tseng\Documents\GitHub\Traffic-Light-Project\data%i" % (p_num))
+            copy_tree(r"C:\Users\Thomas Tseng\Documents\GitHub\Traffic-Light-Project\data", r"C:\Users\Thomas Tseng\Documents\GitHub\Traffic-Light-Project\data%i" % (p_num))
+        processes = []
+        for p_num in range(instance):
+            p = mp.Process(target=main, args=("record.csv", "data" + str(p_num), 3000, 0, 0, random.randint(50, 100), 0, 0, 0, 0, 0, random.randint(50, 100), 0, 0, 0, 2, 2, 2, 2, 3000, 0, 0, 0, 0, 0, 0, 0.0005, 0, 0))
+            p.start()
+            processes.append(p)
+        for process in processes:
+            process.join()
+        fixIndex("record.csv")
+        for p_num in range(instance):
+            shutil.rmtree(r"C:\Users\Thomas Tseng\Documents\GitHub\Traffic-Light-Project\data%i" % (p_num))
+        print("")
+        print("Instance: " + str(instance))
+        print("Time: " + str(time.time() - start_time) + "s")
 
-    main(time_steps=3000, csv_path="record.csv", folder_name="data")
+    # main(time_steps=3000, csv_path="record.csv", folder_name="data")

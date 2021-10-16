@@ -1,10 +1,10 @@
 <additional>
    <tlLogic id="juncMain" type="static" programID="1" offset="0">
-       <phase duration="60.000000" state="ggGGGgggggrrrrrrrrrrggGGGgggggrrrrrrrrrr"/>
-       <phase duration="5.000000" state="yyyyyyyyyyrrrrrrrrrryyyyyyyyyyrrrrrrrrrr"/>
-       <phase duration="20.000000" state="rrrrrrrrrrrrrrrrrGGGrrrrrrrrrrrrrrrrrGGG"/>
-       <phase duration="60.000000" state="rrrrrrrrrrggGGGgggggrrrrrrrrrrggGGGggggg"/>
-       <phase duration="5.000000" state="rrrrrrrrrryyyyyyyyyyrrrrrrrrrryyyyyyyyyy"/>
-       <phase duration="20.000000" state="rrrrrrrGGGrrrrrrrrrrrrrrrrrGGGrrrrrrrrrr"/>
+       <phase duration="60.000000" state="ggGGGgggggrrrrrrrrrrggGGGgggggrrrrrrrrrrrGrG"/>
+       <phase duration="5.000000" state="yyyyyyyyyyrrrrrrrrrryyyyyyyyyyrrrrrrrrrrrGrG"/>
+       <phase duration="20.000000" state="rrrrrrrrrrrrrrrrrGGGrrrrrrrrrrrrrrrrrGGGrrrr"/>
+       <phase duration="60.000000" state="rrrrrrrrrrggGGGgggggrrrrrrrrrrggGGGgggggGrGr"/>
+       <phase duration="5.000000" state="rrrrrrrrrryyyyyyyyyyrrrrrrrrrryyyyyyyyyyGrGr"/>
+       <phase duration="20.000000" state="rrrrrrrGGGrrrrrrrrrrrrrrrrrGGGrrrrrrrrrrrrrr"/>
    </tlLogic>
 </additional>
