@@ -25,8 +25,8 @@ def generateRoute(folder_name, leftOnlyNS, leftStraightNS, straightOnlyNS, right
                   leftOnlyWE, leftStraightWE, straightOnlyWE, rightStraightWE, rightOnlyWE, allWE,
                   steps, demandN, demandS, demandW, demandE, minAccel, maxAccel, minDecel, maxDecel,
                   minLength, maxLength, minGap, maxSpeed, demandProbNS, demandProbWE):
-    lanesNS = leftOnlyNS + leftStraightNS + straightOnlyNS + rightStraightNS + rightOnlyNS + allNS
-    lanesWE = leftOnlyWE + leftStraightWE + straightOnlyWE + rightStraightWE + rightOnlyWE + allWE
+    lanesNS = leftOnlyNS + leftStraightNS + straightOnlyNS + rightStraightNS + rightOnlyNS + allNS + 1
+    lanesWE = leftOnlyWE + leftStraightWE + straightOnlyWE + rightStraightWE + rightOnlyWE + allWE + 1
     random.seed(42)  # make tests reproducible
 
     with open(str(folder_name) + "/cross.rou.xml", "w") as routes:
@@ -69,13 +69,13 @@ def generateRoute(folder_name, leftOnlyNS, leftStraightNS, straightOnlyNS, right
                         direction, vehicleCount, vehicleCount, i, random.randint(lanesNS - leftOnlyNS - leftStraightNS - allNS, lanesNS - 1)), file=routes)
                 elif direction == "right":
                     print("""   <vehicle id="%sN_%i" type="vehicleN_%i" route="edgeN_edgeW" depart="%i" departLane="%i" />""" % (
-                        direction, vehicleCount, vehicleCount, i, random.randint(0, rightOnlyNS + rightStraightNS + allNS - 1)), file=routes)
+                        direction, vehicleCount, vehicleCount, i, random.randint(1, rightOnlyNS + rightStraightNS + allNS)), file=routes)
                 elif direction == "uturn":
                     print("""   <vehicle id="%sN_%i" type="vehicleN_%i" route="edgeN_edgeN" depart="%i" departLane="%i" />""" % (
                             direction, vehicleCount, vehicleCount, i, lanesNS - 1), file=routes)
                 else:
                     print("""   <vehicle id="%sN_%i" type="vehicleN_%i" route="edgeN_edgeS" depart="%i" departLane="%i" />""" % (
-                        direction, vehicleCount, vehicleCount, i, random.randint(rightOnlyNS, rightOnlyNS + rightStraightNS + allNS + straightOnlyNS + leftStraightNS - 1)), file=routes)
+                        direction, vehicleCount, vehicleCount, i, random.randint(rightOnlyNS + 1, rightOnlyNS + rightStraightNS + allNS + straightOnlyNS + leftStraightNS)), file=routes)
                 vehicleCount += 1
                 print("", file=routes)
             if random.uniform(0, 1) < demandS:
@@ -96,13 +96,13 @@ def generateRoute(folder_name, leftOnlyNS, leftStraightNS, straightOnlyNS, right
                         direction, vehicleCount, vehicleCount, i, random.randint(lanesNS - leftOnlyNS - leftStraightNS - allNS, lanesNS - 1)), file=routes)
                 elif direction == "right":
                     print("""   <vehicle id="%sS_%i" type="vehicleS_%i" route="edgeS_edgeE" depart="%i" departLane="%i" />""" % (
-                        direction, vehicleCount, vehicleCount, i, random.randint(0, rightOnlyNS + rightStraightNS + allNS - 1)), file=routes)
+                        direction, vehicleCount, vehicleCount, i, random.randint(1, rightOnlyNS + rightStraightNS + allNS)), file=routes)
                 elif direction == "uturn":
                     print("""   <vehicle id="%sS_%i" type="vehicleS_%i" route="edgeS_edgeS" depart="%i" departLane="%i" />""" % (
                             direction, vehicleCount, vehicleCount, i, lanesNS - 1), file=routes)
                 else:
                     print("""   <vehicle id="%sS_%i" type="vehicleS_%i" route="edgeS_edgeN" depart="%i" departLane="%i" />""" % (
-                        direction, vehicleCount, vehicleCount, i, random.randint(rightOnlyNS, rightOnlyNS + rightStraightNS + allNS + straightOnlyNS + leftStraightNS - 1)), file=routes)
+                        direction, vehicleCount, vehicleCount, i, random.randint(rightOnlyNS + 1, rightOnlyNS + rightStraightNS + allNS + straightOnlyNS + leftStraightNS)), file=routes)
                 vehicleCount += 1
                 print("", file=routes)
             if random.uniform(0, 1) < demandW:
@@ -123,13 +123,13 @@ def generateRoute(folder_name, leftOnlyNS, leftStraightNS, straightOnlyNS, right
                         direction, vehicleCount, vehicleCount, i, random.randint(lanesWE - leftOnlyWE - leftStraightWE - allWE, lanesWE - 1)), file=routes)
                 elif direction == "right":
                     print("""   <vehicle id="%sW_%i" type="vehicleW_%i" route="edgeW_edgeS" depart="%i" departLane="%i" />""" % (
-                        direction, vehicleCount, vehicleCount, i, random.randint(0, rightOnlyWE + rightStraightWE + allWE - 1)), file=routes)
+                        direction, vehicleCount, vehicleCount, i, random.randint(1, rightOnlyWE + rightStraightWE + allWE)), file=routes)
                 elif direction == "uturn":
                     print("""   <vehicle id="%sW_%i" type="vehicleW_%i" route="edgeW_edgeW" depart="%i" departLane="%i" />""" % (
                             direction, vehicleCount, vehicleCount, i, lanesWE - 1), file=routes)
                 else:
                     print("""   <vehicle id="%sW_%i" type="vehicleW_%i" route="edgeW_edgeE" depart="%i" departLane="%i" />""" % (
-                            direction, vehicleCount, vehicleCount, i, random.randint(rightOnlyWE, rightOnlyWE + rightStraightWE + allWE + straightOnlyWE + leftStraightWE - 1)), file=routes)
+                            direction, vehicleCount, vehicleCount, i, random.randint(rightOnlyWE + 1, rightOnlyWE + rightStraightWE + allWE + straightOnlyWE + leftStraightWE)), file=routes)
                 vehicleCount += 1
                 print("", file=routes)
             if random.uniform(0, 1) < demandE:
@@ -150,13 +150,13 @@ def generateRoute(folder_name, leftOnlyNS, leftStraightNS, straightOnlyNS, right
                         direction, vehicleCount, vehicleCount, i, random.randint(lanesWE - leftOnlyWE - leftStraightWE - allWE, lanesWE - 1)), file=routes)
                 elif direction == "right":
                     print("""   <vehicle id="%sE_%i" type="vehicleE_%i" route="edgeE_edgeN" depart="%i" departLane="%i" />""" % (
-                        direction, vehicleCount, vehicleCount, i, random.randint(0, rightOnlyWE + rightStraightWE + allWE - 1)), file=routes)
+                        direction, vehicleCount, vehicleCount, i, random.randint(1, rightOnlyWE + rightStraightWE + allWE)), file=routes)
                 elif direction == "uturn":
                     print("""   <vehicle id="%sE_%i" type="vehicleE_%i" route="edgeE_edgeE" depart="%i" departLane="%i" />""" % (
                             direction, vehicleCount, vehicleCount, i, lanesWE - 1), file=routes)
                 else:
                     print("""   <vehicle id="%sE_%i" type="vehicleE_%i" route="edgeE_edgeW" depart="%i" departLane="%i" />""" % (
-                            direction, vehicleCount, vehicleCount, i, random.randint(rightOnlyWE, rightOnlyWE + rightStraightWE + allWE + straightOnlyWE + leftStraightWE - 1)), file=routes)
+                            direction, vehicleCount, vehicleCount, i, random.randint(rightOnlyWE + 1, rightOnlyWE + rightStraightWE + allWE + straightOnlyWE + leftStraightWE)), file=routes)
                 vehicleCount += 1
                 print("", file=routes)
         print("</routes>", file=routes)
@@ -537,18 +537,18 @@ def buildConnections(folder_name, leftOnlyNS, leftStraightNS, straightOnlyNS, ri
 
         # North
         print("""   <!-- North -->""", file=connections)
-        lane_count = 0
+        lane_count = 1
         for i in range(rightOnlyNS):
             for lane in range(rightOutLanesNS):
                 print("""   <connection from="edgeN_O" to="edgeW_I" fromLane="%i" toLane="%i"/>"""
-                      % (lane_count, lane), file=connections)
+                      % (lane_count, lane + 1), file=connections)
             lane_count += 1
         if rightOnlyNS > 0:
             print("", file=connections)
         for i in range(rightStraightNS):
             for lane in range(rightOutLanesNS):
                 print("""   <connection from="edgeN_O" to="edgeW_I" fromLane="%i" toLane="%i"/>"""
-                      % (lane_count, lane), file=connections)
+                      % (lane_count, lane + 1), file=connections)
             print("""   <connection from="edgeN_O" to="edgeS_I" fromLane="%i" toLane="%i"/>"""
                   % (lane_count, lane_count), file=connections)
             lane_count += 1
@@ -563,7 +563,7 @@ def buildConnections(folder_name, leftOnlyNS, leftStraightNS, straightOnlyNS, ri
         for i in range(allNS):
             for lane in range(rightOutLanesNS):
                 print("""   <connection from="edgeN_O" to="edgeW_I" fromLane="%i" toLane="%i"/>"""
-                      % (lane_count, lane), file=connections)
+                      % (lane_count, lane + 1), file=connections)
             print("""   <connection from="edgeN_O" to="edgeS_I" fromLane="%i" toLane="%i"/>"""
                   % (lane_count, lane_count), file=connections)
             for lane in range(leftOutLanesNS):
@@ -595,18 +595,18 @@ def buildConnections(folder_name, leftOnlyNS, leftStraightNS, straightOnlyNS, ri
 
         # South
         print("""   <!-- South -->""", file=connections)
-        lane_count = 0
+        lane_count = 1
         for i in range(rightOnlyNS):
             for lane in range(rightOutLanesNS):
                 print("""   <connection from="edgeS_O" to="edgeE_I" fromLane="%i" toLane="%i"/>"""
-                      % (lane_count, lane), file=connections)
+                      % (lane_count, lane + 1), file=connections)
             lane_count += 1
         if rightOnlyNS > 0:
             print("", file=connections)
         for i in range(rightStraightNS):
             for lane in range(rightOutLanesNS):
                 print("""   <connection from="edgeS_O" to="edgeE_I" fromLane="%i" toLane="%i"/>"""
-                      % (lane_count, lane), file=connections)
+                      % (lane_count, lane + 1), file=connections)
             print("""   <connection from="edgeS_O" to="edgeN_I" fromLane="%i" toLane="%i"/>"""
                   % (lane_count, lane_count), file=connections)
             lane_count += 1
@@ -621,7 +621,7 @@ def buildConnections(folder_name, leftOnlyNS, leftStraightNS, straightOnlyNS, ri
         for i in range(allNS):
             for lane in range(rightOutLanesNS):
                 print("""   <connection from="edgeS_O" to="edgeE_I" fromLane="%i" toLane="%i"/>"""
-                      % (lane_count, lane), file=connections)
+                      % (lane_count, lane + 1), file=connections)
             print("""   <connection from="edgeS_O" to="edgeN_I" fromLane="%i" toLane="%i"/>"""
                   % (lane_count, lane_count), file=connections)
             for lane in range(leftOutLanesNS):
@@ -653,18 +653,18 @@ def buildConnections(folder_name, leftOnlyNS, leftStraightNS, straightOnlyNS, ri
 
         # West
         print("""   <!-- West -->""", file=connections)
-        lane_count = 0
+        lane_count = 1
         for i in range(rightOnlyWE):
             for lane in range(rightOutLanesWE):
                 print("""   <connection from="edgeW_O" to="edgeS_I" fromLane="%i" toLane="%i"/>"""
-                      % (lane_count, lane), file=connections)
+                      % (lane_count, lane + 1), file=connections)
             lane_count += 1
         if rightOnlyWE > 0:
             print("", file=connections)
         for i in range(rightStraightWE):
             for lane in range(rightOutLanesWE):
                 print("""   <connection from="edgeW_O" to="edgeS_I" fromLane="%i" toLane="%i"/>"""
-                      % (lane_count, lane), file=connections)
+                      % (lane_count, lane + 1), file=connections)
             print("""   <connection from="edgeW_O" to="edgeE_I" fromLane="%i" toLane="%i"/>"""
                   % (lane_count, lane_count), file=connections)
             lane_count += 1
@@ -679,7 +679,7 @@ def buildConnections(folder_name, leftOnlyNS, leftStraightNS, straightOnlyNS, ri
         for i in range(allWE):
             for lane in range(rightOutLanesWE):
                 print("""   <connection from="edgeW_O" to="edgeS_I" fromLane="%i" toLane="%i"/>"""
-                      % (lane_count, lane), file=connections)
+                      % (lane_count, lane + 1), file=connections)
             print("""   <connection from="edgeW_O" to="edgeE_I" fromLane="%i" toLane="%i"/>"""
                   % (lane_count, lane_count), file=connections)
             for lane in range(leftOutLanesWE):
@@ -711,18 +711,18 @@ def buildConnections(folder_name, leftOnlyNS, leftStraightNS, straightOnlyNS, ri
 
         # East
         print("""   <!-- East -->""", file=connections)
-        lane_count = 0
+        lane_count = 1
         for i in range(rightOnlyWE):
             for lane in range(rightOutLanesWE):
                 print("""   <connection from="edgeE_O" to="edgeN_I" fromLane="%i" toLane="%i"/>"""
-                      % (lane_count, lane), file=connections)
+                      % (lane_count, lane + 1), file=connections)
             lane_count += 1
         if rightOnlyWE > 0:
             print("", file=connections)
         for i in range(rightStraightWE):
             for lane in range(rightOutLanesWE):
                 print("""   <connection from="edgeE_O" to="edgeN_I" fromLane="%i" toLane="%i"/>"""
-                      % (lane_count, lane), file=connections)
+                      % (lane_count, lane + 1), file=connections)
             print("""   <connection from="edgeE_O" to="edgeW_I" fromLane="%i" toLane="%i"/>"""
                   % (lane_count, lane_count), file=connections)
             lane_count += 1
@@ -737,7 +737,7 @@ def buildConnections(folder_name, leftOnlyNS, leftStraightNS, straightOnlyNS, ri
         for i in range(allWE):
             for lane in range(rightOutLanesWE):
                 print("""   <connection from="edgeE_O" to="edgeN_I" fromLane="%i" toLane="%i"/>"""
-                      % (lane_count, lane), file=connections)
+                      % (lane_count, lane + 1), file=connections)
             print("""   <connection from="edgeE_O" to="edgeW_I" fromLane="%i" toLane="%i"/>"""
                   % (lane_count, lane_count), file=connections)
             for lane in range(leftOutLanesWE):
@@ -776,31 +776,31 @@ def createNetwork(folder_name, leftOnlyNS, leftStraightNS, straightOnlyNS, right
     tree = ET.parse(str(folder_name) + "/cross.edg.xml")
 
     tl = tree.find(".//edge[@id='edgeN_O']")
-    tl.set("numLanes", str(lanesNS))
+    tl.set("numLanes", str(lanesNS + 1))
     tl.set("speed", str(outspeedNS))
     tl = tree.find(".//edge[@id='edgeN_I']")
-    tl.set("numLanes", str(lanesNS))
+    tl.set("numLanes", str(lanesNS + 1))
     tl.set("speed", str(inspeedNS))
 
     tl = tree.find(".//edge[@id='edgeS_O']")
-    tl.set("numLanes", str(lanesNS))
+    tl.set("numLanes", str(lanesNS + 1))
     tl.set("speed", str(outspeedNS))
     tl = tree.find(".//edge[@id='edgeS_I']")
-    tl.set("numLanes", str(lanesNS))
+    tl.set("numLanes", str(lanesNS + 1))
     tl.set("speed", str(inspeedNS))
 
     tl = tree.find(".//edge[@id='edgeW_O']")
-    tl.set("numLanes", str(lanesWE))
+    tl.set("numLanes", str(lanesWE + 1))
     tl.set("speed", str(outspeedWE))
     tl = tree.find(".//edge[@id='edgeW_I']")
-    tl.set("numLanes", str(lanesWE))
+    tl.set("numLanes", str(lanesWE + 1))
     tl.set("speed", str(inspeedWE))
 
     tl = tree.find(".//edge[@id='edgeE_O']")
-    tl.set("numLanes", str(lanesWE))
+    tl.set("numLanes", str(lanesWE + 1))
     tl.set("speed", str(outspeedWE))
     tl = tree.find(".//edge[@id='edgeE_I']")
-    tl.set("numLanes", str(lanesWE))
+    tl.set("numLanes", str(lanesWE + 1))
     tl.set("speed", str(inspeedWE))
 
     tree.write(str(folder_name) + "/cross.edg.xml")
@@ -899,13 +899,13 @@ def main(csv_path, folder_name, time_steps,
     if leftStraightWE + rightStraightWE + straightOnlyWE + allWE == 0:
         demandProbWE[1] = 0
 
-    setDuration(folder_name, leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS, rightOnlyNS, allNS,
-                leftOnlyWE, leftStraightWE, straightOnlyWE, rightStraightWE, rightOnlyWE, allWE,
-                leftOutLanesNS, rightOutLanesNS, leftOutLanesWE, rightOutLanesWE,
-                moveDurationNS, moveDurationWE, yellowDurationNS, yellowDurationWE, turnDurationNS, turnDurationWE)
-    buildConnections(folder_name, leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS, rightOnlyNS, allNS,
-                     leftOnlyWE, leftStraightWE, straightOnlyWE, rightStraightWE, rightOnlyWE, allWE,
-                     leftOutLanesNS, rightOutLanesNS, leftOutLanesWE, rightOutLanesWE)
+    # setDuration(folder_name, leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS, rightOnlyNS, allNS,
+    #             leftOnlyWE, leftStraightWE, straightOnlyWE, rightStraightWE, rightOnlyWE, allWE,
+    #             leftOutLanesNS, rightOutLanesNS, leftOutLanesWE, rightOutLanesWE,
+    #             moveDurationNS, moveDurationWE, yellowDurationNS, yellowDurationWE, turnDurationNS, turnDurationWE)
+    # buildConnections(folder_name, leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS, rightOnlyNS, allNS,
+    #                  leftOnlyWE, leftStraightWE, straightOnlyWE, rightStraightWE, rightOnlyWE, allWE,
+    #                  leftOutLanesNS, rightOutLanesNS, leftOutLanesWE, rightOutLanesWE)
     createNetwork(folder_name, leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS, rightOnlyNS, allNS,
                   leftOnlyWE, leftStraightWE, straightOnlyWE, rightStraightWE, rightOnlyWE, allWE,
                   outSpeedNS, inSpeedNS, outSpeedWE, inSpeedWE)
@@ -914,7 +914,7 @@ def main(csv_path, folder_name, time_steps,
                   time_steps, demandN, demandS, demandW, demandE, vehicleMinAccel, vehicleMaxAccel,
                   vehicleMinDecel, vehicleMaxDecel, vehicleMinLength, vehicleMaxLength, minGap,
                   vehicleMaxSpeed, demandProbNS, demandProbWE)
-    traci.start([checkBinary('sumo'), "-c", str(folder_name) + "/cross.sumocfg",
+    traci.start([checkBinary('sumo-gui'), "-c", str(folder_name) + "/cross.sumocfg",
              "--tripinfo-output", str(folder_name) + "/tripinfo.xml", "--statistic-output", "statistics.xml", "--tripinfo-output.write-unfinished"])
     runSim(time_steps)
     rates = findRate(str(folder_name) + "/tripinfo.xml")
@@ -929,24 +929,25 @@ def fixIndex(csv_path):
     dataframe.to_csv(csv_path)
 
 if __name__ == "__main__":
-    for i in range(10):
-        start_time = time.time()
-        setup("record.csv")
-        instance = mp.cpu_count()
-        for p_num in range(instance):
-            os.mkdir(r"C:\Users\Thomas Tseng\Documents\GitHub\Traffic-Light-Project\data%i" % (p_num))
-            copy_tree(r"C:\Users\Thomas Tseng\Documents\GitHub\Traffic-Light-Project\data", r"C:\Users\Thomas Tseng\Documents\GitHub\Traffic-Light-Project\data%i" % (p_num))
-        processes = []
-        for p_num in range(instance):
-            p = mp.Process(target=main, args=("record.csv", "data" + str(p_num), 3000, 0, 0, random.randint(50, 100), 0, 0, 0, 0, 0, random.randint(50, 100), 0, 0, 0, 2, 2, 2, 2, 13, 13, 3, 3, 0, 0, 0.01, 0.01, 0.01, 0.01))
-            p.start()
-            processes.append(p)
-        for process in processes:
-            process.join()
-        fixIndex("record.csv")
-        for p_num in range(instance):
-            shutil.rmtree(r"C:\Users\Thomas Tseng\Documents\GitHub\Traffic-Light-Project\data%i" % (p_num))
-        print("")
-        print("Time: " + str(time.time() - start_time) + "s")
+    # for i in range(1):
+    #     start_time = time.time()
+    #     setup("record.csv")
+    #     instance = mp.cpu_count()
+    #     for p_num in range(instance):
+    #         os.mkdir(r"C:\Users\Thomas Tseng\Documents\GitHub\Traffic-Light-Project\data%i" % (p_num))
+    #         copy_tree(r"C:\Users\Thomas Tseng\Documents\GitHub\Traffic-Light-Project\data", r"C:\Users\Thomas Tseng\Documents\GitHub\Traffic-Light-Project\data%i" % (p_num))
+    #     processes = []
+    #     for p_num in range(instance):
+    #         p = mp.Process(target=main, args=("record.csv", "data" + str(p_num), 3000, 0, 0, random.randint(50, 100), 0, 0, 0, 0, 0, random.randint(50, 100), 0, 0, 0, 2, 2, 2, 2, 3000, 0, 0, 0, 0, 0, 0, 0.0005, 0, 0))
+    #         p.start()
+    #         processes.append(p)
+    #     for process in processes:
+    #         process.join()
+    #     fixIndex("record.csv")
+    #     for p_num in range(instance):
+    #         shutil.rmtree(r"C:\Users\Thomas Tseng\Documents\GitHub\Traffic-Light-Project\data%i" % (p_num))
+    #     print("")
+    #     print("Instance: " + str(instance))
+    #     print("Time: " + str(time.time() - start_time) + "s")
 
-    # main(time_steps=3000, csv_path="record.csv", folder_name="data")
+    main(time_steps=3000, csv_path="record.csv", folder_name="data")

@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- generated on 2021-10-12 04:41:28 by Eclipse SUMO sumo Version 1.10.0
+<!-- generated on 2021-10-16 07:59:26 by Eclipse SUMO GUI Version 1.10.0
 <configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/sumoConfiguration.xsd">
 
     <input>
-        <net-file value="data5/cross.net.xml"/>
-        <route-files value="data5/cross.rou.xml"/>
-        <additional-files value="data5/cross.tls.xml"/>
+        <net-file value="data/cross.net.xml"/>
+        <route-files value="data/cross.rou.xml"/>
     </input>
 
     <output>
-        <tripinfo-output value="data5/tripinfo.xml"/>
+        <tripinfo-output value="data/tripinfo.xml"/>
         <tripinfo-output.write-unfinished value="true"/>
         <statistic-output value="statistics.xml"/>
     </output>
@@ -31,7 +30,7 @@
     </report>
 
     <traci_server>
-        <remote-port value="57688"/>
+        <remote-port value="62569"/>
     </traci_server>
 
     <gui_only>
@@ -39,16 +38,3 @@
     </gui_only>
 
 </configuration>
--->
-
-<statistics xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/statistic_file.xsd">
-    <vehicles loaded="106" inserted="106" running="3" waiting="0"/>
-    <teleports total="0" jam="0" yield="0" wrongLane="0"/>
-    <safety collisions="0" emergencyStops="0"/>
-    <persons loaded="0" running="0" jammed="0"/>
-    <vehicleTripStatistics routeLength="985.28" speed="10.22" duration="97.83" waitingTime="3.89" timeLoss="28.06" departDelay="0.00" departDelayWaiting="0.00" totalTravelTime="10370.00" totalDepartDelay="0.00"/>
-    <pedestrianStatistics number="0" routeLength="0.00" duration="0.00" timeLoss="0.00"/>
-    <rideStatistics number="0"/>
-    <transportStatistics number="0"/>
-</statistics>
-s>
