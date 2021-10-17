@@ -1,0 +1,8 @@
+1. Add edge length parameter
+2. Add pedestrian demand parameter
+3. Check demand for loop
+4. Adjust priority
+5. Add all pedestrian routes
+6. Make pedestrians start at each end
+7. Fix lane addition error regarding pedestrians
+8. Add everything into CSV header
