@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- generated on 2021-10-22 23:09:02 by Eclipse SUMO sumo Version 1.10.0
+<!-- generated on 2021-10-22 23:48:03 by Eclipse SUMO sumo Version 1.10.0
 <configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/sumoConfiguration.xsd">
 
     <input>
-        <net-file value="data0/cross.net.xml"/>
-        <route-files value="data0/cross.rou.xml"/>
-        <additional-files value="data0/cross.tls.xml"/>
+        <net-file value="data1/cross.net.xml"/>
+        <route-files value="data1/cross.rou.xml"/>
+        <additional-files value="data1/cross.tls.xml"/>
     </input>
 
     <output>
-        <tripinfo-output value="data0/tripinfo.xml"/>
+        <tripinfo-output value="data1/tripinfo.xml"/>
         <tripinfo-output.write-unfinished value="true"/>
         <statistic-output value="statistics.xml"/>
     </output>
@@ -31,11 +31,11 @@
     </report>
 
     <traci_server>
-        <remote-port value="53869"/>
+        <remote-port value="49447"/>
     </traci_server>
 
     <gui_only>
-        <gui-settings-file value="data0/viewsettings.xml"/>
+        <gui-settings-file value="data1/viewsettings.xml"/>
         <tracker-interval value="1"/>
     </gui_only>
 

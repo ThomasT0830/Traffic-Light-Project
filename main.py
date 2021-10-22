@@ -1234,7 +1234,24 @@ def main(csv_path, folder_name, time_steps,
     runSim(time_steps)
     rates = findRate(str(folder_name) + "/tripinfo.xml")
     print(rates)
-    dataframe = pd.DataFrame([[rates]])
+    dataframe = pd.DataFrame([[rates, leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS, rightOnlyNS, allNS,
+            leftOnlyWE, leftStraightWE, straightOnlyWE, rightStraightWE, rightOnlyWE, allWE,
+            leftOutLanesNS, rightOutLanesNS, leftOutLanesWE, rightOutLanesWE,
+            moveDurationNS, moveDurationWE,
+            yellowDurationNS, yellowDurationWE,
+            turnDurationNS, turnDurationWE,
+            waitDurationNS, waitDurationWE,
+            lengthN, lengthS, lengthW, lengthE,
+            demandN, demandS, demandW, demandE,
+            demandProbNS[1], demandProbNS[0], demandProbNS[2], demandProbNS[3],
+            demandProbWE[1], demandProbWE[0], demandProbWE[2], demandProbWE[3],
+            pDemandRegN, pDemandRegS, pDemandRegW, pDemandRegE,
+            pDemandOppN, pDemandOppS, pDemandOppW, pDemandOppE,
+            pSpeedRegN, pSpeedRegS, pSpeedRegW, pSpeedRegE,
+            pSpeedOppN, pSpeedOppS, pSpeedOppW, pSpeedOppE,
+            outSpeedNS, outSpeedWE, inSpeedNS, inSpeedWE,
+            vehicleMaxSpeed, vehicleMinAccel, vehicleMaxAccel, vehicleMinDecel,
+            vehicleMaxDecel, vehicleMinLength, vehicleMaxLength, minGap]])
     dataframe.to_csv(str(folder_name) + "/" + csv_path, mode='a', header=False, index=False)
 
 def fixIndex(csv_path):
