@@ -23,22 +23,63 @@ if 'SUMO_HOME' in os.environ:
 else:
     sys.exit("please declare environment variable 'SUMO_HOME'")
 
+
+def adjustNodes(folder_name, lengthN, lengthS, lengthW, lengthE):
+    tree = ET.parse(str(folder_name) + "/cross.nod.xml")
+
+    tl = tree.find(".//node[@id='juncN']")
+    tl.set("y", "+" + str(lengthN))
+
+    tl = tree.find(".//node[@id='juncS']")
+    tl.set("y", "-" + str(lengthS))
+
+    tl = tree.find(".//node[@id='juncW']")
+    tl.set("x", "-" + str(lengthW))
+
+    tl = tree.find(".//node[@id='juncE']")
+    tl.set("x", "+" + str(lengthE))
+
+    tree.write(str(folder_name) + "/cross.nod.xml")
+
 def generateRoute(folder_name, time_steps, leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS, rightOnlyNS, allNS,
                   leftOnlyWE, leftStraightWE, straightOnlyWE, rightStraightWE, rightOnlyWE, allWE,
-                  steps, demandN, demandS, demandW, demandE, minAccel, maxAccel, minDecel, maxDecel,
-                  minLength, maxLength, minGap, maxSpeed, demandProbNS, demandProbWE):
+                  lengthN, lengthS, lengthW, lengthE,
+                  demandN, demandS, demandW, demandE,
+                  minAccel, maxAccel, minDecel, maxDecel,
+                  minLength, maxLength, minGap, maxSpeed, demandProbNS, demandProbWE,
+                  pDemandRegN, pDemandRegS, pDemandRegW, pDemandRegE,
+                  pDemandOppN, pDemandOppS, pDemandOppW, pDemandOppE):
     lanesNS = leftOnlyNS + leftStraightNS + straightOnlyNS + rightStraightNS + rightOnlyNS + allNS + 1
     lanesWE = leftOnlyWE + leftStraightWE + straightOnlyWE + rightStraightWE + rightOnlyWE + allWE + 1
     random.seed(42)  # make tests reproducible
 
     with open(str(folder_name) + "/cross.rou.xml", "w") as routes:
         print("""<routes>""", file=routes)
-        print("""   <personFlow id="pA" begin="0" end="%i" personsPerHour="%i">
+        print("""   <personFlow id="pRegN" begin="0" end="%i" personsPerHour="%i">
+        <walk edges="edgeN_O edgeS_I"/>
+    </personFlow>""" % (time_steps, pDemandRegN * 3600), file=routes)
+        print("""   <personFlow id="pRegS" begin="0" end="%i" personsPerHour="%i">
+        <walk edges="edgeS_O edgeN_I"/>
+    </personFlow>""" % (time_steps, pDemandRegS * 3600), file=routes)
+        print("""   <personFlow id="pRegW" begin="0" end="%i" personsPerHour="%i">
         <walk edges="edgeW_O edgeE_I"/>
-    </personFlow>""" % (time_steps), file=routes)
-        print("""   <personFlow id="pB" begin="0" end="%i" personsPerHour="%i" departPos="500">
-        <walk from="edgeE_I" to="edgeW_O"/>
-    </personFlow>""" % (time_steps), file=routes)
+    </personFlow>""" % (time_steps, pDemandRegW * 3600), file=routes)
+        print("""   <personFlow id="pRegE" begin="0" end="%i" personsPerHour="%i">
+        <walk edges="edgeE_O edgeW_I"/>
+    </personFlow>""" % (time_steps, pDemandRegE * 3600), file=routes)
+        print("""   <personFlow id="pOppN" begin="0" end="%i" personsPerHour="%i" departPos="%f">
+        <walk edges="edgeN_I edgeS_O"/>
+    </personFlow>""" % (time_steps, pDemandOppN * 3600, lengthN), file=routes)
+        print("""   <personFlow id="pOppS" begin="0" end="%i" personsPerHour="%i" departPos="%f">
+        <walk edges="edgeS_I edgeN_O"/>
+    </personFlow>""" % (time_steps, pDemandOppS * 3600, lengthS), file=routes)
+        print("""   <personFlow id="pOppW" begin="0" end="%i" personsPerHour="%i" departPos="%f">
+        <walk edges="edgeW_I edgeE_O"/>
+    </personFlow>""" % (time_steps, pDemandOppW * 3600, lengthW), file=routes)
+        print("""   <personFlow id="pOppE" begin="0" end="%i" personsPerHour="%i" departPos="%f">
+        <walk edges="edgeE_I edgeW_O"/>
+    </personFlow>""" % (time_steps, pDemandOppE * 3600, lengthE), file=routes)
+
         print("""
     <route id="edgeN_edgeN" edges="edgeN_O edgeN_I" />
     <route id="edgeN_edgeS" edges="edgeN_O edgeS_I" />
@@ -58,7 +99,7 @@ def generateRoute(folder_name, time_steps, leftOnlyNS, leftStraightNS, straightO
     <route id="edgeE_edgeE" edges="edgeE_O edgeE_I" />
     """, file=routes)
         vehicleCount = 0
-        for i in range(steps):
+        for i in range(time_steps):
             for demand in range(math.ceil(demandN)):
                 if random.uniform(0, 1) < demandN:
                     random_direction = random.uniform(0, sum(demandProbNS))
@@ -552,10 +593,10 @@ def buildConnections(folder_name, leftOnlyNS, leftStraightNS, straightOnlyNS, ri
 
     with open(str(folder_name) + "/cross.con.xml", "w") as connections:
         print("""<connections>""", file=connections)
-        print("""   <crossing width="4.00" edges="edgeN_I edgeN_O" node="juncMain"/>
-    <crossing width="4.00" edges="edgeE_I edgeE_O" node="juncMain"/>
-    <crossing width="4.00" edges="edgeS_I edgeS_O" node="juncMain"/>
-    <crossing width="4.00" edges="edgeW_I edgeW_O" node="juncMain"/>""", file=connections)
+        print("""   <crossing width="4.00" edges="edgeN_I edgeN_O" node="juncMain" priority="1"/>
+    <crossing width="4.00" edges="edgeE_I edgeE_O" node="juncMain" priority="1"/>
+    <crossing width="4.00" edges="edgeS_I edgeS_O" node="juncMain" priority="1"/>
+    <crossing width="4.00" edges="edgeW_I edgeW_O" node="juncMain" priority="1"/>""", file=connections)
         # North
         print("""   <!-- North -->""", file=connections)
         print("""   <connection from="edgeN_O" to="edgeS_I" fromLane="0" toLane="0" />""", file=connections)
@@ -879,11 +920,23 @@ def main(csv_path, folder_name, time_steps,
         moveDurationNS=60, moveDurationWE=60,
         yellowDurationNS=5, yellowDurationWE=5,
         turnDurationNS=20, turnDurationWE=20,
+        lengthN=500, lengthS=500, lengthW=500, lengthE=500,
         demandN=0.20, demandS=0.20, demandW=0.20, demandE=0.20,
         demandProbNS=None, demandProbWE=None,
+        pDemandRegN=0.1, pDemandRegS=0.1, pDemandRegW=0.1, pDemandRegE=0.1,
+        pDemandOppN=0.1, pDemandOppS=0.1, pDemandOppW=0.1, pDemandOppE=0.1,
         outSpeedNS=19.0, outSpeedWE=19.0, inSpeedNS=11.0, inSpeedWE=11.0,
         vehicleMaxSpeed=25.0, vehicleMinAccel=0.8, vehicleMaxAccel=0.8, vehicleMinDecel=4.5,
         vehicleMaxDecel=4.5, vehicleMinLength=5, vehicleMaxLength=5, minGap=2.5):
+
+    if lengthN <= 50:
+        lengthN = 50
+    if lengthS <= 50:
+        lengthS = 50
+    if lengthW <= 50:
+        lengthW = 50
+    if lengthE <= 50:
+        lengthE = 50
 
     if demandProbNS is None:
         # left, straight, right, uturn
@@ -927,6 +980,7 @@ def main(csv_path, folder_name, time_steps,
     if leftStraightWE + rightStraightWE + straightOnlyWE + allWE == 0:
         demandProbWE[1] = 0
 
+    adjustNodes(folder_name, lengthN, lengthS, lengthW, lengthE)
     setDuration(folder_name, leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS, rightOnlyNS, allNS,
                 leftOnlyWE, leftStraightWE, straightOnlyWE, rightStraightWE, rightOnlyWE, allWE,
                 leftOutLanesNS, rightOutLanesNS, leftOutLanesWE, rightOutLanesWE,
@@ -939,9 +993,10 @@ def main(csv_path, folder_name, time_steps,
                   outSpeedNS, inSpeedNS, outSpeedWE, inSpeedWE)
     generateRoute(folder_name, time_steps, leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS, rightOnlyNS, allNS,
                   leftOnlyWE, leftStraightWE, straightOnlyWE, rightStraightWE, rightOnlyWE, allWE,
-                  time_steps, demandN, demandS, demandW, demandE, vehicleMinAccel, vehicleMaxAccel,
+                  lengthN, lengthS, lengthW, lengthE, demandN, demandS, demandW, demandE, vehicleMinAccel, vehicleMaxAccel,
                   vehicleMinDecel, vehicleMaxDecel, vehicleMinLength, vehicleMaxLength, minGap,
-                  vehicleMaxSpeed, demandProbNS, demandProbWE)
+                  vehicleMaxSpeed, demandProbNS, demandProbWE, pDemandRegN, pDemandRegS, pDemandRegW, pDemandRegE,
+                  pDemandOppN, pDemandOppS, pDemandOppW, pDemandOppE)
     traci.start([checkBinary('sumo-gui'), "-c", str(folder_name) + "/cross.sumocfg",
              "--tripinfo-output", str(folder_name) + "/tripinfo.xml", "--statistic-output", "statistics.xml", "--tripinfo-output.write-unfinished"])
     runSim(time_steps)
@@ -978,4 +1033,4 @@ if __name__ == "__main__":
     #     print("Instance: " + str(instance))
     #     print("Time: " + str(time.time() - start_time) + "s")
 
-    main("record.csv", "data", 3000, demandN=5, demandW=5, demandE=5, demandS=5, straightOnlyNS=20, straightOnlyWE=20)
+    main("record.csv", "data", 3000, lengthN=50, lengthS=50, lengthW=50, lengthE=50)
