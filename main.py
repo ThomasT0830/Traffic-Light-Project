@@ -1,5 +1,8 @@
 from __future__ import absolute_import
 from __future__ import print_function
+
+import traceback
+
 from bs4 import BeautifulSoup
 from sumolib import checkBinary
 from distutils.dir_util import copy_tree
@@ -1141,20 +1144,20 @@ def main(csv_path, folder_name, time_steps,
         leftOnlyNS=0, leftStraightNS=1, straightOnlyNS=1, rightStraightNS=1, rightOnlyNS=0, allNS=0,
         leftOnlyWE=0, leftStraightWE=1, straightOnlyWE=1, rightStraightWE=1, rightOnlyWE=0, allWE=0,
         leftOutLanesNS=2, rightOutLanesNS=2, leftOutLanesWE=2, rightOutLanesWE=2,
-        moveDurationNS=60, moveDurationWE=60,
-        yellowDurationNS=5, yellowDurationWE=5,
-        turnDurationNS=20, turnDurationWE=20,
-        waitDurationNS=10, waitDurationWE=10,
+        moveDurationNS=60.0, moveDurationWE=60.0,
+        yellowDurationNS=5.0, yellowDurationWE=5.0,
+        turnDurationNS=20.0, turnDurationWE=20.0,
+        waitDurationNS=10.0, waitDurationWE=10.0,
         lengthN=500, lengthS=500, lengthW=500, lengthE=500,
         demandN=0.20, demandS=0.20, demandW=0.20, demandE=0.20,
         demandProbNS=None, demandProbWE=None,
         pDemandRegN=0.1, pDemandRegS=0.1, pDemandRegW=0.1, pDemandRegE=0.1,
         pDemandOppN=0.1, pDemandOppS=0.1, pDemandOppW=0.1, pDemandOppE=0.1,
-        pSpeedRegN=1, pSpeedRegS=1, pSpeedRegW=1, pSpeedRegE=1,
-        pSpeedOppN=1, pSpeedOppS=1, pSpeedOppW=1, pSpeedOppE=1,
+        pSpeedRegN=1.0, pSpeedRegS=1.0, pSpeedRegW=1.0, pSpeedRegE=1.0,
+        pSpeedOppN=1.0, pSpeedOppS=1.0, pSpeedOppW=1.0, pSpeedOppE=1.0,
         outSpeedNS=19.0, outSpeedWE=19.0, inSpeedNS=11.0, inSpeedWE=11.0,
         vehicleMaxSpeed=25.0, vehicleMinAccel=0.8, vehicleMaxAccel=0.8, vehicleMinDecel=4.5,
-        vehicleMaxDecel=4.5, vehicleMinLength=5, vehicleMaxLength=5, minGap=2.5):
+        vehicleMaxDecel=4.5, vehicleMinLength=5.0, vehicleMaxLength=5.0, minGap=2.5):
 
     if lengthN <= 50:
         lengthN = 50
@@ -1253,13 +1256,130 @@ def main(csv_path, folder_name, time_steps,
                 vehicleMaxSpeed, vehicleMinAccel, vehicleMaxAccel, vehicleMinDecel,
                 vehicleMaxDecel, vehicleMinLength, vehicleMaxLength, minGap]])
         dataframe.to_csv(str(folder_name) + "/" + csv_path, mode='a', header=False, index=False)
-    except:
+    except Exception:
         print("Simulation failed.")
+        traceback.print_exc()
 
 def fixIndex(csv_path):
     dataframe = pd.read_csv(csv_path, index_col=0)
     dataframe = dataframe.reset_index(drop=True)
     dataframe.to_csv(csv_path)
+
+def execute(set_time, cycle, p_num):
+    try:
+        traci.close()
+    except:
+        print("Already closed.")
+    while time.time() - set_time < cycle:
+        leftOnlyNS = randint(0, 1)
+        leftStraightNS = randint(0, 1)
+        straightOnlyNS = randint(0, 3)
+        rightStraightNS = randint(0, 1)
+        rightOnlyNS = randint(0, 1)
+        allNS = randint(0, 1)
+        leftOnlyWE = randint(0, 1)
+        leftStraightWE = randint(0, 1)
+        straightOnlyWE = randint(0, 3)
+        rightStraightWE = randint(0, 1)
+        rightOnlyWE = randint(0, 1)
+        allWE = randint(0, 1)
+        leftOutLanesNS = randint(1, 2)
+        rightOutLanesNS = randint(1, 2)
+        leftOutLanesWE = randint(1, 2)
+        rightOutLanesWE = randint(1, 2)
+        moveDurationNS = uniform(15, 120)
+        moveDurationWE = uniform(15, 120)
+        yellowDurationNS = uniform(3, 6)
+        yellowDurationWE = uniform(3, 6)
+        turnDurationNS = uniform(10, 40)
+        turnDurationWE = uniform(10, 40)
+        waitDurationNS = uniform(3, 15)
+        waitDurationWE = uniform(3, 15)
+        lengthN = randrange(300, 1001, 100)
+        lengthS = randrange(300, 1001, 100)
+        lengthW = randrange(300, 1001, 100)
+        lengthE = randrange(300, 1001, 100)
+        lanesNS = leftOnlyNS + leftStraightNS + straightOnlyNS + rightStraightNS + rightOnlyNS + allNS
+        lanesWE = leftOnlyWE + leftStraightWE + straightOnlyWE + rightStraightWE + rightOnlyWE + allWE
+        if lanesNS <= 2 and leftOnlyNS + leftStraightNS + allNS == 0:
+            demandN = uniform(0.01, 0.15)
+            demandS = uniform(0.01, 0.15)
+        elif lanesNS <= 2:
+            demandN = uniform(0.15, 0.3)
+            demandS = uniform(0.15, 0.3)
+        elif lanesNS <= 4:
+            demandN = uniform(0.15, 0.45)
+            demandS = uniform(0.15, 0.45)
+        else:
+            demandN = uniform(0.15, 0.6)
+            demandS = uniform(0.15, 0.6)
+        if lanesWE <= 2 and leftOnlyWE + leftStraightWE + allWE == 0:
+            demandW = uniform(0.01, 0.15)
+            demandE = uniform(0.01, 0.15)
+        elif lanesWE <= 2:
+            demandW = uniform(0.15, 0.3)
+            demandE = uniform(0.15, 0.3)
+        elif lanesWE <= 4:
+            demandW = uniform(0.15, 0.45)
+            demandE = uniform(0.15, 0.45)
+        else:
+            demandW = uniform(0.15, 0.6)
+            demandE = uniform(0.15, 0.6)
+        demandProbNS = [0, 0, 0, 0]
+        demandProbNS[0] = uniform(0, 0.3)
+        demandProbNS[2] = uniform(0, 0.3)
+        demandProbNS[3] = uniform(0, 0.1)
+        demandProbNS[1] = 1 - demandProbNS[0] - demandProbNS[2] - demandProbNS[3]
+        demandProbWE = [0, 0, 0, 0]
+        demandProbWE[0] = uniform(0, 0.3)
+        demandProbWE[2] = uniform(0, 0.3)
+        demandProbWE[3] = uniform(0, 0.1)
+        demandProbWE[1] = 1 - demandProbWE[0] - demandProbWE[2] - demandProbWE[3]
+        pDemandRegN = uniform(0.01, 0.3)
+        pDemandRegS = uniform(0.01, 0.3)
+        pDemandRegW = uniform(0.01, 0.3)
+        pDemandRegE = uniform(0.01, 0.3)
+        pDemandOppN = uniform(0.01, 0.3)
+        pDemandOppS = uniform(0.01, 0.3)
+        pDemandOppW = uniform(0.01, 0.3)
+        pDemandOppE = uniform(0.01, 0.3)
+        pSpeedRegN = uniform(0.89, 2.24)
+        pSpeedRegS = uniform(0.89, 2.24)
+        pSpeedRegW = uniform(0.89, 2.24)
+        pSpeedRegE = uniform(0.89, 2.24)
+        pSpeedOppN = uniform(0.89, 2.24)
+        pSpeedOppS = uniform(0.89, 2.24)
+        pSpeedOppW = uniform(0.89, 2.24)
+        pSpeedOppE = uniform(0.89, 2.24)
+        outSpeedNS = uniform(11.2, 26.8)
+        outSpeedWE = uniform(11.2, 26.8)
+        inSpeedNS = uniform(11.2, 26.8)
+        inSpeedWE = uniform(11.2, 26.8)
+        vehicleMaxSpeed = uniform(120, 150)
+        vehicleMinAccel = uniform(2, 2.5)
+        vehicleMaxAccel = uniform(3.5, 4)
+        vehicleMinDecel = uniform(2.5, 3.5)
+        vehicleMaxDecel = uniform(5.5, 7)
+        vehicleMinLength = uniform(3.8, 4.0)
+        vehicleMaxLength = uniform(5.5, 5.7)
+        minGap = uniform(2.3, 2.7)
+        main("record.csv", "data" + str(p_num), 3000, leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS, rightOnlyNS, allNS,
+            leftOnlyWE, leftStraightWE, straightOnlyWE, rightStraightWE, rightOnlyWE, allWE,
+            leftOutLanesNS, rightOutLanesNS, leftOutLanesWE, rightOutLanesWE,
+            moveDurationNS, moveDurationWE,
+            yellowDurationNS, yellowDurationWE,
+            turnDurationNS, turnDurationWE,
+            waitDurationNS, waitDurationWE,
+            lengthN, lengthS, lengthW, lengthE,
+            demandN, demandS, demandW, demandE,
+            demandProbNS, demandProbWE,
+            pDemandRegN, pDemandRegS, pDemandRegW, pDemandRegE,
+            pDemandOppN, pDemandOppS, pDemandOppW, pDemandOppE,
+            pSpeedRegN, pSpeedRegS, pSpeedRegW, pSpeedRegE,
+            pSpeedOppN, pSpeedOppS, pSpeedOppW, pSpeedOppE,
+            outSpeedNS, outSpeedWE, inSpeedNS, inSpeedWE,
+            vehicleMaxSpeed, vehicleMinAccel, vehicleMaxAccel, vehicleMinDecel,
+            vehicleMaxDecel, vehicleMinLength, vehicleMaxLength, minGap)
 
 if __name__ == "__main__":
     while True:
@@ -1272,119 +1392,9 @@ if __name__ == "__main__":
                 copy_tree(r"data_new", r"data%i" % (p_num))
             processes = []
             for p_num in range(instance):
-                leftOnlyNS = randint(0, 1)
-                leftStraightNS = randint(0, 1)
-                straightOnlyNS = randint(0, 3)
-                rightStraightNS = randint(0, 1)
-                rightOnlyNS = randint(0, 1)
-                allNS = randint(0, 1)
-                leftOnlyWE = randint(0, 1)
-                leftStraightWE = randint(0, 1)
-                straightOnlyWE = randint(0, 3)
-                rightStraightWE = randint(0, 1)
-                rightOnlyWE = randint(0, 1)
-                allWE = randint(0, 1)
-                leftOutLanesNS = randint(1, 2)
-                rightOutLanesNS = randint(1, 2)
-                leftOutLanesWE = randint(1, 2)
-                rightOutLanesWE = randint(1, 2)
-                moveDurationNS = uniform(15, 120)
-                moveDurationWE = uniform(15, 120)
-                yellowDurationNS = uniform(3, 6)
-                yellowDurationWE = uniform(3, 6)
-                turnDurationNS = uniform(10, 40)
-                turnDurationWE = uniform(10, 40)
-                waitDurationNS = uniform(3, 15)
-                waitDurationWE = uniform(3, 15)
-                lengthN = randrange(300, 1001, 100)
-                lengthS = randrange(300, 1001, 100)
-                lengthW = randrange(300, 1001, 100)
-                lengthE = randrange(300, 1001, 100)
-                lanesNS = leftOnlyNS + leftStraightNS + straightOnlyNS + rightStraightNS + rightOnlyNS + allNS
-                lanesWE = leftOnlyWE + leftStraightWE + straightOnlyWE + rightStraightWE + rightOnlyWE + allWE
-                if lanesNS <= 2 and leftOnlyNS + leftStraightNS + allNS == 0:
-                    demandN = uniform(0.01, 0.15)
-                    demandS = uniform(0.01, 0.15)
-                elif lanesNS <= 2:
-                    demandN = uniform(0.15, 0.3)
-                    demandS = uniform(0.15, 0.3)
-                elif lanesNS <= 4:
-                    demandN = uniform(0.15, 0.45)
-                    demandS = uniform(0.15, 0.45)
-                else:
-                    demandN = uniform(0.15, 0.6)
-                    demandS = uniform(0.15, 0.6)
-                if lanesWE <= 2 and leftOnlyWE + leftStraightWE + allWE == 0:
-                    demandW = uniform(0.01, 0.15)
-                    demandE = uniform(0.01, 0.15)
-                elif lanesWE <= 2:
-                    demandW = uniform(0.15, 0.3)
-                    demandE = uniform(0.15, 0.3)
-                elif lanesWE <= 4:
-                    demandW = uniform(0.15, 0.45)
-                    demandE = uniform(0.15, 0.45)
-                else:
-                    demandW = uniform(0.15, 0.6)
-                    demandE = uniform(0.15, 0.6)
-                demandProbNS = [0, 0, 0, 0]
-                demandProbNS[0] = uniform(0, 0.3)
-                demandProbNS[2] = uniform(0, 0.3)
-                demandProbNS[3] = uniform(0, 0.1)
-                demandProbNS[1] = 1 - demandProbNS[0] - demandProbNS[2] - demandProbNS[3]
-                demandProbWE = [0, 0, 0, 0]
-                demandProbWE[0] = uniform(0, 0.3)
-                demandProbWE[2] = uniform(0, 0.3)
-                demandProbWE[3] = uniform(0, 0.1)
-                demandProbWE[1] = 1 - demandProbWE[0] - demandProbWE[2] - demandProbWE[3]
-                pDemandRegN = uniform(0.01, 0.3)
-                pDemandRegS = uniform(0.01, 0.3)
-                pDemandRegW = uniform(0.01, 0.3)
-                pDemandRegE = uniform(0.01, 0.3)
-                pDemandOppN = uniform(0.01, 0.3)
-                pDemandOppS = uniform(0.01, 0.3)
-                pDemandOppW = uniform(0.01, 0.3)
-                pDemandOppE = uniform(0.01, 0.3)
-                pSpeedRegN = uniform(0.89, 2.24)
-                pSpeedRegS = uniform(0.89, 2.24)
-                pSpeedRegW = uniform(0.89, 2.24)
-                pSpeedRegE = uniform(0.89, 2.24)
-                pSpeedOppN = uniform(0.89, 2.24)
-                pSpeedOppS = uniform(0.89, 2.24)
-                pSpeedOppW = uniform(0.89, 2.24)
-                pSpeedOppE = uniform(0.89, 2.24)
-                outSpeedNS = uniform(11.2, 26.8)
-                outSpeedWE = uniform(11.2, 26.8)
-                inSpeedNS = uniform(11.2, 26.8)
-                inSpeedWE = uniform(11.2, 26.8)
-                vehicleMaxSpeed = uniform(120, 150)
-                vehicleMinAccel = uniform(2, 2.5)
-                vehicleMaxAccel = uniform(3.5, 4)
-                vehicleMinDecel = uniform(2.5, 3.5)
-                vehicleMaxDecel = uniform(5.5, 7)
-                vehicleMinLength = uniform(3.8, 4.0)
-                vehicleMaxLength = uniform(5.5, 5.7)
-                minGap = uniform(2.3, 2.7)
-
-                p = mp.Process(target=main, args=("record.csv", "data" + str(p_num), 3000, leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS, rightOnlyNS, allNS,
-                                                leftOnlyWE, leftStraightWE, straightOnlyWE, rightStraightWE, rightOnlyWE, allWE,
-                                                leftOutLanesNS, rightOutLanesNS, leftOutLanesWE, rightOutLanesWE,
-                                                moveDurationNS, moveDurationWE,
-                                                yellowDurationNS, yellowDurationWE,
-                                                turnDurationNS, turnDurationWE,
-                                                waitDurationNS, waitDurationWE,
-                                                lengthN, lengthS, lengthW, lengthE,
-                                                demandN, demandS, demandW, demandE,
-                                                demandProbNS, demandProbWE,
-                                                pDemandRegN, pDemandRegS, pDemandRegW, pDemandRegE,
-                                                pDemandOppN, pDemandOppS, pDemandOppW, pDemandOppE,
-                                                pSpeedRegN, pSpeedRegS, pSpeedRegW, pSpeedRegE,
-                                                pSpeedOppN, pSpeedOppS, pSpeedOppW, pSpeedOppE,
-                                                outSpeedNS, outSpeedWE, inSpeedNS, inSpeedWE,
-                                                vehicleMaxSpeed, vehicleMinAccel, vehicleMaxAccel, vehicleMinDecel,
-                                                vehicleMaxDecel, vehicleMinLength, vehicleMaxLength, minGap))
+                p = mp.Process(target=execute, args=(time.time(), 1800, p_num))
                 p.start()
                 processes.append(p)
-
             for process in processes:
                 process.join()
             for p_num in range(instance):
@@ -1416,7 +1426,8 @@ if __name__ == "__main__":
             print("")
             print("Instance: " + str(instance))
             print("Time: " + str(time.time() - start_time) + "s")
-        except:
+        except Exception:
             print("Full run failed.")
+            traceback.print_exc()
 
     # main("record.csv", "data", 3000)

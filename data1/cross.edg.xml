@@ -1,29 +1,29 @@
 <edges xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/edges_file.xsd">
-   <edge id="edgeN_O" from="juncN" to="juncMain" priority="78" numLanes="6" speed="23.515749790642097" disallow="pedestrian">
+   <edge id="edgeN_O" from="juncN" to="juncMain" priority="78" numLanes="6" speed="13.365784787077908" disallow="pedestrian">
       <lane index="0" allow="pedestrian" />
    </edge>
-   <edge id="edgeN_I" from="juncMain" to="juncN" priority="46" numLanes="6" speed="26.508336388295774" disallow="pedestrian">
-      <lane index="0" allow="pedestrian" />
-   </edge>
-
-   <edge id="edgeS_O" from="juncS" to="juncMain" priority="78" numLanes="6" speed="23.515749790642097" disallow="pedestrian">
-      <lane index="0" allow="pedestrian" />
-   </edge>
-   <edge id="edgeS_I" from="juncMain" to="juncS" priority="46" numLanes="6" speed="26.508336388295774" disallow="pedestrian">
+   <edge id="edgeN_I" from="juncMain" to="juncN" priority="46" numLanes="6" speed="16.664729986456596" disallow="pedestrian">
       <lane index="0" allow="pedestrian" />
    </edge>
 
-   <edge id="edgeW_O" from="juncW" to="juncMain" priority="78" numLanes="3" speed="24.94981794470245" disallow="pedestrian">
+   <edge id="edgeS_O" from="juncS" to="juncMain" priority="78" numLanes="6" speed="13.365784787077908" disallow="pedestrian">
       <lane index="0" allow="pedestrian" />
    </edge>
-   <edge id="edgeW_I" from="juncMain" to="juncW" priority="46" numLanes="3" speed="12.343195294109089" disallow="pedestrian">
+   <edge id="edgeS_I" from="juncMain" to="juncS" priority="46" numLanes="6" speed="16.664729986456596" disallow="pedestrian">
       <lane index="0" allow="pedestrian" />
    </edge>
 
-   <edge id="edgeE_O" from="juncE" to="juncMain" priority="78" numLanes="3" speed="24.94981794470245" disallow="pedestrian">
+   <edge id="edgeW_O" from="juncW" to="juncMain" priority="78" numLanes="5" speed="22.682028181585963" disallow="pedestrian">
       <lane index="0" allow="pedestrian" />
    </edge>
-   <edge id="edgeE_I" from="juncMain" to="juncE" priority="46" numLanes="3" speed="12.343195294109089" disallow="pedestrian">
+   <edge id="edgeW_I" from="juncMain" to="juncW" priority="46" numLanes="5" speed="22.29782195563275" disallow="pedestrian">
+      <lane index="0" allow="pedestrian" />
+   </edge>
+
+   <edge id="edgeE_O" from="juncE" to="juncMain" priority="78" numLanes="5" speed="22.682028181585963" disallow="pedestrian">
+      <lane index="0" allow="pedestrian" />
+   </edge>
+   <edge id="edgeE_I" from="juncMain" to="juncE" priority="46" numLanes="5" speed="22.29782195563275" disallow="pedestrian">
       <lane index="0" allow="pedestrian" />
    </edge>
 

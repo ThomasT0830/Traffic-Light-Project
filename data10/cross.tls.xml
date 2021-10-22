@@ -1,12 +1,12 @@
 <additional>
    <tlLogic id="juncMain" type="static" programID="1" offset="0">
-       <phase duration="16.390950" state="GgGGGGgggrrrrrrrGgGGGGgggrrrrrrrrGrG"/>
-       <phase duration="3.081227" state="yyyyyyyyyrrrrrrryyyyyyyyyrrrrrrrrGrG"/>
-       <phase duration="9.212883" state="rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrGrG"/>
-       <phase duration="28.101582" state="rrrrrrrrrrrrrGGGrrrrrrrrrrrrrGGGrrrr"/>
-       <phase duration="51.684471" state="rrrrrrrrrGGGGgggrrrrrrrrrGGGGgggGrGr"/>
-       <phase duration="3.991928" state="rrrrrrrrryyyyyyyrrrrrrrrryyyyyyyGrGr"/>
-       <phase duration="6.111749" state="rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrGrGr"/>
-       <phase duration="32.244833" state="rrrrrrrGGrrrrrrrrrrrrrrGGrrrrrrrrrrr"/>
+       <phase duration="23.331689" state="ggGGGGGgggggrrrrrrrrrrggGGGGGgggggrrrrrrrrrrrGrG"/>
+       <phase duration="3.601998" state="yyyyyyyyyyyyrrrrrrrrrryyyyyyyyyyyyrrrrrrrrrrrGrG"/>
+       <phase duration="12.447499" state="rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrGrG"/>
+       <phase duration="20.338388" state="rrrrrrrrrrrrrrrrrrrGGGrrrrrrrrrrrrrrrrrrrGGGrrrr"/>
+       <phase duration="52.528492" state="rrrrrrrrrrrrGgGGGgggggrrrrrrrrrrrrGgGGGgggggGrGr"/>
+       <phase duration="5.812885" state="rrrrrrrrrrrryyyyyyyyyyrrrrrrrrrrrryyyyyyyyyyGrGr"/>
+       <phase duration="6.957036" state="rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrGrGr"/>
+       <phase duration="19.671317" state="rrrrrrrrrGGGrrrrrrrrrrrrrrrrrrrGGGrrrrrrrrrrrrrr"/>
    </tlLogic>
 </additional>
