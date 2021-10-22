@@ -1,0 +1,31 @@
+<edges xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/edges_file.xsd">
+   <edge id="edgeN_O" from="juncN" to="juncMain" priority="78" numLanes="5" speed="15.975719594349284" disallow="pedestrian">
+      <lane index="0" allow="pedestrian" />
+   </edge>
+   <edge id="edgeN_I" from="juncMain" to="juncN" priority="46" numLanes="5" speed="14.515099649055937" disallow="pedestrian">
+      <lane index="0" allow="pedestrian" />
+   </edge>
+
+   <edge id="edgeS_O" from="juncS" to="juncMain" priority="78" numLanes="5" speed="15.975719594349284" disallow="pedestrian">
+      <lane index="0" allow="pedestrian" />
+   </edge>
+   <edge id="edgeS_I" from="juncMain" to="juncS" priority="46" numLanes="5" speed="14.515099649055937" disallow="pedestrian">
+      <lane index="0" allow="pedestrian" />
+   </edge>
+
+   <edge id="edgeW_O" from="juncW" to="juncMain" priority="78" numLanes="4" speed="12.446632336807248" disallow="pedestrian">
+      <lane index="0" allow="pedestrian" />
+   </edge>
+   <edge id="edgeW_I" from="juncMain" to="juncW" priority="46" numLanes="4" speed="11.847633527736319" disallow="pedestrian">
+      <lane index="0" allow="pedestrian" />
+   </edge>
+
+   <edge id="edgeE_O" from="juncE" to="juncMain" priority="78" numLanes="4" speed="12.446632336807248" disallow="pedestrian">
+      <lane index="0" allow="pedestrian" />
+   </edge>
+   <edge id="edgeE_I" from="juncMain" to="juncE" priority="46" numLanes="4" speed="11.847633527736319" disallow="pedestrian">
+      <lane index="0" allow="pedestrian" />
+   </edge>
+
+
+</edges>

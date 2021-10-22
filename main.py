@@ -1,10 +1,10 @@
 from __future__ import absolute_import
 from __future__ import print_function
 from bs4 import BeautifulSoup
-from sumolib import checkBinary  # noqa
+from sumolib import checkBinary
 from distutils.dir_util import copy_tree
 from random import randint, uniform, randrange
-import traci  # noqa
+import traci
 import pandas as pd
 import os
 import sys
@@ -13,8 +13,6 @@ import random
 import multiprocessing as mp
 import shutil
 import time
-import csv
-import randomTrips
 import math
 
 # we need to import python modules from the $SUMO_HOME/tools directory
@@ -811,10 +809,10 @@ def buildConnections(folder_name, leftOnlyNS, leftStraightNS, straightOnlyNS, ri
 
     with open(str(folder_name) + "/cross.con.xml", "w") as connections:
         print("""<connections>""", file=connections)
-        print("""   <crossing width="4.00" edges="edgeN_I edgeN_O" node="juncMain" priority="1"/>
-    <crossing width="4.00" edges="edgeE_I edgeE_O" node="juncMain" priority="1"/>
-    <crossing width="4.00" edges="edgeS_I edgeS_O" node="juncMain" priority="1"/>
-    <crossing width="4.00" edges="edgeW_I edgeW_O" node="juncMain" priority="1"/>""", file=connections)
+        print("""   <crossing width="4.50" edges="edgeN_I edgeN_O" node="juncMain" priority="1"/>
+    <crossing width="4.50" edges="edgeE_I edgeE_O" node="juncMain" priority="1"/>
+    <crossing width="4.50" edges="edgeS_I edgeS_O" node="juncMain" priority="1"/>
+    <crossing width="4.50" edges="edgeW_I edgeW_O" node="juncMain" priority="1"/>""", file=connections)
         # North
         print("""   <!-- North -->""", file=connections)
         lane_count = 1
@@ -1231,8 +1229,8 @@ def main(csv_path, folder_name, time_steps,
                   pDemandOppN, pDemandOppS, pDemandOppW, pDemandOppE, pSpeedRegN, pSpeedRegS, pSpeedRegW, pSpeedRegE,
                   pSpeedOppN, pSpeedOppS, pSpeedOppW, pSpeedOppE)
     try:
-        traci.start([checkBinary('sumo-gui'), "-c", str(folder_name) + "/cross.sumocfg",
-                 "--tripinfo-output", str(folder_name) + "/tripinfo.xml", "--tripinfo-output.write-unfinished"])
+        traci.start([checkBinary('sumo'), "-c", str(folder_name) + "/cross.sumocfg",
+                 "--tripinfo-output", str(folder_name) + "/tripinfo.xml", "--tripinfo-output.write-unfinished", "--no-warnings"])
         runSim(time_steps)
         rates = findRate(str(folder_name) + "/tripinfo.xml")
         print(rates)
@@ -1264,167 +1262,161 @@ def fixIndex(csv_path):
     dataframe.to_csv(csv_path)
 
 if __name__ == "__main__":
-    for i in range(1):
-        # try:
-        start_time = time.time()
-        setup("record.csv")
-        instance = mp.cpu_count()
-        for p_num in range(instance):
-            os.mkdir(r"data%i" % (p_num))
-            copy_tree(r"data", r"data%i" % (p_num))
-        processes = []
-        for p_num in range(instance):
-            leftOnlyNS = randint(0, 1)
-            leftStraightNS = randint(0, 1)
-            straightOnlyNS = randint(0, 3)
-            rightStraightNS = randint(0, 1)
-            rightOnlyNS = randint(0, 1)
-            allNS = randint(0, 1)
-            leftOnlyWE = randint(0, 1)
-            leftStraightWE = randint(0, 1)
-            straightOnlyWE = randint(0, 3)
-            rightStraightWE = randint(0, 1)
-            rightOnlyWE = randint(0, 1)
-            allWE = randint(0, 1)
-            leftOutLanesNS = randint(1, 2)
-            rightOutLanesNS = randint(1, 2)
-            leftOutLanesWE = randint(1, 2)
-            rightOutLanesWE = randint(1, 2)
-            moveDurationNS = uniform(15, 120)
-            moveDurationWE = uniform(15, 120)
-            yellowDurationNS = uniform(3, 6)
-            yellowDurationWE = uniform(3, 6)
-            turnDurationNS = uniform(10, 40)
-            turnDurationWE = uniform(10, 40)
-            waitDurationNS = uniform(3, 15)
-            waitDurationWE = uniform(3, 15)
-            lengthN = randrange(300, 1001, 100)
-            lengthS = randrange(300, 1001, 100)
-            lengthW = randrange(300, 1001, 100)
-            lengthE = randrange(300, 1001, 100)
-            lanesNS = leftOnlyNS + leftStraightNS + straightOnlyNS + rightStraightNS + rightOnlyNS + allNS
-            lanesWE = leftOnlyWE + leftStraightWE + straightOnlyWE + rightStraightWE + rightOnlyWE + allWE
-            if lanesNS <= 2 and leftOnlyNS + leftStraightNS + allNS == 0:
-                demandN = uniform(0.01, 0.15)
-                demandS = uniform(0.01, 0.15)
-            elif lanesNS <= 2:
-                demandN = uniform(0.15, 0.32)
-                demandS = uniform(0.15, 0.32)
-            elif lanesNS <= 4:
-                demandN = uniform(0.32, 0.48)
-                demandS = uniform(0.32, 0.48)
-            elif lanesNS <= 6:
-                demandN = uniform(0.53, 0.64)
-                demandS = uniform(0.53, 0.64)
-            else:
-                demandN = uniform(0.53, 0.68)
-                demandS = uniform(0.53, 0.68)
-            if lanesWE <= 2 and leftOnlyWE + leftStraightWE + allWE == 0:
-                demandW = uniform(0.01, 0.15)
-                demandE = uniform(0.01, 0.15)
-            elif lanesWE <= 2:
-                demandW = uniform(0.15, 0.32)
-                demandE = uniform(0.15, 0.32)
-            elif lanesWE <= 4:
-                demandW = uniform(0.32, 0.48)
-                demandE = uniform(0.32, 0.48)
-            elif lanesWE <= 6:
-                demandW = uniform(0.53, 0.64)
-                demandE = uniform(0.53, 0.64)
-            else:
-                demandW = uniform(0.53, 0.68)
-                demandE = uniform(0.53, 0.68)
-            demandProbNS = [0, 0, 0, 0]
-            demandProbNS[0] = uniform(0, 0.3)
-            demandProbNS[2] = uniform(0, 0.3)
-            demandProbNS[3] = uniform(0, 0.1)
-            demandProbNS[1] = 1 - demandProbNS[0] - demandProbNS[2] - demandProbNS[3]
-            demandProbWE = [0, 0, 0, 0]
-            demandProbWE[0] = uniform(0, 0.3)
-            demandProbWE[2] = uniform(0, 0.3)
-            demandProbWE[3] = uniform(0, 0.1)
-            demandProbWE[1] = 1 - demandProbWE[0] - demandProbWE[2] - demandProbWE[3]
-            pDemandRegN = uniform(0.01, 0.2)
-            pDemandRegS = uniform(0.01, 0.2)
-            pDemandRegW = uniform(0.01, 0.2)
-            pDemandRegE = uniform(0.01, 0.2)
-            pDemandOppN = uniform(0.01, 0.2)
-            pDemandOppS = uniform(0.01, 0.2)
-            pDemandOppW = uniform(0.01, 0.2)
-            pDemandOppE = uniform(0.01, 0.2)
-            pSpeedRegN = uniform(0.89, 2.24)
-            pSpeedRegS = uniform(0.89, 2.24)
-            pSpeedRegW = uniform(0.89, 2.24)
-            pSpeedRegE = uniform(0.89, 2.24)
-            pSpeedOppN = uniform(0.89, 2.24)
-            pSpeedOppS = uniform(0.89, 2.24)
-            pSpeedOppW = uniform(0.89, 2.24)
-            pSpeedOppE = uniform(0.89, 2.24)
-            outSpeedNS = uniform(11.2, 26.8)
-            outSpeedWE = uniform(11.2, 26.8)
-            inSpeedNS = uniform(11.2, 26.8)
-            inSpeedWE = uniform(11.2, 26.8)
-            vehicleMaxSpeed = uniform(120, 150)
-            vehicleMinAccel = uniform(2, 2.5)
-            vehicleMaxAccel = uniform(3.5, 4)
-            vehicleMinDecel = uniform(2.5, 3.5)
-            vehicleMaxDecel = uniform(5.5, 7)
-            vehicleMinLength = uniform(3.8, 4.0)
-            vehicleMaxLength = uniform(5.5, 5.7)
-            minGap = uniform(2.3, 2.7)
+    while True:
+        try:
+            start_time = time.time()
+            setup("record.csv")
+            instance = mp.cpu_count()
+            for p_num in range(instance):
+                os.mkdir(r"data%i" % (p_num))
+                copy_tree(r"data_new", r"data%i" % (p_num))
+            processes = []
+            for p_num in range(instance):
+                leftOnlyNS = randint(0, 1)
+                leftStraightNS = randint(0, 1)
+                straightOnlyNS = randint(0, 3)
+                rightStraightNS = randint(0, 1)
+                rightOnlyNS = randint(0, 1)
+                allNS = randint(0, 1)
+                leftOnlyWE = randint(0, 1)
+                leftStraightWE = randint(0, 1)
+                straightOnlyWE = randint(0, 3)
+                rightStraightWE = randint(0, 1)
+                rightOnlyWE = randint(0, 1)
+                allWE = randint(0, 1)
+                leftOutLanesNS = randint(1, 2)
+                rightOutLanesNS = randint(1, 2)
+                leftOutLanesWE = randint(1, 2)
+                rightOutLanesWE = randint(1, 2)
+                moveDurationNS = uniform(15, 120)
+                moveDurationWE = uniform(15, 120)
+                yellowDurationNS = uniform(3, 6)
+                yellowDurationWE = uniform(3, 6)
+                turnDurationNS = uniform(10, 40)
+                turnDurationWE = uniform(10, 40)
+                waitDurationNS = uniform(3, 15)
+                waitDurationWE = uniform(3, 15)
+                lengthN = randrange(300, 1001, 100)
+                lengthS = randrange(300, 1001, 100)
+                lengthW = randrange(300, 1001, 100)
+                lengthE = randrange(300, 1001, 100)
+                lanesNS = leftOnlyNS + leftStraightNS + straightOnlyNS + rightStraightNS + rightOnlyNS + allNS
+                lanesWE = leftOnlyWE + leftStraightWE + straightOnlyWE + rightStraightWE + rightOnlyWE + allWE
+                if lanesNS <= 2 and leftOnlyNS + leftStraightNS + allNS == 0:
+                    demandN = uniform(0.01, 0.15)
+                    demandS = uniform(0.01, 0.15)
+                elif lanesNS <= 2:
+                    demandN = uniform(0.15, 0.3)
+                    demandS = uniform(0.15, 0.3)
+                elif lanesNS <= 4:
+                    demandN = uniform(0.15, 0.45)
+                    demandS = uniform(0.15, 0.45)
+                else:
+                    demandN = uniform(0.15, 0.6)
+                    demandS = uniform(0.15, 0.6)
+                if lanesWE <= 2 and leftOnlyWE + leftStraightWE + allWE == 0:
+                    demandW = uniform(0.01, 0.15)
+                    demandE = uniform(0.01, 0.15)
+                elif lanesWE <= 2:
+                    demandW = uniform(0.15, 0.3)
+                    demandE = uniform(0.15, 0.3)
+                elif lanesWE <= 4:
+                    demandW = uniform(0.15, 0.45)
+                    demandE = uniform(0.15, 0.45)
+                else:
+                    demandW = uniform(0.15, 0.6)
+                    demandE = uniform(0.15, 0.6)
+                demandProbNS = [0, 0, 0, 0]
+                demandProbNS[0] = uniform(0, 0.3)
+                demandProbNS[2] = uniform(0, 0.3)
+                demandProbNS[3] = uniform(0, 0.1)
+                demandProbNS[1] = 1 - demandProbNS[0] - demandProbNS[2] - demandProbNS[3]
+                demandProbWE = [0, 0, 0, 0]
+                demandProbWE[0] = uniform(0, 0.3)
+                demandProbWE[2] = uniform(0, 0.3)
+                demandProbWE[3] = uniform(0, 0.1)
+                demandProbWE[1] = 1 - demandProbWE[0] - demandProbWE[2] - demandProbWE[3]
+                pDemandRegN = uniform(0.01, 0.3)
+                pDemandRegS = uniform(0.01, 0.3)
+                pDemandRegW = uniform(0.01, 0.3)
+                pDemandRegE = uniform(0.01, 0.3)
+                pDemandOppN = uniform(0.01, 0.3)
+                pDemandOppS = uniform(0.01, 0.3)
+                pDemandOppW = uniform(0.01, 0.3)
+                pDemandOppE = uniform(0.01, 0.3)
+                pSpeedRegN = uniform(0.89, 2.24)
+                pSpeedRegS = uniform(0.89, 2.24)
+                pSpeedRegW = uniform(0.89, 2.24)
+                pSpeedRegE = uniform(0.89, 2.24)
+                pSpeedOppN = uniform(0.89, 2.24)
+                pSpeedOppS = uniform(0.89, 2.24)
+                pSpeedOppW = uniform(0.89, 2.24)
+                pSpeedOppE = uniform(0.89, 2.24)
+                outSpeedNS = uniform(11.2, 26.8)
+                outSpeedWE = uniform(11.2, 26.8)
+                inSpeedNS = uniform(11.2, 26.8)
+                inSpeedWE = uniform(11.2, 26.8)
+                vehicleMaxSpeed = uniform(120, 150)
+                vehicleMinAccel = uniform(2, 2.5)
+                vehicleMaxAccel = uniform(3.5, 4)
+                vehicleMinDecel = uniform(2.5, 3.5)
+                vehicleMaxDecel = uniform(5.5, 7)
+                vehicleMinLength = uniform(3.8, 4.0)
+                vehicleMaxLength = uniform(5.5, 5.7)
+                minGap = uniform(2.3, 2.7)
 
-            p = mp.Process(target=main, args=("record.csv", "data" + str(p_num), 3000, leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS, rightOnlyNS, allNS,
-                                            leftOnlyWE, leftStraightWE, straightOnlyWE, rightStraightWE, rightOnlyWE, allWE,
-                                            leftOutLanesNS, rightOutLanesNS, leftOutLanesWE, rightOutLanesWE,
-                                            moveDurationNS, moveDurationWE,
-                                            yellowDurationNS, yellowDurationWE,
-                                            turnDurationNS, turnDurationWE,
-                                            waitDurationNS, waitDurationWE,
-                                            lengthN, lengthS, lengthW, lengthE,
-                                            demandN, demandS, demandW, demandE,
-                                            demandProbNS, demandProbWE,
-                                            pDemandRegN, pDemandRegS, pDemandRegW, pDemandRegE,
-                                            pDemandOppN, pDemandOppS, pDemandOppW, pDemandOppE,
-                                            pSpeedRegN, pSpeedRegS, pSpeedRegW, pSpeedRegE,
-                                            pSpeedOppN, pSpeedOppS, pSpeedOppW, pSpeedOppE,
-                                            outSpeedNS, outSpeedWE, inSpeedNS, inSpeedWE,
-                                            vehicleMaxSpeed, vehicleMinAccel, vehicleMaxAccel, vehicleMinDecel,
-                                            vehicleMaxDecel, vehicleMinLength, vehicleMaxLength, minGap))
-            p.start()
-            processes.append(p)
+                p = mp.Process(target=main, args=("record.csv", "data" + str(p_num), 3000, leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS, rightOnlyNS, allNS,
+                                                leftOnlyWE, leftStraightWE, straightOnlyWE, rightStraightWE, rightOnlyWE, allWE,
+                                                leftOutLanesNS, rightOutLanesNS, leftOutLanesWE, rightOutLanesWE,
+                                                moveDurationNS, moveDurationWE,
+                                                yellowDurationNS, yellowDurationWE,
+                                                turnDurationNS, turnDurationWE,
+                                                waitDurationNS, waitDurationWE,
+                                                lengthN, lengthS, lengthW, lengthE,
+                                                demandN, demandS, demandW, demandE,
+                                                demandProbNS, demandProbWE,
+                                                pDemandRegN, pDemandRegS, pDemandRegW, pDemandRegE,
+                                                pDemandOppN, pDemandOppS, pDemandOppW, pDemandOppE,
+                                                pSpeedRegN, pSpeedRegS, pSpeedRegW, pSpeedRegE,
+                                                pSpeedOppN, pSpeedOppS, pSpeedOppW, pSpeedOppE,
+                                                outSpeedNS, outSpeedWE, inSpeedNS, inSpeedWE,
+                                                vehicleMaxSpeed, vehicleMinAccel, vehicleMaxAccel, vehicleMinDecel,
+                                                vehicleMaxDecel, vehicleMinLength, vehicleMaxLength, minGap))
+                p.start()
+                processes.append(p)
 
-        for process in processes:
-            process.join()
-        for p_num in range(instance):
-            try:
-                dataframe = pd.read_csv(r"data%i/record.csv" % (p_num),
-                        names=["rates", "leftOnlyNS", "leftStraightNS", "straightOnlyNS", "rightStraightNS", "rightOnlyNS", "allNS",
-                               "leftOnlyWE", "leftStraightWE", "straightOnlyWE", "rightStraightWE", "rightOnlyWE", "allWE",
-                               "leftOutLanesNS", "rightOutLanesNS", "leftOutLanesWE", "rightOutLanesWE",
-                               "moveDurationNS", "moveDurationWE",
-                               "yellowDurationNS", "yellowDurationWE",
-                               "turnDurationNS", "turnDurationWE",
-                               "waitDurationNS", "waitDurationWE",
-                               "lengthN", "lengthS", "lengthW", "lengthE",
-                               "demandN", "demandS", "demandW", "demandE",
-                               "demandProbNS_Straight", "demandProbNS_Left", "demandProbNS_Right", "demandProbNS_UTurn",
-                               "demandProbWE_Straight", "demandProbWE_Left", "demandProbWE_Right", "demandProbWE_UTurn",
-                               "pDemandRegN", "pDemandRegS", "pDemandRegW", "pDemandRegE",
-                               "pDemandOppN", "pDemandOppS", "pDemandOppW", "pDemandOppE",
-                               "pSpeedRegN", "pSpeedRegS", "pSpeedRegW", "pSpeedRegE",
-                               "pSpeedOppN", "pSpeedOppS", "pSpeedOppW", "pSpeedOppE",
-                               "outSpeedNS", "outSpeedWE", "inSpeedNS", "inSpeedWE",
-                               "vehicleMaxSpeed", "vehicleMinAccel", "vehicleMaxAccel", "vehicleMinDecel",
-                               "vehicleMaxDecel", "vehicleMinLength", "vehicleMaxLength", "minGap"])
-                dataframe.to_csv(r"record.csv", mode='a', header=False)
-            except:
-                print("Appending data failed.")
-            shutil.rmtree(r"data%i" % (p_num))
-        fixIndex("record.csv")
-        print("")
-        print("Instance: " + str(instance))
-        print("Time: " + str(time.time() - start_time) + "s")
-        # except:
-        #     print("Full run failed.")
+            for process in processes:
+                process.join()
+            for p_num in range(instance):
+                try:
+                    dataframe = pd.read_csv(r"data%i/record.csv" % (p_num),
+                            names=["rates", "leftOnlyNS", "leftStraightNS", "straightOnlyNS", "rightStraightNS", "rightOnlyNS", "allNS",
+                                   "leftOnlyWE", "leftStraightWE", "straightOnlyWE", "rightStraightWE", "rightOnlyWE", "allWE",
+                                   "leftOutLanesNS", "rightOutLanesNS", "leftOutLanesWE", "rightOutLanesWE",
+                                   "moveDurationNS", "moveDurationWE",
+                                   "yellowDurationNS", "yellowDurationWE",
+                                   "turnDurationNS", "turnDurationWE",
+                                   "waitDurationNS", "waitDurationWE",
+                                   "lengthN", "lengthS", "lengthW", "lengthE",
+                                   "demandN", "demandS", "demandW", "demandE",
+                                   "demandProbNS_Straight", "demandProbNS_Left", "demandProbNS_Right", "demandProbNS_UTurn",
+                                   "demandProbWE_Straight", "demandProbWE_Left", "demandProbWE_Right", "demandProbWE_UTurn",
+                                   "pDemandRegN", "pDemandRegS", "pDemandRegW", "pDemandRegE",
+                                   "pDemandOppN", "pDemandOppS", "pDemandOppW", "pDemandOppE",
+                                   "pSpeedRegN", "pSpeedRegS", "pSpeedRegW", "pSpeedRegE",
+                                   "pSpeedOppN", "pSpeedOppS", "pSpeedOppW", "pSpeedOppE",
+                                   "outSpeedNS", "outSpeedWE", "inSpeedNS", "inSpeedWE",
+                                   "vehicleMaxSpeed", "vehicleMinAccel", "vehicleMaxAccel", "vehicleMinDecel",
+                                   "vehicleMaxDecel", "vehicleMinLength", "vehicleMaxLength", "minGap"])
+                    dataframe.to_csv(r"record.csv", mode='a', header=False)
+                except:
+                    print("Appending data failed.")
+                shutil.rmtree(r"data%i" % (p_num))
+            fixIndex("record.csv")
+            print("")
+            print("Instance: " + str(instance))
+            print("Time: " + str(time.time() - start_time) + "s")
+        except:
+            print("Full run failed.")
 
     # main("record.csv", "data", 3000)

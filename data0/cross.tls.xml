@@ -1,0 +1,12 @@
+<additional>
+   <tlLogic id="juncMain" type="static" programID="1" offset="0">
+       <phase duration="118.958265" state="GGgggggrrrrrrrrrGGgggggrrrrrrrrrrGrG"/>
+       <phase duration="4.750754" state="yyyyyyyrrrrrrrrryyyyyyyrrrrrrrrrrGrG"/>
+       <phase duration="5.581307" state="rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrGrG"/>
+       <phase duration="29.903042" state="rrrrrrrrrrrrrrGGrrrrrrrrrrrrrrGGrrrr"/>
+       <phase duration="110.700524" state="rrrrrrrggGggGgggrrrrrrrggGggGgggGrGr"/>
+       <phase duration="3.338452" state="rrrrrrryyyyyyyyyrrrrrrryyyyyyyyyGrGr"/>
+       <phase duration="5.423161" state="rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrGrGr"/>
+       <phase duration="31.378352" state="rrrrGGGrrrrrrrrrrrrrGGGrrrrrrrrrrrrr"/>
+   </tlLogic>
+</additional>
