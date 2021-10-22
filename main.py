@@ -55,28 +55,28 @@ def generateRoute(folder_name, time_steps, leftOnlyNS, leftStraightNS, straightO
 
     with open(str(folder_name) + "/cross.rou.xml", "w") as routes:
         print("""<routes>""", file=routes)
-        print("""   <personFlow id="pRegN" begin="0" end="%i" personsPerHour="%i">
+        print("""   <personFlow id="pRegN" begin="0" end="%i" personsPerHour="%f">
         <walk edges="edgeN_O edgeS_I" speed="%f"/>
     </personFlow>""" % (time_steps, pDemandRegN * 3600, pSpeedRegN), file=routes)
-        print("""   <personFlow id="pRegS" begin="0" end="%i" personsPerHour="%i">
+        print("""   <personFlow id="pRegS" begin="0" end="%i" personsPerHour="%f">
         <walk edges="edgeS_O edgeN_I" speed="%f"/>
     </personFlow>""" % (time_steps, pDemandRegS * 3600, pSpeedRegS), file=routes)
-        print("""   <personFlow id="pRegW" begin="0" end="%i" personsPerHour="%i">
+        print("""   <personFlow id="pRegW" begin="0" end="%i" personsPerHour="%f">
         <walk edges="edgeW_O edgeE_I" speed="%f"/>
     </personFlow>""" % (time_steps, pDemandRegW * 3600, pSpeedRegW), file=routes)
-        print("""   <personFlow id="pRegE" begin="0" end="%i" personsPerHour="%i">
+        print("""   <personFlow id="pRegE" begin="0" end="%i" personsPerHour="%f">
         <walk edges="edgeE_O edgeW_I" speed="%f"/>
     </personFlow>""" % (time_steps, pDemandRegE * 3600, pSpeedRegE), file=routes)
-        print("""   <personFlow id="pOppN" begin="0" end="%i" personsPerHour="%i" departPos="%f">
+        print("""   <personFlow id="pOppN" begin="0" end="%i" personsPerHour="%f" departPos="%f">
         <walk edges="edgeN_I edgeS_O" speed="%f"/>
     </personFlow>""" % (time_steps, pDemandOppN * 3600, lengthN, pSpeedOppN), file=routes)
-        print("""   <personFlow id="pOppS" begin="0" end="%i" personsPerHour="%i" departPos="%f">
+        print("""   <personFlow id="pOppS" begin="0" end="%i" personsPerHour="%f" departPos="%f">
         <walk edges="edgeS_I edgeN_O" speed="%f"/>
     </personFlow>""" % (time_steps, pDemandOppS * 3600, lengthS, pSpeedOppS), file=routes)
-        print("""   <personFlow id="pOppW" begin="0" end="%i" personsPerHour="%i" departPos="%f">
+        print("""   <personFlow id="pOppW" begin="0" end="%i" personsPerHour="%f" departPos="%f">
         <walk edges="edgeW_I edgeE_O" speed="%f"/>
     </personFlow>""" % (time_steps, pDemandOppW * 3600, lengthW, pSpeedOppW), file=routes)
-        print("""   <personFlow id="pOppE" begin="0" end="%i" personsPerHour="%i" departPos="%f">
+        print("""   <personFlow id="pOppE" begin="0" end="%i" personsPerHour="%f" departPos="%f">
         <walk edges="edgeE_I edgeW_O" speed="%f"/>
     </personFlow>""" % (time_steps, pDemandOppE * 3600, lengthE, pSpeedOppE), file=routes)
 
@@ -1116,15 +1116,24 @@ def findRate(data):
 
 def setup(csv_path):
     dataframe = pd.read_csv(csv_path, sep='\t',
-                            names=["leftOnlyNS", "leftStraightNS", "straightOnlyNS", "rightStraightNS", "rightOnlyNS", "allNS",
-                                   "leftOnlyWE", "leftStraightWE", "straightOnlyWE", "rightStraightWE", "rightOnlyWE", "allWE",
-                                   "moveDurationNS", "moveDurationWE", "yellowDurationNS", "yellowDurationWE",
-                                   "turnDurationNS", "turnDurationWE", "demandN", "demandS", "demandW", "demandE",
-                                   "demandProbNS_Straight", "demandProbNS_Left", "demandProbNS_Right",
-                                   "demandProbNS_UTurn", "demandProbWE_Straight", "demandProbWE_Left", "demandProbWE_Right",
-                                   "demandProbWE_UTurn", "outSpeedNS", "outSpeedWE", "inSpeedNS", "inSpeedWE", "vehicleMaxSpeed",
-                                   "vehicleMinAccel", "vehicleMaxAccel", "vehicleMinDecel", "vehicleMaxDecel", "vehicleMinLength",
-                                   "vehicleMaxLength", "minGap"])
+                            names=["rates", "leftOnlyNS", "leftStraightNS", "straightOnlyNS", "rightStraightNS", "rightOnlyNS", "allNS",
+                            "leftOnlyWE", "leftStraightWE", "straightOnlyWE", "rightStraightWE", "rightOnlyWE", "allWE",
+                            "leftOutLanesNS", "rightOutLanesNS", "leftOutLanesWE", "rightOutLanesWE",
+                            "moveDurationNS", "moveDurationWE",
+                            "yellowDurationNS", "yellowDurationWE",
+                            "turnDurationNS", "turnDurationWE",
+                            "waitDurationNS", "waitDurationWE",
+                            "lengthN", "lengthS", "lengthW", "lengthE",
+                            "demandN", "demandS", "demandW", "demandE",
+                            "demandProbNS_Straight", "demandProbNS_Left", "demandProbNS_Right", "demandProbNS_UTurn",
+                            "demandProbWE_Straight", "demandProbWE_Left", "demandProbWE_Right", "demandProbWE_UTurn",
+                            "pDemandRegN", "pDemandRegS", "pDemandRegW", "pDemandRegE",
+                            "pDemandOppN", "pDemandOppS", "pDemandOppW", "pDemandOppE",
+                            "pSpeedRegN", "pSpeedRegS", "pSpeedRegW", "pSpeedRegE",
+                            "pSpeedOppN", "pSpeedOppS", "pSpeedOppW", "pSpeedOppE",
+                            "outSpeedNS", "outSpeedWE", "inSpeedNS", "inSpeedWE",
+                            "vehicleMaxSpeed", "vehicleMinAccel", "vehicleMaxAccel", "vehicleMinDecel",
+                            "vehicleMaxDecel", "vehicleMinLength", "vehicleMaxLength", "minGap"])
     if dataframe.empty:
         dataframe.to_csv(csv_path)
 
@@ -1220,14 +1229,13 @@ def main(csv_path, folder_name, time_steps,
                   vehicleMaxSpeed, demandProbNS, demandProbWE, pDemandRegN, pDemandRegS, pDemandRegW, pDemandRegE,
                   pDemandOppN, pDemandOppS, pDemandOppW, pDemandOppE, pSpeedRegN, pSpeedRegS, pSpeedRegW, pSpeedRegE,
                   pSpeedOppN, pSpeedOppS, pSpeedOppW, pSpeedOppE)
-    traci.start([checkBinary('sumo-gui'), "-c", str(folder_name) + "/cross.sumocfg",
+    traci.start([checkBinary('sumo'), "-c", str(folder_name) + "/cross.sumocfg",
              "--tripinfo-output", str(folder_name) + "/tripinfo.xml", "--statistic-output", "statistics.xml", "--tripinfo-output.write-unfinished"])
     runSim(time_steps)
     rates = findRate(str(folder_name) + "/tripinfo.xml")
     print(rates)
-
     dataframe = pd.DataFrame([[rates]])
-    dataframe.to_csv(csv_path, mode='a', header=False)
+    dataframe.to_csv(str(folder_name) + "/" + csv_path, mode='a', header=False, index=False)
 
 def fixIndex(csv_path):
     dataframe = pd.read_csv(csv_path, index_col=0)
@@ -1238,20 +1246,41 @@ if __name__ == "__main__":
     for i in range(1):
         start_time = time.time()
         setup("record.csv")
-        instance = 1 #cmp.cpu_count()
+        instance = 2 #cmp.cpu_count()
         for p_num in range(instance):
-            os.mkdir(r"C:\Users\Thomas Tseng\Documents\GitHub\Traffic-Light-Project\data%i" % (p_num))
-            copy_tree(r"C:\Users\Thomas Tseng\Documents\GitHub\Traffic-Light-Project\data", r"C:\Users\Thomas Tseng\Documents\GitHub\Traffic-Light-Project\data%i" % (p_num))
+            os.mkdir(r"data%i" % (p_num))
+            copy_tree(r"data", r"data%i" % (p_num))
         processes = []
         for p_num in range(instance):
-            p = mp.Process(target=main, args=("record.csv", "data" + str(p_num), 3000, 0, 0, random.randint(50, 100), 0, 0, 0, 0, 0, random.randint(50, 100), 0, 0, 0, 2, 2, 2, 2, 3000, 0, 0, 0, 0, 0, 0, 0.0005, 0, 0))
+            p = mp.Process(target=main, args=("record.csv", "data" + str(p_num), 500))
             p.start()
             processes.append(p)
         for process in processes:
             process.join()
-        fixIndex("record.csv")
         for p_num in range(instance):
-            shutil.rmtree(r"C:\Users\Thomas Tseng\Documents\GitHub\Traffic-Light-Project\data%i" % (p_num))
+            dataframe = pd.read_csv(r"data%i/record.csv" % (p_num),
+                    names=["rates", "leftOnlyNS", "leftStraightNS", "straightOnlyNS", "rightStraightNS", "rightOnlyNS", "allNS",
+                           "leftOnlyWE", "leftStraightWE", "straightOnlyWE", "rightStraightWE", "rightOnlyWE", "allWE",
+                           "leftOutLanesNS", "rightOutLanesNS", "leftOutLanesWE", "rightOutLanesWE",
+                           "moveDurationNS", "moveDurationWE",
+                           "yellowDurationNS", "yellowDurationWE",
+                           "turnDurationNS", "turnDurationWE",
+                           "waitDurationNS", "waitDurationWE",
+                           "lengthN", "lengthS", "lengthW", "lengthE",
+                           "demandN", "demandS", "demandW", "demandE",
+                           "demandProbNS_Straight", "demandProbNS_Left", "demandProbNS_Right", "demandProbNS_UTurn",
+                           "demandProbWE_Straight", "demandProbWE_Left", "demandProbWE_Right", "demandProbWE_UTurn",
+                           "pDemandRegN", "pDemandRegS", "pDemandRegW", "pDemandRegE",
+                           "pDemandOppN", "pDemandOppS", "pDemandOppW", "pDemandOppE",
+                           "pSpeedRegN", "pSpeedRegS", "pSpeedRegW", "pSpeedRegE",
+                           "pSpeedOppN", "pSpeedOppS", "pSpeedOppW", "pSpeedOppE",
+                           "outSpeedNS", "outSpeedWE", "inSpeedNS", "inSpeedWE",
+                           "vehicleMaxSpeed", "vehicleMinAccel", "vehicleMaxAccel", "vehicleMinDecel",
+                           "vehicleMaxDecel", "vehicleMinLength", "vehicleMaxLength", "minGap"])
+            dataframe.to_csv(r"record.csv", mode='a', header=False)
+            print(dataframe)
+            shutil.rmtree(r"data%i" % (p_num))
+        fixIndex("record.csv")
         print("")
         print("Instance: " + str(instance))
         print("Time: " + str(time.time() - start_time) + "s")
