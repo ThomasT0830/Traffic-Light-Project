@@ -1259,7 +1259,7 @@ def main(csv_path, folder_name, time_steps,
             outSpeedNS, outSpeedWE, inSpeedNS, inSpeedWE,
             vehicleMaxSpeed, vehicleMinAccel, vehicleMaxAccel, vehicleMinDecel,
             vehicleMaxDecel, vehicleMinLength, vehicleMaxLength, minGap]])
-    dataframe.to_csv(csv_path, mode='a', header=False, index=False)
+    dataframe.to_csv(csv_path, mode='a', header=False, index=True)
 
 def fixIndex(csv_path):
     dataframe = pd.read_csv(csv_path, index_col=0)
@@ -1359,7 +1359,7 @@ def execute():
     vehicleMinLength = uniform(3.8, 4.0)
     vehicleMaxLength = uniform(5.5, 5.7)
     minGap = uniform(2.3, 2.7)
-    main("record.csv", "data", 3000, leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS, rightOnlyNS, allNS,
+    main("record.csv", "data", 200, leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS, rightOnlyNS, allNS,
         leftOnlyWE, leftStraightWE, straightOnlyWE, rightStraightWE, rightOnlyWE, allWE,
         leftOutLanesNS, rightOutLanesNS, leftOutLanesWE, rightOutLanesWE,
         moveDurationNS, moveDurationWE,
@@ -1380,8 +1380,8 @@ def execute():
 if __name__ == "__main__":
     process_name = str(randint(0, 9)) + str(randint(0, 9)) + str(randint(0, 9)) + str(randint(0, 9))
     setup("record.csv")
-    cycle_length = 86400
-    start_time = time.time()
+    cycle_length = 30 # 3600 * 1.5
+    total_run_time = 0
     total_records = 0
     total_errors = 0
     num_days = 1
@@ -1389,7 +1389,8 @@ if __name__ == "__main__":
     from_email = "thomasprogramtest2021@gmail.com"
     from_password = "thomastseng0830"
     to_email = "0830thomastseng@gmail.com"
-    subject = "Process " + str(process_name) + " Report: Day " + str(num_days)
+
+    subject = "Process " + str(process_name) + " Has Begun Running"
     text = ""
     html = f"""
             <html>
@@ -1397,27 +1398,30 @@ if __name__ == "__main__":
                     <meta charset="UTF-8">
                 </head>
                 <body style="">
-                    <h2>{subject}</h2>
+                    <p>Process {str(process_name)} has successfully started! Reports will be sent at around {str(datetime.datetime.now().time())} each day.</p>
                 </body>
             </html>
             """
 
-    message = MIMEMultipart("alternative")
-    message["Subject"] = subject
-    message["From"] = formataddr((str(Header('SUMO Simulation', 'utf-8')), from_email))
-    message["To"] = to_email
+    try:
+        message = MIMEMultipart("alternative")
+        message["Subject"] = subject
+        message["From"] = formataddr((str(Header('SUMO Simulation', 'utf-8')), from_email))
+        message["To"] = to_email
 
-    part1 = MIMEText(text, "plain")
-    part2 = MIMEText(html, "html")
+        part1 = MIMEText(text, "plain")
+        part2 = MIMEText(html, "html")
 
-    message.attach(part1)
-    message.attach(part2)
+        message.attach(part1)
+        message.attach(part2)
 
-    server = smtplib.SMTP("smtp.gmail.com", 587)
-    server.starttls()
-    server.login(from_email, from_password)
-    server.sendmail(from_email, to_email, message.as_string())
-    server.quit()
+        server = smtplib.SMTP("smtp.gmail.com", 587)
+        server.starttls()
+        server.login(from_email, from_password)
+        server.sendmail(from_email, to_email, message.as_string())
+        server.quit()
+    except Exception:
+        traceback.print_exc()
 
     while True:
         set_time = time.time()
@@ -1425,7 +1429,6 @@ if __name__ == "__main__":
         daily_errors = 0
         while time.time() - set_time < cycle_length:
             try:
-                start_time = time.time()
                 p = mp.Process(target=execute, args=())
                 p.start()
                 p.join()
@@ -1436,15 +1439,64 @@ if __name__ == "__main__":
                 total_errors += 1
                 daily_errors += 1
         fixIndex("record.csv")
-        current_time = str(datetime.datetime.now())
-        total_run_time = time.time() - start_time
+
+        current_time = datetime.datetime.now()
         total_daily_time = time.time() - set_time
+        total_run_time += total_daily_time
         formatted_run_time = datetime.timedelta(seconds=total_run_time)
         formatted_daily_time = datetime.timedelta(seconds=total_daily_time)
         average_run_time = total_run_time / total_records
         average_daily_time = total_daily_time / daily_records
         average_daily_records = total_records / (total_run_time / 86400)
         average_hourly_records = total_records / (total_run_time / 3600)
+
+        subject = "Process " + str(process_name) + " Report: Day " + str(num_days)
+        text = ""
+        html = f"""
+                    <html>
+                        <head>
+                            <meta charset="UTF-8">
+                        </head>
+                        <body style="">
+                            <h4>The following text is a report of the progress of Process {process_name}:</h4>
+                            <p>Current Time: {str(current_time)}</p>
+                            <p>Total Days: {str(num_days)} Days</p>
+                            <p>Total Run Time: {str(formatted_run_time)}</p>
+                            <p>Total Records: {str(total_records)} Records</p>
+                            <p>Total Errors: {str(total_errors)} Errors</p>
+                            <p>Day {str(num_days)} Run Time: {str(formatted_daily_time)}</p>
+                            <p>Day {str(num_days)} Records: {str(daily_records)} Records</p>
+                            <p>Day {str(num_days)} Errors: {str(daily_errors)} Errors</p>
+                            <p>Average Rate: {str(average_run_time)} Seconds/Record</p>
+                            <p>Day {str(num_days)} Rate: {str(average_daily_time)} Seconds/Record</p>
+                            <p>Inverse Average Rate: {str(1/average_run_time)} Records/Second</p>
+                            <p>Inverse Day {str(num_days)} Rate: {str(1/average_daily_time)} Records/Second</p>
+                            <p>Daily Rate: {str(average_daily_records)} Records/Day</p>
+                            <p>Hourly Rate: {str(average_hourly_records)} Records/Hour</p>
+                        </body>
+                    </html>
+                    """
+
+        try:
+            message = MIMEMultipart("alternative")
+            message["Subject"] = subject
+            message["From"] = formataddr((str(Header('SUMO Simulation', 'utf-8')), from_email))
+            message["To"] = to_email
+
+            part1 = MIMEText(text, "plain")
+            part2 = MIMEText(html, "html")
+
+            message.attach(part1)
+            message.attach(part2)
+
+            server = smtplib.SMTP("smtp.gmail.com", 587)
+            server.starttls()
+            server.login(from_email, from_password)
+            server.sendmail(from_email, to_email, message.as_string())
+            server.quit()
+        except:
+            traceback.print_exc()
+
         num_days += 1
 
     # main("record.csv", "data", 3000)
