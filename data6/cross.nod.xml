@@ -1,8 +1,0 @@
-<nodes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/nodes_file.xsd">
-   <node id="juncMain" x="0.0" y="0.0" type="traffic_light" />
-
-   <node id="juncN" x="0.0" y="+600" type="priority" />
-   <node id="juncS" x="0.0" y="-600" type="priority" />
-   <node id="juncW" x="-1000" y="0.0" type="priority" />
-   <node id="juncE" x="+500" y="0.0" type="priority" />
-</nodes>

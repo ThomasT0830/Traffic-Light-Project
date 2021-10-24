@@ -1,12 +1,10 @@
 <additional>
    <tlLogic id="juncMain" type="static" programID="1" offset="0">
-       <phase duration="60.000000" state="ggGGGgggggggggggggggggggggggggggggggggggggrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrggGGGgggggggggggggggggggggggggggggggggggggrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrGrG"/>
-       <phase duration="5.000000" state="yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrryyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrGrG"/>
-       <phase duration="10.000000" state="rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrGrG"/>
-       <phase duration="20.000000" state="rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrggggggggggggggggggggggggggggggggGGGrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrggggggggggggggggggggggggggggggggGGGrrrr"/>
-       <phase duration="60.000000" state="rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrggGGGgggggggggggggggggggggggggggggggggggggrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrggGGGgggggggggggggggggggggggggggggggggggggGrGr"/>
-       <phase duration="5.000000" state="rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrryyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrryyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyGrGr"/>
-       <phase duration="10.000000" state="rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrGrGr"/>
-       <phase duration="20.000000" state="rrrrrrrggggggggggggggggggggggggggggggggGGGrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrggggggggggggggggggggggggggggggggGGGrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr"/>
+       <phase duration="29.674374" state="GgGgGggrrrrrrrrGgGgGggrrrrrrrrrGrG"/>
+       <phase duration="4.721894" state="yyyyyyyrrrrrrrryyyyyyyrrrrrrrrrGrG"/>
+       <phase duration="9.180710" state="rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrGrG"/>
+       <phase duration="37.676878" state="rrrrrrrGGggGGGGrrrrrrrGGggGGGGGrGr"/>
+       <phase duration="4.043765" state="rrrrrrryyyyyyyyrrrrrrryyyyyyyyGrGr"/>
+       <phase duration="5.795759" state="rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrGrGr"/>
    </tlLogic>
 </additional>

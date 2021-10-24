@@ -1,197 +1,54 @@
 <connections>
-   <crossing width="6.00" edges="edgeN_I edgeN_O" node="juncMain" priority="1"/>
-    <crossing width="6.00" edges="edgeE_I edgeE_O" node="juncMain" priority="1"/>
-    <crossing width="6.00" edges="edgeS_I edgeS_O" node="juncMain" priority="1"/>
-    <crossing width="6.00" edges="edgeW_I edgeW_O" node="juncMain" priority="1"/>
+   <crossing width="4.50" edges="edgeN_I edgeN_O" node="juncMain" priority="1"/>
+    <crossing width="4.50" edges="edgeE_I edgeE_O" node="juncMain" priority="1"/>
+    <crossing width="4.50" edges="edgeS_I edgeS_O" node="juncMain" priority="1"/>
+    <crossing width="4.50" edges="edgeW_I edgeW_O" node="juncMain" priority="1"/>
    <!-- North -->
    <connection from="edgeN_O" to="edgeW_I" fromLane="1" toLane="1"/>
-   <connection from="edgeN_O" to="edgeW_I" fromLane="1" toLane="2"/>
-   <connection from="edgeN_O" to="edgeS_I" fromLane="1" toLane="1"/>
 
+   <connection from="edgeN_O" to="edgeW_I" fromLane="2" toLane="1"/>
    <connection from="edgeN_O" to="edgeS_I" fromLane="2" toLane="2"/>
 
-   <connection from="edgeN_O" to="edgeE_I" fromLane="3" toLane="20"/>
-   <connection from="edgeN_O" to="edgeE_I" fromLane="3" toLane="19"/>
+   <connection from="edgeN_O" to="edgeW_I" fromLane="3" toLane="1"/>
    <connection from="edgeN_O" to="edgeS_I" fromLane="3" toLane="3"/>
+   <connection from="edgeN_O" to="edgeE_I" fromLane="3" toLane="5"/>
 
-   <connection from="edgeN_O" to="edgeE_I" fromLane="4" toLane="20"/>
-   <connection from="edgeN_O" to="edgeE_I" fromLane="4" toLane="19"/>
-   <connection from="edgeN_O" to="edgeE_I" fromLane="5" toLane="20"/>
-   <connection from="edgeN_O" to="edgeE_I" fromLane="5" toLane="19"/>
-   <connection from="edgeN_O" to="edgeE_I" fromLane="6" toLane="20"/>
-   <connection from="edgeN_O" to="edgeE_I" fromLane="6" toLane="19"/>
-   <connection from="edgeN_O" to="edgeE_I" fromLane="7" toLane="20"/>
-   <connection from="edgeN_O" to="edgeE_I" fromLane="7" toLane="19"/>
-   <connection from="edgeN_O" to="edgeE_I" fromLane="8" toLane="20"/>
-   <connection from="edgeN_O" to="edgeE_I" fromLane="8" toLane="19"/>
-   <connection from="edgeN_O" to="edgeE_I" fromLane="9" toLane="20"/>
-   <connection from="edgeN_O" to="edgeE_I" fromLane="9" toLane="19"/>
-   <connection from="edgeN_O" to="edgeE_I" fromLane="10" toLane="20"/>
-   <connection from="edgeN_O" to="edgeE_I" fromLane="10" toLane="19"/>
-   <connection from="edgeN_O" to="edgeE_I" fromLane="11" toLane="20"/>
-   <connection from="edgeN_O" to="edgeE_I" fromLane="11" toLane="19"/>
-   <connection from="edgeN_O" to="edgeE_I" fromLane="12" toLane="20"/>
-   <connection from="edgeN_O" to="edgeE_I" fromLane="12" toLane="19"/>
-   <connection from="edgeN_O" to="edgeE_I" fromLane="13" toLane="20"/>
-   <connection from="edgeN_O" to="edgeE_I" fromLane="13" toLane="19"/>
-   <connection from="edgeN_O" to="edgeE_I" fromLane="14" toLane="20"/>
-   <connection from="edgeN_O" to="edgeE_I" fromLane="14" toLane="19"/>
-   <connection from="edgeN_O" to="edgeE_I" fromLane="15" toLane="20"/>
-   <connection from="edgeN_O" to="edgeE_I" fromLane="15" toLane="19"/>
-   <connection from="edgeN_O" to="edgeE_I" fromLane="16" toLane="20"/>
-   <connection from="edgeN_O" to="edgeE_I" fromLane="16" toLane="19"/>
-   <connection from="edgeN_O" to="edgeE_I" fromLane="17" toLane="20"/>
-   <connection from="edgeN_O" to="edgeE_I" fromLane="17" toLane="19"/>
-   <connection from="edgeN_O" to="edgeE_I" fromLane="18" toLane="20"/>
-   <connection from="edgeN_O" to="edgeE_I" fromLane="18" toLane="19"/>
-   <connection from="edgeN_O" to="edgeE_I" fromLane="19" toLane="20"/>
-   <connection from="edgeN_O" to="edgeE_I" fromLane="19" toLane="19"/>
-   <connection from="edgeN_O" to="edgeE_I" fromLane="20" toLane="20"/>
-   <connection from="edgeN_O" to="edgeE_I" fromLane="20" toLane="19"/>
-
-   <connection from="edgeN_O" to="edgeN_I" fromLane="20" toLane="20"/>
+   <connection from="edgeN_O" to="edgeN_I" fromLane="3" toLane="3"/>
 
    <!-- South -->
    <connection from="edgeS_O" to="edgeE_I" fromLane="1" toLane="1"/>
-   <connection from="edgeS_O" to="edgeE_I" fromLane="1" toLane="2"/>
-   <connection from="edgeS_O" to="edgeN_I" fromLane="1" toLane="1"/>
 
+   <connection from="edgeS_O" to="edgeE_I" fromLane="2" toLane="1"/>
    <connection from="edgeS_O" to="edgeN_I" fromLane="2" toLane="2"/>
 
-   <connection from="edgeS_O" to="edgeW_I" fromLane="3" toLane="20"/>
-   <connection from="edgeS_O" to="edgeW_I" fromLane="3" toLane="19"/>
+   <connection from="edgeS_O" to="edgeE_I" fromLane="3" toLane="1"/>
    <connection from="edgeS_O" to="edgeN_I" fromLane="3" toLane="3"/>
+   <connection from="edgeS_O" to="edgeW_I" fromLane="3" toLane="5"/>
 
-   <connection from="edgeS_O" to="edgeW_I" fromLane="4" toLane="20"/>
-   <connection from="edgeS_O" to="edgeW_I" fromLane="4" toLane="19"/>
-   <connection from="edgeS_O" to="edgeW_I" fromLane="5" toLane="20"/>
-   <connection from="edgeS_O" to="edgeW_I" fromLane="5" toLane="19"/>
-   <connection from="edgeS_O" to="edgeW_I" fromLane="6" toLane="20"/>
-   <connection from="edgeS_O" to="edgeW_I" fromLane="6" toLane="19"/>
-   <connection from="edgeS_O" to="edgeW_I" fromLane="7" toLane="20"/>
-   <connection from="edgeS_O" to="edgeW_I" fromLane="7" toLane="19"/>
-   <connection from="edgeS_O" to="edgeW_I" fromLane="8" toLane="20"/>
-   <connection from="edgeS_O" to="edgeW_I" fromLane="8" toLane="19"/>
-   <connection from="edgeS_O" to="edgeW_I" fromLane="9" toLane="20"/>
-   <connection from="edgeS_O" to="edgeW_I" fromLane="9" toLane="19"/>
-   <connection from="edgeS_O" to="edgeW_I" fromLane="10" toLane="20"/>
-   <connection from="edgeS_O" to="edgeW_I" fromLane="10" toLane="19"/>
-   <connection from="edgeS_O" to="edgeW_I" fromLane="11" toLane="20"/>
-   <connection from="edgeS_O" to="edgeW_I" fromLane="11" toLane="19"/>
-   <connection from="edgeS_O" to="edgeW_I" fromLane="12" toLane="20"/>
-   <connection from="edgeS_O" to="edgeW_I" fromLane="12" toLane="19"/>
-   <connection from="edgeS_O" to="edgeW_I" fromLane="13" toLane="20"/>
-   <connection from="edgeS_O" to="edgeW_I" fromLane="13" toLane="19"/>
-   <connection from="edgeS_O" to="edgeW_I" fromLane="14" toLane="20"/>
-   <connection from="edgeS_O" to="edgeW_I" fromLane="14" toLane="19"/>
-   <connection from="edgeS_O" to="edgeW_I" fromLane="15" toLane="20"/>
-   <connection from="edgeS_O" to="edgeW_I" fromLane="15" toLane="19"/>
-   <connection from="edgeS_O" to="edgeW_I" fromLane="16" toLane="20"/>
-   <connection from="edgeS_O" to="edgeW_I" fromLane="16" toLane="19"/>
-   <connection from="edgeS_O" to="edgeW_I" fromLane="17" toLane="20"/>
-   <connection from="edgeS_O" to="edgeW_I" fromLane="17" toLane="19"/>
-   <connection from="edgeS_O" to="edgeW_I" fromLane="18" toLane="20"/>
-   <connection from="edgeS_O" to="edgeW_I" fromLane="18" toLane="19"/>
-   <connection from="edgeS_O" to="edgeW_I" fromLane="19" toLane="20"/>
-   <connection from="edgeS_O" to="edgeW_I" fromLane="19" toLane="19"/>
-   <connection from="edgeS_O" to="edgeW_I" fromLane="20" toLane="20"/>
-   <connection from="edgeS_O" to="edgeW_I" fromLane="20" toLane="19"/>
-
-   <connection from="edgeS_O" to="edgeS_I" fromLane="20" toLane="20"/>
+   <connection from="edgeS_O" to="edgeS_I" fromLane="3" toLane="3"/>
 
    <!-- West -->
    <connection from="edgeW_O" to="edgeS_I" fromLane="1" toLane="1"/>
    <connection from="edgeW_O" to="edgeS_I" fromLane="1" toLane="2"/>
-   <connection from="edgeW_O" to="edgeE_I" fromLane="1" toLane="1"/>
 
+   <connection from="edgeW_O" to="edgeS_I" fromLane="2" toLane="1"/>
+   <connection from="edgeW_O" to="edgeS_I" fromLane="2" toLane="2"/>
    <connection from="edgeW_O" to="edgeE_I" fromLane="2" toLane="2"/>
 
-   <connection from="edgeW_O" to="edgeN_I" fromLane="3" toLane="20"/>
-   <connection from="edgeW_O" to="edgeN_I" fromLane="3" toLane="19"/>
    <connection from="edgeW_O" to="edgeE_I" fromLane="3" toLane="3"/>
-
-   <connection from="edgeW_O" to="edgeN_I" fromLane="4" toLane="20"/>
-   <connection from="edgeW_O" to="edgeN_I" fromLane="4" toLane="19"/>
-   <connection from="edgeW_O" to="edgeN_I" fromLane="5" toLane="20"/>
-   <connection from="edgeW_O" to="edgeN_I" fromLane="5" toLane="19"/>
-   <connection from="edgeW_O" to="edgeN_I" fromLane="6" toLane="20"/>
-   <connection from="edgeW_O" to="edgeN_I" fromLane="6" toLane="19"/>
-   <connection from="edgeW_O" to="edgeN_I" fromLane="7" toLane="20"/>
-   <connection from="edgeW_O" to="edgeN_I" fromLane="7" toLane="19"/>
-   <connection from="edgeW_O" to="edgeN_I" fromLane="8" toLane="20"/>
-   <connection from="edgeW_O" to="edgeN_I" fromLane="8" toLane="19"/>
-   <connection from="edgeW_O" to="edgeN_I" fromLane="9" toLane="20"/>
-   <connection from="edgeW_O" to="edgeN_I" fromLane="9" toLane="19"/>
-   <connection from="edgeW_O" to="edgeN_I" fromLane="10" toLane="20"/>
-   <connection from="edgeW_O" to="edgeN_I" fromLane="10" toLane="19"/>
-   <connection from="edgeW_O" to="edgeN_I" fromLane="11" toLane="20"/>
-   <connection from="edgeW_O" to="edgeN_I" fromLane="11" toLane="19"/>
-   <connection from="edgeW_O" to="edgeN_I" fromLane="12" toLane="20"/>
-   <connection from="edgeW_O" to="edgeN_I" fromLane="12" toLane="19"/>
-   <connection from="edgeW_O" to="edgeN_I" fromLane="13" toLane="20"/>
-   <connection from="edgeW_O" to="edgeN_I" fromLane="13" toLane="19"/>
-   <connection from="edgeW_O" to="edgeN_I" fromLane="14" toLane="20"/>
-   <connection from="edgeW_O" to="edgeN_I" fromLane="14" toLane="19"/>
-   <connection from="edgeW_O" to="edgeN_I" fromLane="15" toLane="20"/>
-   <connection from="edgeW_O" to="edgeN_I" fromLane="15" toLane="19"/>
-   <connection from="edgeW_O" to="edgeN_I" fromLane="16" toLane="20"/>
-   <connection from="edgeW_O" to="edgeN_I" fromLane="16" toLane="19"/>
-   <connection from="edgeW_O" to="edgeN_I" fromLane="17" toLane="20"/>
-   <connection from="edgeW_O" to="edgeN_I" fromLane="17" toLane="19"/>
-   <connection from="edgeW_O" to="edgeN_I" fromLane="18" toLane="20"/>
-   <connection from="edgeW_O" to="edgeN_I" fromLane="18" toLane="19"/>
-   <connection from="edgeW_O" to="edgeN_I" fromLane="19" toLane="20"/>
-   <connection from="edgeW_O" to="edgeN_I" fromLane="19" toLane="19"/>
-   <connection from="edgeW_O" to="edgeN_I" fromLane="20" toLane="20"/>
-   <connection from="edgeW_O" to="edgeN_I" fromLane="20" toLane="19"/>
-
-   <connection from="edgeW_O" to="edgeW_I" fromLane="20" toLane="20"/>
+   <connection from="edgeW_O" to="edgeE_I" fromLane="4" toLane="4"/>
+   <connection from="edgeW_O" to="edgeE_I" fromLane="5" toLane="5"/>
 
    <!-- East -->
    <connection from="edgeE_O" to="edgeN_I" fromLane="1" toLane="1"/>
    <connection from="edgeE_O" to="edgeN_I" fromLane="1" toLane="2"/>
-   <connection from="edgeE_O" to="edgeW_I" fromLane="1" toLane="1"/>
 
+   <connection from="edgeE_O" to="edgeN_I" fromLane="2" toLane="1"/>
+   <connection from="edgeE_O" to="edgeN_I" fromLane="2" toLane="2"/>
    <connection from="edgeE_O" to="edgeW_I" fromLane="2" toLane="2"/>
 
-   <connection from="edgeE_O" to="edgeS_I" fromLane="3" toLane="20"/>
-   <connection from="edgeE_O" to="edgeS_I" fromLane="3" toLane="19"/>
    <connection from="edgeE_O" to="edgeW_I" fromLane="3" toLane="3"/>
+   <connection from="edgeE_O" to="edgeW_I" fromLane="4" toLane="4"/>
+   <connection from="edgeE_O" to="edgeW_I" fromLane="5" toLane="5"/>
 
-   <connection from="edgeE_O" to="edgeS_I" fromLane="4" toLane="20"/>
-   <connection from="edgeE_O" to="edgeS_I" fromLane="4" toLane="19"/>
-   <connection from="edgeE_O" to="edgeS_I" fromLane="5" toLane="20"/>
-   <connection from="edgeE_O" to="edgeS_I" fromLane="5" toLane="19"/>
-   <connection from="edgeE_O" to="edgeS_I" fromLane="6" toLane="20"/>
-   <connection from="edgeE_O" to="edgeS_I" fromLane="6" toLane="19"/>
-   <connection from="edgeE_O" to="edgeS_I" fromLane="7" toLane="20"/>
-   <connection from="edgeE_O" to="edgeS_I" fromLane="7" toLane="19"/>
-   <connection from="edgeE_O" to="edgeS_I" fromLane="8" toLane="20"/>
-   <connection from="edgeE_O" to="edgeS_I" fromLane="8" toLane="19"/>
-   <connection from="edgeE_O" to="edgeS_I" fromLane="9" toLane="20"/>
-   <connection from="edgeE_O" to="edgeS_I" fromLane="9" toLane="19"/>
-   <connection from="edgeE_O" to="edgeS_I" fromLane="10" toLane="20"/>
-   <connection from="edgeE_O" to="edgeS_I" fromLane="10" toLane="19"/>
-   <connection from="edgeE_O" to="edgeS_I" fromLane="11" toLane="20"/>
-   <connection from="edgeE_O" to="edgeS_I" fromLane="11" toLane="19"/>
-   <connection from="edgeE_O" to="edgeS_I" fromLane="12" toLane="20"/>
-   <connection from="edgeE_O" to="edgeS_I" fromLane="12" toLane="19"/>
-   <connection from="edgeE_O" to="edgeS_I" fromLane="13" toLane="20"/>
-   <connection from="edgeE_O" to="edgeS_I" fromLane="13" toLane="19"/>
-   <connection from="edgeE_O" to="edgeS_I" fromLane="14" toLane="20"/>
-   <connection from="edgeE_O" to="edgeS_I" fromLane="14" toLane="19"/>
-   <connection from="edgeE_O" to="edgeS_I" fromLane="15" toLane="20"/>
-   <connection from="edgeE_O" to="edgeS_I" fromLane="15" toLane="19"/>
-   <connection from="edgeE_O" to="edgeS_I" fromLane="16" toLane="20"/>
-   <connection from="edgeE_O" to="edgeS_I" fromLane="16" toLane="19"/>
-   <connection from="edgeE_O" to="edgeS_I" fromLane="17" toLane="20"/>
-   <connection from="edgeE_O" to="edgeS_I" fromLane="17" toLane="19"/>
-   <connection from="edgeE_O" to="edgeS_I" fromLane="18" toLane="20"/>
-   <connection from="edgeE_O" to="edgeS_I" fromLane="18" toLane="19"/>
-   <connection from="edgeE_O" to="edgeS_I" fromLane="19" toLane="20"/>
-   <connection from="edgeE_O" to="edgeS_I" fromLane="19" toLane="19"/>
-   <connection from="edgeE_O" to="edgeS_I" fromLane="20" toLane="20"/>
-   <connection from="edgeE_O" to="edgeS_I" fromLane="20" toLane="19"/>
-
-   <connection from="edgeE_O" to="edgeE_I" fromLane="20" toLane="20"/>
 </connections>
