@@ -1,16 +1,15 @@
 from __future__ import absolute_import
 from __future__ import print_function
-from email.utils import formataddr
-from email.message import EmailMessage
-from email.header import Header
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-
-import traceback
-
 from bs4 import BeautifulSoup
 from sumolib import checkBinary
 from random import randint, uniform, randrange
+from email.utils import formataddr
+from email.header import Header
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from contextlib import closing
+
+import traceback
 import traci
 import pandas as pd
 import os
@@ -1094,10 +1093,15 @@ def createNetwork(folder_name, leftOnlyNS, leftStraightNS, straightOnlyNS, right
     os.system("netconvert --node-files=%s/cross.nod.xml --edge-files=%s/cross.edg.xml --connection-files=%s/cross.con.xml --output-file=%s/cross.net.xml --no-turnarounds.except-turnlane=true" % (folder_name, folder_name, folder_name, folder_name))
 
 def runSim(time_steps):
-    step = 0
-    while step <= time_steps:
-        traci.simulationStep()
-        step += 1
+    traci.simulationStep(time_steps)
+    # step = 0
+    # set_time = time.time()
+    # while step <= time_steps:
+    #     traci.simulationStep()
+    #     step += 1
+        # print(time.time() - set_time)
+        # if time.time() - set_time > 300:
+        #     raise Exception("Over Maximum Time")
     traci.close()
     sys.stdout.flush()
 
@@ -1238,7 +1242,7 @@ def main(csv_path, folder_name, time_steps,
                   pSpeedOppN, pSpeedOppS, pSpeedOppW, pSpeedOppE)
 
     traci.start([checkBinary('sumo-gui'), "-c", str(folder_name) + "/cross.sumocfg",
-             "--tripinfo-output", str(folder_name) + "/tripinfo.xml", "--tripinfo-output.write-unfinished", "--no-warnings"])
+             "--tripinfo-output", str(folder_name) + "/tripinfo.xml", "--tripinfo-output.write-unfinished", "--no-warnings", "--quit-on-end"])
     runSim(time_steps)
     rates = findRate(str(folder_name) + "/tripinfo.xml")
     dataframe = pd.DataFrame([[rates, leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS, rightOnlyNS, allNS,
@@ -1266,6 +1270,8 @@ def fixIndex(csv_path):
     dataframe = dataframe.reset_index(drop=True)
     dataframe.to_csv(csv_path)
 
+# from pebble import concurrent
+# @concurrent.process(timeout=20)
 def execute():
     leftOnlyNS = randint(0, 1)
     leftStraightNS = randint(0, 1)
@@ -1359,7 +1365,7 @@ def execute():
     vehicleMinLength = uniform(3.8, 4.0)
     vehicleMaxLength = uniform(5.5, 5.7)
     minGap = uniform(2.3, 2.7)
-    main("record.csv", "data", 200, leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS, rightOnlyNS, allNS,
+    main("record.csv", "data", 3000, leftOnlyNS, leftStraightNS, straightOnlyNS, rightStraightNS, rightOnlyNS, allNS,
         leftOnlyWE, leftStraightWE, straightOnlyWE, rightStraightWE, rightOnlyWE, allWE,
         leftOutLanesNS, rightOutLanesNS, leftOutLanesWE, rightOutLanesWE,
         moveDurationNS, moveDurationWE,
@@ -1380,7 +1386,7 @@ def execute():
 if __name__ == "__main__":
     process_name = str(randint(0, 9)) + str(randint(0, 9)) + str(randint(0, 9)) + str(randint(0, 9))
     setup("record.csv")
-    cycle_length = 30 # 3600 * 1.5
+    cycle_length = 30 * 60
     total_run_time = 0
     total_records = 0
     total_errors = 0
@@ -1403,81 +1409,119 @@ if __name__ == "__main__":
             </html>
             """
 
-    try:
-        message = MIMEMultipart("alternative")
-        message["Subject"] = subject
-        message["From"] = formataddr((str(Header('SUMO Simulation', 'utf-8')), from_email))
-        message["To"] = to_email
-
-        part1 = MIMEText(text, "plain")
-        part2 = MIMEText(html, "html")
-
-        message.attach(part1)
-        message.attach(part2)
-
-        server = smtplib.SMTP("smtp.gmail.com", 587)
-        server.starttls()
-        server.login(from_email, from_password)
-        server.sendmail(from_email, to_email, message.as_string())
-        server.quit()
-    except Exception:
-        traceback.print_exc()
+    # try:
+    #     message = MIMEMultipart("alternative")
+    #     message["Subject"] = subject
+    #     message["From"] = formataddr((str(Header('SUMO Simulation', 'utf-8')), from_email))
+    #     message["To"] = to_email
+    #
+    #     part1 = MIMEText(text, "plain")
+    #     part2 = MIMEText(html, "html")
+    #
+    #     message.attach(part1)
+    #     message.attach(part2)
+    #
+    #     server = smtplib.SMTP("smtp.gmail.com", 587)
+    #     server.starttls()
+    #     server.login(from_email, from_password)
+    #     server.sendmail(from_email, to_email, message.as_string())
+    #     server.quit()
+    # except Exception:
+    #     traceback.print_exc()
 
     while True:
-        set_time = time.time()
-        daily_records = 0
-        daily_errors = 0
-        while time.time() - set_time < cycle_length:
-            try:
-                p = mp.Process(target=execute, args=())
-                p.start()
-                p.join()
-                total_records += 1
-                daily_records += 1
-            except Exception:
-                traceback.print_exc()
-                total_errors += 1
-                daily_errors += 1
-        fixIndex("record.csv")
-
-        current_time = datetime.datetime.now()
-        total_daily_time = time.time() - set_time
-        total_run_time += total_daily_time
-        formatted_run_time = datetime.timedelta(seconds=total_run_time)
-        formatted_daily_time = datetime.timedelta(seconds=total_daily_time)
-        average_run_time = total_run_time / total_records
-        average_daily_time = total_daily_time / daily_records
-        average_daily_records = total_records / (total_run_time / 86400)
-        average_hourly_records = total_records / (total_run_time / 3600)
-
-        subject = "Process " + str(process_name) + " Report: Day " + str(num_days)
-        text = ""
-        html = f"""
-                    <html>
-                        <head>
-                            <meta charset="UTF-8">
-                        </head>
-                        <body style="">
-                            <h4>The following text is a report of the progress of Process {process_name}:</h4>
-                            <p>Current Time: {str(current_time)}</p>
-                            <p>Total Days: {str(num_days)} Days</p>
-                            <p>Total Run Time: {str(formatted_run_time)}</p>
-                            <p>Total Records: {str(total_records)} Records</p>
-                            <p>Total Errors: {str(total_errors)} Errors</p>
-                            <p>Day {str(num_days)} Run Time: {str(formatted_daily_time)}</p>
-                            <p>Day {str(num_days)} Records: {str(daily_records)} Records</p>
-                            <p>Day {str(num_days)} Errors: {str(daily_errors)} Errors</p>
-                            <p>Average Rate: {str(average_run_time)} Seconds/Record</p>
-                            <p>Day {str(num_days)} Rate: {str(average_daily_time)} Seconds/Record</p>
-                            <p>Inverse Average Rate: {str(1/average_run_time)} Records/Second</p>
-                            <p>Inverse Day {str(num_days)} Rate: {str(1/average_daily_time)} Records/Second</p>
-                            <p>Daily Rate: {str(average_daily_records)} Records/Day</p>
-                            <p>Hourly Rate: {str(average_hourly_records)} Records/Hour</p>
-                        </body>
-                    </html>
-                    """
-
         try:
+            set_time = time.time()
+            daily_records = 0
+            daily_errors = 0
+            while time.time() - set_time < cycle_length:
+                try:
+                    with closing(mp.Pool(1, maxtasksperchild=1)) as pool:
+                        f = pool.apply_async(execute, args=())
+                        result = f.get(timeout=10)
+                        pool.close()
+                        pool.terminate()
+                        pool.join()
+                        traci.close()
+                    pool.terminate()
+                    # pool = mp.Pool(processes=1)
+                    # result = pool.apply_async(execute, args=())
+                    # result.get(timeout=20)
+                    # pool.close()
+
+                    # pool.join()
+                    # future = execute()
+                    # results = future.result()
+
+                    total_records += 1
+                    daily_records += 1
+                except Exception as e:
+                    traceback.print_exc()
+                    total_errors += 1
+                    daily_errors += 1
+                    try:
+                        traci.close()
+                    except:
+                        pass
+            fixIndex("record.csv")
+
+            current_time = datetime.datetime.now()
+            total_daily_time = time.time() - set_time
+            total_run_time += total_daily_time
+            formatted_run_time = datetime.timedelta(seconds=total_run_time)
+            formatted_daily_time = datetime.timedelta(seconds=total_daily_time)
+
+            if total_records == 0:
+                average_run_time = "NaN"
+                inverse_average_run_time = "NaN"
+            else:
+                average_run_time = total_run_time / total_records
+            if daily_records == 0:
+                average_daily_time = "NaN"
+            else:
+                average_daily_time = total_daily_time / daily_records
+            if total_run_time == 0:
+                inverse_average_run_time = "NaN"
+                average_daily_records = "NaN"
+                average_hourly_records = "NaN"
+            else:
+                inverse_average_run_time = total_records / total_run_time
+                average_daily_records = total_records / (total_run_time / 86400)
+                average_hourly_records = total_records / (total_run_time / 3600)
+            if total_daily_time == 0:
+                inverse_average_daily_time = "NaN"
+            else:
+                inverse_average_daily_time = daily_records / total_daily_time
+
+            subject = "Process " + str(process_name) + " Report: Day " + str(num_days)
+            text = ""
+            html = f"""
+                        <html>
+                            <head>
+                                <meta charset="UTF-8">
+                            </head>
+                            <body style="">
+                                <h4>The following text is a report of the progress of Process {process_name}. The next report should be sent at around {str(datetime.datetime.now().time())} tomorrow.:</h4>
+                                <p>Current Time: {str(current_time)}</p>
+                                <p>Total Days: {str(num_days)} Days</p>
+                                <p>Total Run Time: {str(formatted_run_time)}</p>
+                                <p>Total Records: {str(total_records)} Records</p>
+                                <p>Total Errors: {str(total_errors)} Errors</p>
+                                <p>Day {str(num_days)} Run Time: {str(formatted_daily_time)}</p>
+                                <p>Day {str(num_days)} Records: {str(daily_records)} Records</p>
+                                <p>Day {str(num_days)} Errors: {str(daily_errors)} Errors</p>
+                                <p>Average Rate: {str(average_run_time)} Seconds/Record</p>
+                                <p>Day {str(num_days)} Rate: {str(average_daily_time)} Seconds/Record</p>
+                                <p>Inverse Average Rate: {str(inverse_average_run_time)} Records/Second</p>
+                                <p>Inverse Day {str(num_days)} Rate: {str(inverse_average_daily_time)} Records/Second</p>
+                                <p>Daily Rate: {str(average_daily_records)} Records/Day</p>
+                                <p>Hourly Rate: {str(average_hourly_records)} Records/Hour</p>
+                            </body>
+                        </html>
+                        """
+
+            num_days += 1
+
             message = MIMEMultipart("alternative")
             message["Subject"] = subject
             message["From"] = formataddr((str(Header('SUMO Simulation', 'utf-8')), from_email))
@@ -1494,9 +1538,9 @@ if __name__ == "__main__":
             server.login(from_email, from_password)
             server.sendmail(from_email, to_email, message.as_string())
             server.quit()
-        except:
             traceback.print_exc()
 
-        num_days += 1
-
+        except:
+            traceback.print_exc()
+    # fixIndex("record.csv")
     # main("record.csv", "data", 3000)
