@@ -7,13 +7,13 @@ from email.utils import formataddr
 from email.header import Header
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from contextlib import closing
 
 import traceback
 import traci
 import pandas as pd
 import os
 import sys
+import psutil
 import xml.etree.ElementTree as ET
 import random
 import multiprocessing as mp
@@ -28,7 +28,6 @@ if 'SUMO_HOME' in os.environ:
     sys.path.append(tools)
 else:
     sys.exit("please declare environment variable 'SUMO_HOME'")
-
 
 def adjustNodes(folder_name, lengthN, lengthS, lengthW, lengthE):
     tree = ET.parse(str(folder_name) + "/cross.nod.xml")
@@ -1094,14 +1093,6 @@ def createNetwork(folder_name, leftOnlyNS, leftStraightNS, straightOnlyNS, right
 
 def runSim(time_steps):
     traci.simulationStep(time_steps)
-    # step = 0
-    # set_time = time.time()
-    # while step <= time_steps:
-    #     traci.simulationStep()
-    #     step += 1
-        # print(time.time() - set_time)
-        # if time.time() - set_time > 300:
-        #     raise Exception("Over Maximum Time")
     traci.close()
     sys.stdout.flush()
 
@@ -1147,7 +1138,6 @@ def setup(csv_path):
                             "vehicleMaxDecel", "vehicleMinLength", "vehicleMaxLength", "minGap"])
     if dataframe.empty:
         dataframe.to_csv(csv_path)
-
 
 def main(csv_path, folder_name, time_steps,
         leftOnlyNS=0, leftStraightNS=1, straightOnlyNS=1, rightStraightNS=1, rightOnlyNS=0, allNS=0,
@@ -1270,8 +1260,6 @@ def fixIndex(csv_path):
     dataframe = dataframe.reset_index(drop=True)
     dataframe.to_csv(csv_path)
 
-# from pebble import concurrent
-# @concurrent.process(timeout=20)
 def execute():
     leftOnlyNS = randint(0, 1)
     leftStraightNS = randint(0, 1)
@@ -1383,6 +1371,12 @@ def execute():
         vehicleMaxSpeed, vehicleMinAccel, vehicleMaxAccel, vehicleMinDecel,
         vehicleMaxDecel, vehicleMinLength, vehicleMaxLength, minGap)
 
+def kill_proc_tree(pid):
+    parent = psutil.Process(pid)
+    children = parent.children(recursive=True)
+    for child in children:
+        child.kill()
+
 if __name__ == "__main__":
     process_name = str(randint(0, 9)) + str(randint(0, 9)) + str(randint(0, 9)) + str(randint(0, 9))
     setup("record.csv")
@@ -1435,34 +1429,20 @@ if __name__ == "__main__":
             daily_records = 0
             daily_errors = 0
             while time.time() - set_time < cycle_length:
+                pid = os.getpid()
                 try:
-                    with closing(mp.Pool(1, maxtasksperchild=1)) as pool:
-                        f = pool.apply_async(execute, args=())
-                        result = f.get(timeout=10)
-                        pool.close()
-                        pool.terminate()
-                        pool.join()
-                        traci.close()
-                    pool.terminate()
-                    # pool = mp.Pool(processes=1)
-                    # result = pool.apply_async(execute, args=())
-                    # result.get(timeout=20)
-                    # pool.close()
-
-                    # pool.join()
-                    # future = execute()
-                    # results = future.result()
-
+                    pool = mp.Pool(processes=1)
+                    result = pool.apply_async(execute, args=())
+                    result.get(timeout=300)
+                    pool.close()
+                    pool.join()
                     total_records += 1
                     daily_records += 1
                 except Exception as e:
                     traceback.print_exc()
+                    kill_proc_tree(pid)
                     total_errors += 1
                     daily_errors += 1
-                    try:
-                        traci.close()
-                    except:
-                        pass
             fixIndex("record.csv")
 
             current_time = datetime.datetime.now()
