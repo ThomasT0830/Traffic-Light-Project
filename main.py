@@ -1,5 +1,8 @@
 from __future__ import absolute_import
 from __future__ import print_function
+
+import multiprocessing.context
+
 from bs4 import BeautifulSoup
 from sumolib import checkBinary
 from random import randint, uniform, randrange
@@ -1231,7 +1234,7 @@ def main(csv_path, folder_name, time_steps,
                   pDemandOppN, pDemandOppS, pDemandOppW, pDemandOppE, pSpeedRegN, pSpeedRegS, pSpeedRegW, pSpeedRegE,
                   pSpeedOppN, pSpeedOppS, pSpeedOppW, pSpeedOppE)
 
-    traci.start([checkBinary('sumo-gui'), "-c", str(folder_name) + "/cross.sumocfg",
+    traci.start([checkBinary('sumo'), "-c", str(folder_name) + "/cross.sumocfg",
              "--tripinfo-output", str(folder_name) + "/tripinfo.xml", "--tripinfo-output.write-unfinished", "--no-warnings", "--quit-on-end"])
     runSim(time_steps)
     rates = findRate(str(folder_name) + "/tripinfo.xml")
@@ -1380,7 +1383,7 @@ def kill_proc_tree(pid):
 if __name__ == "__main__":
     process_name = str(randint(0, 9)) + str(randint(0, 9)) + str(randint(0, 9)) + str(randint(0, 9))
     setup("record.csv")
-    cycle_length = 30 * 60
+    cycle_length = 60
     total_run_time = 0
     total_records = 0
     total_errors = 0
@@ -1403,25 +1406,25 @@ if __name__ == "__main__":
             </html>
             """
 
-    # try:
-    #     message = MIMEMultipart("alternative")
-    #     message["Subject"] = subject
-    #     message["From"] = formataddr((str(Header('SUMO Simulation', 'utf-8')), from_email))
-    #     message["To"] = to_email
-    #
-    #     part1 = MIMEText(text, "plain")
-    #     part2 = MIMEText(html, "html")
-    #
-    #     message.attach(part1)
-    #     message.attach(part2)
-    #
-    #     server = smtplib.SMTP("smtp.gmail.com", 587)
-    #     server.starttls()
-    #     server.login(from_email, from_password)
-    #     server.sendmail(from_email, to_email, message.as_string())
-    #     server.quit()
-    # except Exception:
-    #     traceback.print_exc()
+    try:
+        message = MIMEMultipart("alternative")
+        message["Subject"] = subject
+        message["From"] = formataddr((str(Header('SUMO Simulation', 'utf-8')), from_email))
+        message["To"] = to_email
+
+        part1 = MIMEText(text, "plain")
+        part2 = MIMEText(html, "html")
+
+        message.attach(part1)
+        message.attach(part2)
+
+        server = smtplib.SMTP("smtp.gmail.com", 587)
+        server.starttls()
+        server.login(from_email, from_password)
+        server.sendmail(from_email, to_email, message.as_string())
+        server.quit()
+    except Exception:
+        traceback.print_exc()
 
     while True:
         try:
@@ -1433,14 +1436,18 @@ if __name__ == "__main__":
                 try:
                     pool = mp.Pool(processes=1)
                     result = pool.apply_async(execute, args=())
-                    result.get(timeout=300)
+                    result.get(timeout=15)
                     pool.close()
                     pool.join()
                     total_records += 1
                     daily_records += 1
-                except Exception as e:
+                except multiprocessing.context.TimeoutError:
                     traceback.print_exc()
                     kill_proc_tree(pid)
+                    total_errors += 1
+                    daily_errors += 1
+                except Exception as e:
+                    traceback.print_exc()
                     total_errors += 1
                     daily_errors += 1
             fixIndex("record.csv")
