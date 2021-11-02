@@ -1,9 +1,6 @@
 from __future__ import absolute_import
 from __future__ import print_function
 
-import multiprocessing.context
-import signal
-
 from bs4 import BeautifulSoup
 from sumolib import checkBinary
 from random import randint, uniform, randrange
@@ -25,6 +22,8 @@ import datetime
 import time
 import math
 import smtplib
+import multiprocessing.context
+import pytz
 
 # we need to import python modules from the $SUMO_HOME/tools directory
 if 'SUMO_HOME' in os.environ:
@@ -1382,10 +1381,21 @@ def kill_proc_tree(pid):
         child.kill()
 
 if __name__ == "__main__":
-    process_name = input("Input Process Name: ") # str(randint(0, 9)) + str(randint(0, 9)) + str(randint(0, 9)) + str(randint(0, 9))
+    try:
+        process_name = sys.argv[1]
+    except:
+        process_name = input("Process Name: ") # str(randint(0, 9)) + str(randint(0, 9)) + str(randint(0, 9)) + str(randint(0, 9))
 
     setup("record.csv")
-    cycle_length = 30 * 60
+
+    timezone = pytz.timezone('Asia/Taipei')
+
+    days = 1
+    hours = 0
+    minutes = 0
+    seconds = 0
+    cycle_length = days * 86400 + hours * 3600 + minutes * 60 + seconds
+
     total_run_time = 0
     total_records = 0
     total_errors = 0
@@ -1393,7 +1403,7 @@ if __name__ == "__main__":
 
     from_email = "thomasprogramtest2021@gmail.com"
     from_password = "thomastseng0830"
-    to_email = "0830thomastseng@gmail.com"
+    to_email = "thomast0830@gmail.com"
 
     subject = "Process " + str(process_name) + " Has Begun Running"
     text = ""
@@ -1403,7 +1413,7 @@ if __name__ == "__main__":
                     <meta charset="UTF-8">
                 </head>
                 <body style="">
-                    <p>Process {str(process_name)} has successfully started! Reports will be sent at around {str((datetime.datetime.now() + datetime.timedelta(0, cycle_length)).time())} each day.</p>
+                    <p>Process {str(process_name)} has successfully started! Reports will be sent at around {str((datetime.datetime.now(timezone) + datetime.timedelta(0, cycle_length)).time())} each day.</p>
                 </body>
             </html>
             """
@@ -1435,7 +1445,11 @@ if __name__ == "__main__":
             daily_errors = 0
             while time.time() - set_time < cycle_length:
                 pid = os.getpid()
-                print(psutil.Process(pid).memory_info())
+                print("")
+                print("Run: " + str(total_records + total_errors + 1))
+                print("Time: " + str(datetime.datetime.now(timezone)))
+                print("Records: " + str(total_records))
+                print("")
                 pool = mp.Pool(processes=1, maxtasksperchild=1)
                 try:
                     result = pool.apply_async(execute, args=())
@@ -1455,7 +1469,7 @@ if __name__ == "__main__":
                 pool.terminate()
             fixIndex("record.csv")
 
-            current_time = datetime.datetime.now()
+            current_time = datetime.datetime.now(timezone)
             total_daily_time = time.time() - set_time
             total_run_time += total_daily_time
             formatted_run_time = datetime.timedelta(seconds=total_run_time)
@@ -1491,7 +1505,7 @@ if __name__ == "__main__":
                                 <meta charset="UTF-8">
                             </head>
                             <body style="">
-                                <h4>This report shows the progress of Process {process_name}. The next report should be sent at around {str((datetime.datetime.now() + datetime.timedelta(0, cycle_length)).time())} tomorrow.:</h4>
+                                <h4>This report shows the progress of Process {process_name}. The next report should be sent at around {str((datetime.datetime.now(timezone) + datetime.timedelta(0, cycle_length)).time())} tomorrow.:</h4>
                                 <p>Current Time: {str(current_time)}</p>
                                 <p>Total Days: {str(num_days)} Days</p>
                                 <p>Total Run Time: {str(formatted_run_time)}</p>
@@ -1506,6 +1520,7 @@ if __name__ == "__main__":
                                 <p>Inverse Day {str(num_days)} Rate: {str(inverse_average_daily_time)} Records/Second</p>
                                 <p>Daily Rate: {str(average_daily_records)} Records/Day</p>
                                 <p>Hourly Rate: {str(average_hourly_records)} Records/Hour</p>
+                                <p>Memory: {str(psutil.Process(os.getpid()).memory_info())}</p>
                             </body>
                         </html>
                         """
