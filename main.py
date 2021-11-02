@@ -2,6 +2,7 @@ from __future__ import absolute_import
 from __future__ import print_function
 
 import multiprocessing.context
+import signal
 
 from bs4 import BeautifulSoup
 from sumolib import checkBinary
@@ -1381,9 +1382,10 @@ def kill_proc_tree(pid):
         child.kill()
 
 if __name__ == "__main__":
-    process_name = str(randint(0, 9)) + str(randint(0, 9)) + str(randint(0, 9)) + str(randint(0, 9))
+    process_name = input("Input Process Name: ") # str(randint(0, 9)) + str(randint(0, 9)) + str(randint(0, 9)) + str(randint(0, 9))
+
     setup("record.csv")
-    cycle_length = 60
+    cycle_length = 30 * 60
     total_run_time = 0
     total_records = 0
     total_errors = 0
@@ -1401,7 +1403,7 @@ if __name__ == "__main__":
                     <meta charset="UTF-8">
                 </head>
                 <body style="">
-                    <p>Process {str(process_name)} has successfully started! Reports will be sent at around {str(datetime.datetime.now().time())} each day.</p>
+                    <p>Process {str(process_name)} has successfully started! Reports will be sent at around {str((datetime.datetime.now() + datetime.timedelta(0, cycle_length)).time())} each day.</p>
                 </body>
             </html>
             """
@@ -1433,12 +1435,12 @@ if __name__ == "__main__":
             daily_errors = 0
             while time.time() - set_time < cycle_length:
                 pid = os.getpid()
+                print(psutil.Process(pid).memory_info())
+                pool = mp.Pool(processes=1, maxtasksperchild=1)
                 try:
-                    pool = mp.Pool(processes=1)
                     result = pool.apply_async(execute, args=())
-                    result.get(timeout=15)
+                    result.get(timeout=300)
                     pool.close()
-                    pool.join()
                     total_records += 1
                     daily_records += 1
                 except multiprocessing.context.TimeoutError:
@@ -1450,6 +1452,7 @@ if __name__ == "__main__":
                     traceback.print_exc()
                     total_errors += 1
                     daily_errors += 1
+                pool.terminate()
             fixIndex("record.csv")
 
             current_time = datetime.datetime.now()
@@ -1488,7 +1491,7 @@ if __name__ == "__main__":
                                 <meta charset="UTF-8">
                             </head>
                             <body style="">
-                                <h4>The following text is a report of the progress of Process {process_name}. The next report should be sent at around {str(datetime.datetime.now().time())} tomorrow.:</h4>
+                                <h4>This report shows the progress of Process {process_name}. The next report should be sent at around {str((datetime.datetime.now() + datetime.timedelta(0, cycle_length)).time())} tomorrow.:</h4>
                                 <p>Current Time: {str(current_time)}</p>
                                 <p>Total Days: {str(num_days)} Days</p>
                                 <p>Total Run Time: {str(formatted_run_time)}</p>
@@ -1525,9 +1528,8 @@ if __name__ == "__main__":
             server.login(from_email, from_password)
             server.sendmail(from_email, to_email, message.as_string())
             server.quit()
-            traceback.print_exc()
-
         except:
             traceback.print_exc()
+
     # fixIndex("record.csv")
     # main("record.csv", "data", 3000)
