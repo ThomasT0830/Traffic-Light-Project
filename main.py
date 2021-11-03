@@ -24,6 +24,7 @@ import math
 import smtplib
 import multiprocessing.context
 import pytz
+import csv
 
 # we need to import python modules from the $SUMO_HOME/tools directory
 if 'SUMO_HOME' in os.environ:
@@ -1262,6 +1263,7 @@ def fixIndex(csv_path):
     dataframe = pd.read_csv(csv_path, index_col=0)
     dataframe = dataframe.reset_index(drop=True)
     dataframe.to_csv(csv_path)
+    return len(dataframe.index)
 
 def execute():
     leftOnlyNS = randint(0, 1)
@@ -1400,6 +1402,7 @@ if __name__ == "__main__":
     total_records = 0
     total_errors = 0
     num_days = 1
+    original_time = time.time()
 
     from_email = "thomasprogramtest2021@gmail.com"
     from_password = "thomastseng0830"
@@ -1467,7 +1470,27 @@ if __name__ == "__main__":
                     total_errors += 1
                     daily_errors += 1
                 pool.terminate()
-            fixIndex("record.csv")
+
+                current_time = datetime.datetime.now(timezone)
+                total_time = time.time() - original_time
+                try:
+                    total_rate = total_records / total_time
+                except:
+                    total_rate = "NaN"
+                try:
+                    total_inverse_rate = total_time / total_records
+                except:
+                    total_inverse_rate = "NaN"
+                with open('status.csv', 'w', encoding='UTF8') as f:
+                    writer = csv.writer(f)
+                    writer.writerow(["Current Time: " + str(current_time)])
+                    writer.writerow(["Total Records: " + str(total_records)])
+                    writer.writerow(["Total Errors: " + str(total_errors)])
+                    writer.writerow(["Total Time: " + str(total_time)])
+                    writer.writerow(["Average Rate (Records/Second): " + str(total_rate)])
+                    writer.writerow(["Average Inverse Rate (Seconds/Record): " + str(total_inverse_rate)])
+
+            total_records = fixIndex("record.csv")
 
             current_time = datetime.datetime.now(timezone)
             total_daily_time = time.time() - set_time
