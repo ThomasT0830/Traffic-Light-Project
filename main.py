@@ -1401,6 +1401,7 @@ if __name__ == "__main__":
     total_run_time = 0
     total_records = 0
     total_errors = 0
+    save_records = 0
     num_days = 1
     original_time = time.time()
 
@@ -1491,6 +1492,8 @@ if __name__ == "__main__":
                     writer.writerow(["Average Inverse Rate (Seconds/Record): " + str(total_inverse_rate)])
 
             total_records = fixIndex("record.csv")
+            daily_records = total_records - save_records
+            save_records = total_records
 
             current_time = datetime.datetime.now(timezone)
             total_daily_time = time.time() - set_time
