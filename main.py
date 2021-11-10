@@ -1407,195 +1407,195 @@ def merge_csv(to_path, from_path=None, directory=None):
 
 
 if __name__ == "__main__":
-    merge_csv("backup/data.csv", from_path=["backup/record.csv"], directory=["backup/Run 1"])
-    try:
-        process_name = sys.argv[1]
-    except:
-        process_name = input("Process Name: ") # str(randint(0, 9)) + str(randint(0, 9)) + str(randint(0, 9)) + str(randint(0, 9))
-    
-    setup("record.csv")
-    
-    timezone = pytz.timezone('Asia/Taipei')
-    
-    days = 1
-    hours = 0
-    minutes = 0
-    seconds = 0
-    cycle_length = days * 86400 + hours * 3600 + minutes * 60 + seconds
-    
-    total_run_time = 0
-    total_records = 0
-    total_errors = 0
-    save_records = 0
-    num_days = 1
-    original_time = time.time()
-    
-    from_email = "thomasprogramtest2021@gmail.com"
-    from_password = "thomastseng0830"
-    to_email = "thomast0830@gmail.com"
-    
-    subject = "Process " + str(process_name) + " Has Begun Running"
-    text = ""
-    html = f"""
-            <html>
-                <head>
-                    <meta charset="UTF-8">
-                </head>
-                <body style="">
-                    <p>Process {str(process_name)} has successfully started! Reports will be sent at around {str((datetime.datetime.now(timezone) + datetime.timedelta(0, cycle_length)).time())} each day.</p>
-                </body>
-            </html>
-            """
-    
-    try:
-        message = MIMEMultipart("alternative")
-        message["Subject"] = subject
-        message["From"] = formataddr((str(Header('SUMO Simulation', 'utf-8')), from_email))
-        message["To"] = to_email
-    
-        part1 = MIMEText(text, "plain")
-        part2 = MIMEText(html, "html")
-    
-        message.attach(part1)
-        message.attach(part2)
-    
-        server = smtplib.SMTP("smtp.gmail.com", 587)
-        server.starttls()
-        server.login(from_email, from_password)
-        server.sendmail(from_email, to_email, message.as_string())
-        server.quit()
-    except Exception:
-        traceback.print_exc()
-    
-    while True:
-        try:
-            set_time = time.time()
-            daily_records = 0
-            daily_errors = 0
-            while time.time() - set_time < cycle_length:
-                pid = os.getpid()
-                print("")
-                print("Run: " + str(total_records + total_errors + 1))
-                print("Time: " + str(datetime.datetime.now(timezone)))
-                print("Records: " + str(total_records))
-                print("")
-                pool = mp.Pool(processes=1, maxtasksperchild=1)
-                try:
-                    result = pool.apply_async(execute, args=())
-                    result.get(timeout=300)
-                    pool.close()
-                    total_records += 1
-                    daily_records += 1
-                except multiprocessing.context.TimeoutError:
-                    traceback.print_exc()
-                    kill_proc_tree(pid)
-                    total_errors += 1
-                    daily_errors += 1
-                except Exception as e:
-                    traceback.print_exc()
-                    total_errors += 1
-                    daily_errors += 1
-                pool.terminate()
-    
-                current_time = datetime.datetime.now(timezone)
-                total_time = time.time() - original_time
-                try:
-                    total_rate = total_records / total_time
-                except:
-                    total_rate = "NaN"
-                try:
-                    total_inverse_rate = total_time / total_records
-                except:
-                    total_inverse_rate = "NaN"
-                with open('status.csv', 'w', encoding='UTF8') as f:
-                    writer = csv.writer(f)
-                    writer.writerow(["Current Time: " + str(current_time)])
-                    writer.writerow(["Total Records: " + str(total_records)])
-                    writer.writerow(["Total Errors: " + str(total_errors)])
-                    writer.writerow(["Total Time: " + str(total_time)])
-                    writer.writerow(["Average Rate (Records/Second): " + str(total_rate)])
-                    writer.writerow(["Average Inverse Rate (Seconds/Record): " + str(total_inverse_rate)])
+    # try:
+    #     process_name = sys.argv[1]
+    # except:
+    #     process_name = input("Process Name: ")
+    #
+    # setup("record.csv")
+    #
+    # timezone = pytz.timezone('Asia/Taipei')
+    #
+    # days = 1
+    # hours = 0
+    # minutes = 0
+    # seconds = 0
+    # cycle_length = days * 86400 + hours * 3600 + minutes * 60 + seconds
+    #
+    # total_run_time = 0
+    # total_records = 0
+    # total_errors = 0
+    # save_records = 0
+    # num_days = 1
+    # original_time = time.time()
+    #
+    # from_email = "thomasprogramtest2021@gmail.com"
+    # from_password = "thomastseng0830"
+    # to_email = "thomast0830@gmail.com"
+    #
+    # subject = "Process " + str(process_name) + " Has Begun Running"
+    # text = ""
+    # html = f"""
+    #         <html>
+    #             <head>
+    #                 <meta charset="UTF-8">
+    #             </head>
+    #             <body style="">
+    #                 <p>Process {str(process_name)} has successfully started! Reports will be sent at around {str((datetime.datetime.now(timezone) + datetime.timedelta(0, cycle_length)).time())} each day.</p>
+    #             </body>
+    #         </html>
+    #         """
+    #
+    # try:
+    #     message = MIMEMultipart("alternative")
+    #     message["Subject"] = subject
+    #     message["From"] = formataddr((str(Header('SUMO Simulation', 'utf-8')), from_email))
+    #     message["To"] = to_email
+    #
+    #     part1 = MIMEText(text, "plain")
+    #     part2 = MIMEText(html, "html")
+    #
+    #     message.attach(part1)
+    #     message.attach(part2)
+    #
+    #     server = smtplib.SMTP("smtp.gmail.com", 587)
+    #     server.starttls()
+    #     server.login(from_email, from_password)
+    #     server.sendmail(from_email, to_email, message.as_string())
+    #     server.quit()
+    # except Exception:
+    #     traceback.print_exc()
+    #
+    # while True:
+    #     try:
+    #         set_time = time.time()
+    #         daily_records = 0
+    #         daily_errors = 0
+    #         while time.time() - set_time < cycle_length:
+    #             pid = os.getpid()
+    #             print("")
+    #             print("Run: " + str(total_records + total_errors + 1))
+    #             print("Time: " + str(datetime.datetime.now(timezone)))
+    #             print("Records: " + str(total_records))
+    #             print("")
+    #             pool = mp.Pool(processes=1, maxtasksperchild=1)
+    #             try:
+    #                 result = pool.apply_async(execute, args=())
+    #                 result.get(timeout=300)
+    #                 pool.close()
+    #                 total_records += 1
+    #                 daily_records += 1
+    #             except multiprocessing.context.TimeoutError:
+    #                 traceback.print_exc()
+    #                 kill_proc_tree(pid)
+    #                 total_errors += 1
+    #                 daily_errors += 1
+    #             except Exception as e:
+    #                 traceback.print_exc()
+    #                 total_errors += 1
+    #                 daily_errors += 1
+    #             pool.terminate()
+    #
+    #             current_time = datetime.datetime.now(timezone)
+    #             total_time = time.time() - original_time
+    #             try:
+    #                 total_rate = total_records / total_time
+    #             except:
+    #                 total_rate = "NaN"
+    #             try:
+    #                 total_inverse_rate = total_time / total_records
+    #             except:
+    #                 total_inverse_rate = "NaN"
+    #             with open('status.csv', 'w', encoding='UTF8') as f:
+    #                 writer = csv.writer(f)
+    #                 writer.writerow(["Current Time: " + str(current_time)])
+    #                 writer.writerow(["Total Records: " + str(total_records)])
+    #                 writer.writerow(["Total Errors: " + str(total_errors)])
+    #                 writer.writerow(["Total Time: " + str(total_time)])
+    #                 writer.writerow(["Average Rate (Records/Second): " + str(total_rate)])
+    #                 writer.writerow(["Average Inverse Rate (Seconds/Record): " + str(total_inverse_rate)])
+    #
+    #         total_records = fixIndex("record.csv")
+    #         daily_records = total_records - save_records
+    #         save_records = total_records
+    #
+    #         current_time = datetime.datetime.now(timezone)
+    #         total_daily_time = time.time() - set_time
+    #         total_run_time += total_daily_time
+    #         formatted_run_time = datetime.timedelta(seconds=total_run_time)
+    #         formatted_daily_time = datetime.timedelta(seconds=total_daily_time)
+    #
+    #         if total_records == 0:
+    #             average_run_time = "NaN"
+    #             inverse_average_run_time = "NaN"
+    #         else:
+    #             average_run_time = total_run_time / total_records
+    #         if daily_records == 0:
+    #             average_daily_time = "NaN"
+    #         else:
+    #             average_daily_time = total_daily_time / daily_records
+    #         if total_run_time == 0:
+    #             inverse_average_run_time = "NaN"
+    #             average_daily_records = "NaN"
+    #             average_hourly_records = "NaN"
+    #         else:
+    #             inverse_average_run_time = total_records / total_run_time
+    #             average_daily_records = total_records / (total_run_time / 86400)
+    #             average_hourly_records = total_records / (total_run_time / 3600)
+    #         if total_daily_time == 0:
+    #             inverse_average_daily_time = "NaN"
+    #         else:
+    #             inverse_average_daily_time = daily_records / total_daily_time
+    #
+    #         subject = "Process " + str(process_name) + " Report: Day " + str(num_days)
+    #         text = ""
+    #         html = f"""
+    #                     <html>
+    #                         <head>
+    #                             <meta charset="UTF-8">
+    #                         </head>
+    #                         <body style="">
+    #                             <h4>This report shows the progress of Process {process_name}. The next report should be sent at around {str((datetime.datetime.now(timezone) + datetime.timedelta(0, cycle_length)).time())} tomorrow.:</h4>
+    #                             <p>Current Time: {str(current_time)}</p>
+    #                             <p>Total Days: {str(num_days)} Days</p>
+    #                             <p>Total Run Time: {str(formatted_run_time)}</p>
+    #                             <p>Total Records: {str(total_records)} Records</p>
+    #                             <p>Total Errors: {str(total_errors)} Errors</p>
+    #                             <p>Day {str(num_days)} Run Time: {str(formatted_daily_time)}</p>
+    #                             <p>Day {str(num_days)} Records: {str(daily_records)} Records</p>
+    #                             <p>Day {str(num_days)} Errors: {str(daily_errors)} Errors</p>
+    #                             <p>Average Rate: {str(average_run_time)} Seconds/Record</p>
+    #                             <p>Day {str(num_days)} Rate: {str(average_daily_time)} Seconds/Record</p>
+    #                             <p>Inverse Average Rate: {str(inverse_average_run_time)} Records/Second</p>
+    #                             <p>Inverse Day {str(num_days)} Rate: {str(inverse_average_daily_time)} Records/Second</p>
+    #                             <p>Daily Rate: {str(average_daily_records)} Records/Day</p>
+    #                             <p>Hourly Rate: {str(average_hourly_records)} Records/Hour</p>
+    #                             <p>Memory: {str(psutil.Process(os.getpid()).memory_info())}</p>
+    #                         </body>
+    #                     </html>
+    #                     """
+    #
+    #         num_days += 1
+    #
+    #         message = MIMEMultipart("alternative")
+    #         message["Subject"] = subject
+    #         message["From"] = formataddr((str(Header('SUMO Simulation', 'utf-8')), from_email))
+    #         message["To"] = to_email
+    #
+    #         part1 = MIMEText(text, "plain")
+    #         part2 = MIMEText(html, "html")
+    #
+    #         message.attach(part1)
+    #         message.attach(part2)
+    #
+    #         server = smtplib.SMTP("smtp.gmail.com", 587)
+    #         server.starttls()
+    #         server.login(from_email, from_password)
+    #         server.sendmail(from_email, to_email, message.as_string())
+    #         server.quit()
+    #     except:
+    #         traceback.print_exc()
 
-            total_records = fixIndex("record.csv")
-            daily_records = total_records - save_records
-            save_records = total_records
-
-            current_time = datetime.datetime.now(timezone)
-            total_daily_time = time.time() - set_time
-            total_run_time += total_daily_time
-            formatted_run_time = datetime.timedelta(seconds=total_run_time)
-            formatted_daily_time = datetime.timedelta(seconds=total_daily_time)
-
-            if total_records == 0:
-                average_run_time = "NaN"
-                inverse_average_run_time = "NaN"
-            else:
-                average_run_time = total_run_time / total_records
-            if daily_records == 0:
-                average_daily_time = "NaN"
-            else:
-                average_daily_time = total_daily_time / daily_records
-            if total_run_time == 0:
-                inverse_average_run_time = "NaN"
-                average_daily_records = "NaN"
-                average_hourly_records = "NaN"
-            else:
-                inverse_average_run_time = total_records / total_run_time
-                average_daily_records = total_records / (total_run_time / 86400)
-                average_hourly_records = total_records / (total_run_time / 3600)
-            if total_daily_time == 0:
-                inverse_average_daily_time = "NaN"
-            else:
-                inverse_average_daily_time = daily_records / total_daily_time
-
-            subject = "Process " + str(process_name) + " Report: Day " + str(num_days)
-            text = ""
-            html = f"""
-                        <html>
-                            <head>
-                                <meta charset="UTF-8">
-                            </head>
-                            <body style="">
-                                <h4>This report shows the progress of Process {process_name}. The next report should be sent at around {str((datetime.datetime.now(timezone) + datetime.timedelta(0, cycle_length)).time())} tomorrow.:</h4>
-                                <p>Current Time: {str(current_time)}</p>
-                                <p>Total Days: {str(num_days)} Days</p>
-                                <p>Total Run Time: {str(formatted_run_time)}</p>
-                                <p>Total Records: {str(total_records)} Records</p>
-                                <p>Total Errors: {str(total_errors)} Errors</p>
-                                <p>Day {str(num_days)} Run Time: {str(formatted_daily_time)}</p>
-                                <p>Day {str(num_days)} Records: {str(daily_records)} Records</p>
-                                <p>Day {str(num_days)} Errors: {str(daily_errors)} Errors</p>
-                                <p>Average Rate: {str(average_run_time)} Seconds/Record</p>
-                                <p>Day {str(num_days)} Rate: {str(average_daily_time)} Seconds/Record</p>
-                                <p>Inverse Average Rate: {str(inverse_average_run_time)} Records/Second</p>
-                                <p>Inverse Day {str(num_days)} Rate: {str(inverse_average_daily_time)} Records/Second</p>
-                                <p>Daily Rate: {str(average_daily_records)} Records/Day</p>
-                                <p>Hourly Rate: {str(average_hourly_records)} Records/Hour</p>
-                                <p>Memory: {str(psutil.Process(os.getpid()).memory_info())}</p>
-                            </body>
-                        </html>
-                        """
-
-            num_days += 1
-
-            message = MIMEMultipart("alternative")
-            message["Subject"] = subject
-            message["From"] = formataddr((str(Header('SUMO Simulation', 'utf-8')), from_email))
-            message["To"] = to_email
-
-            part1 = MIMEText(text, "plain")
-            part2 = MIMEText(html, "html")
-
-            message.attach(part1)
-            message.attach(part2)
-
-            server = smtplib.SMTP("smtp.gmail.com", 587)
-            server.starttls()
-            server.login(from_email, from_password)
-            server.sendmail(from_email, to_email, message.as_string())
-            server.quit()
-        except:
-            traceback.print_exc()
-
+    merge_csv("backup/data.csv", directory=["backup/Run 1", "backup/Run 2", "backup/Run 3", "backup/Run 4"])
     # fixIndex("record.csv")
     # main("record.csv", "data", 3000)

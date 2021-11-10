@@ -2,7 +2,7 @@
    <node id="juncMain" x="0.0" y="0.0" type="traffic_light" />
 
    <node id="juncN" x="0.0" y="+800" type="priority" />
-   <node id="juncS" x="0.0" y="-700" type="priority" />
-   <node id="juncW" x="-800" y="0.0" type="priority" />
-   <node id="juncE" x="+800" y="0.0" type="priority" />
+   <node id="juncS" x="0.0" y="-400" type="priority" />
+   <node id="juncW" x="-900" y="0.0" type="priority" />
+   <node id="juncE" x="+400" y="0.0" type="priority" />
 </nodes>
